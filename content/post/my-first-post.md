@@ -8,9 +8,13 @@ draft: true
 王垠是谁？去谷歌知乎简单搜搜就能很快知道这个大名鼎鼎之人。对我来说，他是具有叛逆精神、擅长质疑与逻辑推断的人。他的求学经历让我感到惋惜，与此同时，他的学习能力让我膜拜，他对计算器编译器的深刻洞见让我崇拜。最让我痴迷的是，还是他在自己的博客 “当然我在扯淡”中记录了四篇他的智慧：
 
 ### 参考链接
+
 《编程的智慧》http://www.yinwang.org/blog-cn/2015/11/21/programming-philosophy
+
 《生活的智慧》http://www.yinwang.org/blog-cn/2017/07/08/living-philosophy
+
 《旅行的智慧》http://www.yinwang.org/blog-cn/2017/08/14/travel-wisdom
+
 《学习的智慧》http://www.yinwang.org/blog-cn/2019/07/12/learning-philosophy
 
 ### 心得感悟
