@@ -58,9 +58,9 @@ description = "东方不亮木星亮，黑了白昼有星空"
 mainSection = "posts" # 主要部分
 showAllPostsOnHomePage = false # 显示所有文章在主页
 postsOnHomePage = 5 # this option will be ignored if showAllPostsOnHomePage is set to true
-tagsOverview = true # show tags overview by default.
-showProjectsList = true # show projects list by default (if projects data file exists).
-projectsUrl = "https://github.com/JupiterXue" # title link for projects list
+tagsOverview = true # 显示归档预览
+showProjectsList = true # 显示项目列表 (if projects data file exists).
+projectsUrl = "https://github.com/JupiterXue" # 项目列表文章标题的链接
 
 # https://gohugo.io/functions/format/#hugo-date-and-time-templating-reference
 dateFormat = "2006-01-02" # default
