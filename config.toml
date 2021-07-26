@@ -17,7 +17,7 @@ weight = 1
 
 [[menu.main]]
 name = "文章"
-url = "/post"
+url = "/posts"
 weight = 2
 
 [[menu.main]]
@@ -43,7 +43,7 @@ lineNoStart = 1
 lineNos = true
 lineNumbersInTable = false
 noClasses = true
-style = "Monokai" # 代码配色，默认 dracula
+style = "monokai" # 代码配色，默认 dracula。大爱 monokai
 tabWidth = 4
 
 [params]
@@ -54,7 +54,7 @@ googleAnalyticsAsync = true # use asynchronous tracking. Synchronous tracking by
 showAllPostsArchive = false # default
 
 # 主页配置
-description = "东方不亮木星亮，黑了白天有星空"
+description = "东方不亮木星亮，黑了白昼有星空"
 mainSection = "posts" # 主要部分
 showAllPostsOnHomePage = false # 显示所有文章在主页
 postsOnHomePage = 5 # this option will be ignored if showAllPostsOnHomePage is set to true
@@ -70,7 +70,7 @@ show_updated = true # 显示更新时间
 showReadTime = true # 显示阅读时间
 
 [params.comments]
-enabled = true # 显示评论
+enabled = false # 显示评论
 engine = "disqus" # 评论引擎
 
 # the value of name should be an valid font awesome icon name (brands type)

@@ -1,5 +1,5 @@
 ---
-title: "My First Post"
+title: "王垠的智慧"
 date: 2021-07-23T18:21:05+08:00
 draft: true
 ---
