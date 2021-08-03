@@ -1,4 +1,4 @@
-baseURL = "https://example.com"
+baseURL = "http://jupiterxue.com"
 languageCode = "zh-CN"
 title = "木夜星空的个人博客"
 theme = "cactus"
@@ -63,7 +63,7 @@ showProjectsList = true # 显示项目列表 (if projects data file exists).
 projectsUrl = "https://github.com/JupiterXue" # 项目列表文章标题的链接
 
 # https://gohugo.io/functions/format/#hugo-date-and-time-templating-reference
-dateFormat = "2006-01-02" # default
+dateFormat = "2006-01-02" # 日期格式化样式
 
 # 文章页面设置
 show_updated = true # 显示更新时间
