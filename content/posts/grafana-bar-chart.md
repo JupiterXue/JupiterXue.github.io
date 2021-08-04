@@ -1,7 +1,13 @@
 ---
 title: "Grafana 条形图实践"
 date: 2021-07-29T09:56:39+08:00
-draft: true
+tags:
+    - Grafana
+    - Promethues
+    - Python
+keywords:
+    - 采集器
+    - 条形图
 ---
 
 # 前言

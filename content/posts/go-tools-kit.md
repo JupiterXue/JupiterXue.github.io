@@ -1,7 +1,11 @@
 ---
 title: "Go 实用小工具"
 date: 2021-07-26T11:00:46+08:00
-draft: true
+category: tech
+tags:
+    - Go
+keywords:
+    - tools
 ---
 
 ## Go 小工具

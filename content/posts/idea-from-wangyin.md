@@ -1,7 +1,11 @@
 ---
 title: "王垠的智慧"
 date: 2021-07-23T18:21:05+08:00
-draft: true
+category: 思考
+tags:
+    - 人物
+keywords:
+    - 智慧
 ---
 
 ## 王垠的智慧
