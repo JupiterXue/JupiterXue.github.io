@@ -53,11 +53,51 @@ keywords:
 
 而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
 
+![img](https://grafana.com/static/img/docs/bar-chart-panel/bar-chart-example-v8-0.png)
+
 今天来彻底搞定这个问题！！
 
-### 参考链接
+### 版本
+|   工具  | 版本  |  
+| :------: | :------ |  
+|   Docker  |   1.13.1 |  
+|   Go  |  1.16.5 |  
+|   Python  | 3.6.8 |  
+|   Promethues  | 2.28.1 |  
+|   Grafana  | v8.1.0-30031pre（这个太重要了！！！） |  
 
-[1] 
+
+### 看官网！看官网！看官网
+1. 首先需要有表格化的数据，并且这些数据都是 number 类型，而不是 string，你的 Grafana Metrics browser 可以长这样：
+```bash
+# data1
+custom_market{browser_name="Chrome"} 
+
+# data2
+custom_market{browser_name="Safari"} 
+
+# data3
+custom_market{browser_name="Edge"} 
+```
+2. Format 格式都是 Table，Instant 瞬间值都要打开。最终你获得了像这样的表数据（打开 Tabel View 可以看到）
+
+|   浏览器  | 市场占比  |   CPU占用  |  
+| :------: | :------: | :------:  |  
+|   Chrome  | 65.88 | 5%  |  
+|   Safari  | 18.50 | 3%  |  
+|   Edge    | 3.29  | 3.4%  |
+
+3. 在 Transform 中转换展示方式。选择 Concatenate fields 再选择 → Copy frame name to field name
+
+4. 在 Transform 中选择需要展示的数据。选择 Filter by name，点选你需要展示的数据
+
+5. 最后，还是在 Transform 中重命名字段。选择 Organize fields，将英文转化为中文吧（如果你需要的话）。
+
+完美收工！就得到了上图的右边部分显示的相同样式。
+
+__参考链接__
+
+[1] [官网：Bar chart](https://grafana.com/docs/grafana/latest/panels/visualizations/bar-chart/)
 
 [2] [A Complete Guide to Bar Charts](https://chartio.com/learn/charts/bar-chart-complete-guide/)
 
