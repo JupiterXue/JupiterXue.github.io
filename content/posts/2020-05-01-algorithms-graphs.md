@@ -619,4 +619,4 @@ We can use Bellman-Ford algorithm as long as there is no negative cycle in the g
 
 Bellman-Ford algorithm can also be used for finding a negative cycle.
 
-Negative cycle application: arbitrage detection.
+Negative cycle application: arbitrage detection.  
