@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title> Go 翻山越岭——反编译2 | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.i/go-to-top/go-top-day8-disassembly/'>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/go-top-day8-disassembly/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
@@ -25,7 +25,7 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
 我们来实现这段代码，文件名为 make.go
 1package main 2 3func main() { 4 // make slice 5 // 空间开的比较大，是为了让这个 slice 分配到堆上。空间小的话会默认分配到栈上，而栈上的 slice 和堆上的 slice 底层实现会不一样。 6 var sl = make([]int, 100000) 7 println(sl) 8 9 // make channel 10 var ch = make(chan int, 5) 11 println(ch) 12 13 // make map 14 var m = make(map[int]int, 22) 15 println(m) 16} 1&gt;&gt;&gt; go build make." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.i/go-to-top/go-top-day8-disassembly/" /><meta property="article:section" content="go-to-top" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/go-top-day8-disassembly/" /><meta property="article:section" content="go-to-top" />
 <meta property="article:published_time" content="2021-08-21T15:25:05+08:00" />
 <meta property="article:modified_time" content="2021-08-21T15:25:05+08:00" />
 
@@ -48,7 +48,7 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
     
   
   
-  <link rel="stylesheet" href="https://jupiterxue.github.i/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
 
   
   
@@ -72,7 +72,7 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
 
 
   
-<link rel="icon" type="image/png" href="https://jupiterxue.github.i/images/favicon.ico" />
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
 
   
   
@@ -84,9 +84,9 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
   <div class="content index py4">
 
     <header id="header">
-  <a href="https://jupiterxue.github.i">
+  <a href="https://jupiterxue.github.io">
   
-    <div id="logo" style="background-image: url(https://jupiterxue.github.i/images/logo.png)"></div>
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
   
   <div id="title">
     <h1>木夜星空的个人博客</h1>

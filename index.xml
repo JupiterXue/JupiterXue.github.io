@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>木夜星空的个人博客</title>
-    <link>https://jupiterxue.github.i/</link>
+    <link>https://jupiterxue.github.io/</link>
     <description>Recent content on 木夜星空的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Sun, 22 Aug 2021 22:51:00 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.i/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 22 Aug 2021 22:51:00 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go 翻山越岭——解释器</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day10-parser/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day10-parser/</link>
       <pubDate>Sun, 22 Aug 2021 22:51:00 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day10-parser/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day10-parser/</guid>
       <description>上期文章遗留了一个问题“三个 panic 在 runtime 代码的具体哪个位置输出”，如果通过汇编调试工具找出来。今天来动手实践，并且尝试解决另一个业务问题。
 问题回顾  分别有三种情况的 panic：
  往已经关闭的 channel中写入数据 关闭一个是 nil 值的 channel 关闭一个已经是关闭状态的 channel   要找出它们在 runtime 代码中具体位置，首先我们先写几个小型代码，来完全模拟这几种情况。
@@ -25,10 +25,10 @@
     
     <item>
       <title>Go 翻山越岭——语法分析实现</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day9-parsing_implementation/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day9-parsing_implementation/</link>
       <pubDate>Sun, 22 Aug 2021 08:34:33 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day9-parsing_implementation/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day9-parsing_implementation/</guid>
       <description>之前的文章提到：Go 程序编译和链接涉及到工具 go tool compile 、go tool objdump 和 SSA func build 将源代码转化成静态单赋值形式的中间代码。这些工具都可以直接上手玩一玩，即便对编译原理的理论不熟悉，在实践后还是会逐步明白的，Go 的工程化在这方面做得挺不错。今天来讲一讲“GO 语言语法分析的具体实现”
 调试工具回顾 通过命令 readelf -h 可以查看 ELF 可执行文件的头信息，发现调试入口的十六进制地址码，然后用 dlv 来调试 Go 程序。
 在 dlv 中，打断点有三种常用方式：
@@ -41,19 +41,19 @@
     
     <item>
       <title>2021 08 21 Go Top Day8 Disassembly</title>
-      <link>https://jupiterxue.github.i/go-to-top/2021-08-21-go-top-day8-disassembly/</link>
+      <link>https://jupiterxue.github.io/go-to-top/2021-08-21-go-top-day8-disassembly/</link>
       <pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/2021-08-21-go-top-day8-disassembly/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/2021-08-21-go-top-day8-disassembly/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Go 翻山越岭——反编译2</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day8-disassembly/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day8-disassembly/</link>
       <pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day8-disassembly/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day8-disassembly/</guid>
       <description>Go 语言常用的两个查看汇编代码的工具是 go tool compile 和 go tool objdump。上期文章说到通过 go tool compile -S 可以查看实现相同功能，两个不同的代码在性能上有什么区别，可从反编译出的汇编代码看出，二者的性能一样。今天再来聊一聊另外一个工具的使用。
  场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
  在解决这种类似问题之前，我们其实可以查阅官方的资料 spec，国外源地址：https://golang.org/ref/spec ，国内看这个：https://golang.google.cn/ref/spec
@@ -68,10 +68,10 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
     
     <item>
       <title>Go 翻山越岭——编译与反编译</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day7-assembly/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day7-assembly/</link>
       <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day7-assembly/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day7-assembly/</guid>
       <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
 重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
 具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
@@ -86,10 +86,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>编译与反编译</title>
-      <link>https://jupiterxue.github.i/go-to-top/2021-08-19-go-top-day7-assembly/</link>
+      <link>https://jupiterxue.github.io/go-to-top/2021-08-19-go-top-day7-assembly/</link>
       <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/2021-08-19-go-top-day7-assembly/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/2021-08-19-go-top-day7-assembly/</guid>
       <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
 重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
 具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
@@ -104,10 +104,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>编译与反编译</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-19-go-top-day7-assembly/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-19-go-top-day7-assembly/</link>
       <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-19-go-top-day7-assembly/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-19-go-top-day7-assembly/</guid>
       <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
 重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
 具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
@@ -122,10 +122,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>性感、美食和学术？</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-18-sex-research/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-18-sex-research/</link>
       <pubDate>Wed, 18 Aug 2021 22:01:22 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-18-sex-research/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-18-sex-research/</guid>
       <description>当我们的开始看论文、接触到学术研究后会形成一个感知：科研工作往往都是在进行复杂的实验、写出带有各种样式的图表和复杂的数学公式，最终生成的长篇大论。但今天我彻底颠覆了这一刻板印象——做科研也是“性感”的。？？？对，你没有看错，今天想来讨论中国知网推出的《研究生科研素养提升》系列学术讲座的其中一期。
 介绍 这期讲座是在 2021-08-18 15:30~17:10 开展的。主讲人是北京交通大学教授、博导师，华国伟。他的主讲题目是《做最“性感”的研究》，一看到题目，是不是就觉得有点意思？
 华老师开篇讲到，“性感”这个词常用于表达吸引异性的场合，而他的讲座并没有这个裸露的含义，而是隐喻：我们做学术也可以吸引其他做学术的人。同时，华老师还提到了一个小故事：
@@ -161,10 +161,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>写技术文章的要点</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-16-tech_write/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-16-tech_write/</link>
       <pubDate>Mon, 16 Aug 2021 22:52:49 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-16-tech_write/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-16-tech_write/</guid>
       <description>磨刀不误砍柴工，程序员在写代码、写文章之余还是值得去了解重构代码、测试代码、如何写文章等辅助性的技能，虽然有时有点务虚，但从长远看却是实打实地有用。今天讨论的主题是“写技术文章有哪些要点”。
 首先，我们需要对技术文章进行一个分类：
  知识总结。  比如你在公司内想要做个什么系统，你不知道，就去 Google 用英文搜一下。把第一页都消化吸收了就能出一篇总结性文章了（也就是老板常说的去调研一下）。业务问题 → Google 搜索 → 消化内容 → 总结 最近对流式计算感兴趣，我也可以 Google 去搜 &amp;ldquo;stream processing&amp;rdquo;，不过搜出来的知识点都比较零散。而我想要更完整的知识体系，那么我就去亚马逊搜书 &amp;ldquo;stream processing&amp;rdquo;。大致了解到有哪些关键词后，我们就去更加专业的渠道去阅读它——learning.oreily.com/library，然后就可以输出笔记了。 流式计算感兴趣 → 读书 → 读书笔记。   项目总结。  公司项目 → 完成之后 → 调研更高级项目 → 复盘总结。 公司问题提炼。业务脱敏，只把关键技术部分整理出来 → 输出。   教程指引。翻译官方文档，补充一些在使用时候会遇到的坑。  Yutube 上很好的国外的视频分享 → 怕忘记、感兴趣 → 结合自己的理解记下来。 内容翻译。medium，lobster，acm 里不错的新论文，acm queue，macm 杂志上的文章，都是不错的翻译目标。    小插曲：注册 ACM 会员再用同样的账号去注册O`reily，能够免费阅读里面大部分的书。价格为 25 刀，可以搞个双币信用卡呀，招行就行，现在学生账号可能不行了，不过用绑了 paypal 的卡就行好像。
@@ -173,10 +173,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>Go 翻山越岭——编译原理基础</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day6-parse/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day6-parse/</link>
       <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day6-parse/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day6-parse/</guid>
       <description>上回我们说到 8 个常见 Go 业务场景，并且可以通过探究 Go 语法背后的秘密就能去解决的问题，在我们开始动手之前，先打好“Go 语言中编译原理的基础”
 回顾 Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，我们可以通过这句代码，编译一段简单的 “Hello World！” 程序看到：
 1go build -x hello.go 编译原理基础 我们可以把编译分为两个部分：编译器前端和编译器后端，如图所示：（这些都是我们软件工程专业课上的基础知识）
@@ -193,10 +193,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>Go 翻山越岭——编译原理基础</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-15-go-top-day6-parse/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</link>
       <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-15-go-top-day6-parse/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</guid>
       <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接。看似简单，但其中蕴藏着极大的能量，尤其在面对不能一时半会就解决的业务场景中，稍微深挖编译与链接的过程就有奇效。今天我们就来聊聊 “Go 语言中编译原理的基础”。
 上期文章提到了 8 个常见 Go 业务场景，虽说都是业务场景，但在代码性能、数据结构转换和系统设计中偏细颗粒度的实践中我们通常感到茫然和繁琐。这是因为在平时开发中，编译器会自动帮我们屏蔽掉代码编译的过程，我们只用关注最后的 ELF 可执行文件。那么我们就来看看，编译器会帮我们做些什么工作，进一步理解我们所写的程序发生了什么样的转化。
 编译原理概述 我们可以把编译分为两个部分：编译器前端和编译器后端，如图所示：（这些都是我们软件工程专业课上的基础知识）
@@ -213,10 +213,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>Go 翻山越岭——常见业务问题</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day5-problem/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day5-problem/</link>
       <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day5-problem/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day5-problem/</guid>
       <description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
 常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
 场景1，这两段代码运行速度怎样？第一个比第二个快？
@@ -226,10 +226,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>Go 翻山越岭——常见业务问题</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-14-go-top-day5-problem/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/</link>
       <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-14-go-top-day5-problem/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/</guid>
       <description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
 常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
 场景1，这两段代码运行速度怎样？第一个比第二个快？
@@ -239,10 +239,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>七夕荐电影《当男人恋爱时》</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-13-when-man-love/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-13-when-man-love/</link>
       <pubDate>Fri, 13 Aug 2021 14:42:49 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-13-when-man-love/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-13-when-man-love/</guid>
       <description>明天就是七夕节了，本来今天应该更技术文章，暂时放一放，让美好暂留一天，今天来聊一部爱情电影。
 爱情并不完美，而爱情电影往往都是那么天真浪漫，这和现实生活产生了巨大的冲突和矛盾，即便如此，依就阻止不了我们对于美好爱情的向往和憧憬。《重庆森林》已经被我看过4、5遍，里面没有讲述重庆、也没有讲述森林，而当你想恋爱了、当你失恋了，这部电影就很贴近你的生活，就和你有关系了。即便是1994年的老电影，至今 2021 年仍然爱不释手。但今天要说的不是《重庆森林》，而是另一部听名字就有点意思的电影——《当男人恋爱时》。
 发现 最初了解到这部电影的时候是无意间看到的一篇影评，2021年6月11日在中国大陆上映了电影《当男人恋爱时》[1]，这篇影评不仅讲述了电影中的情节，还将另外一部于2014年1月22日上映的同名电影的故事情节和剧照都晒了出来。真的是没有对比，就不会知道自己喜欢哪个。当我一看到这副剧照，我就知道，我喜欢老版本的电影！（左图）
@@ -266,10 +266,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>论—如何看论文与写技术文章</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-12-write/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-12-write/</link>
       <pubDate>Thu, 12 Aug 2021 14:42:49 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-12-write/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-12-write/</guid>
       <description>最近成长会的小伙伴推荐了一个系列讲座“2021年“研究生科研素养提升”系列公益讲座”，看到这个题目，不禁联想起自己大学最初的梦想，如果，如果没有当初也便没有现在的自己，就不多说了。翻了翻里面有哪些主题的课程讲座，发现最让我感兴趣的是徐铭梓老师推出的“中国知网辅助论文读写效率提升”，今天讲的主题就是“论—如何看论文与写技术文章”。
 这里又不得不提及，在我们成长会中，每年 Scalers 老师都会亲自带队，在为期几个月的时间内带我们进行专题性阅读。什么是专题阅读？比如这期的主题是“经济学”，我们会从曼昆的《经济学原理》的微观与宏观开始看，再到《经济思想史》和《解读中国经济》。像《经济学原理》都是经贸领域同学的本科专业教材，都是大部头，不过我们也是按照每天一章、两章的阅读量在阅读。光阅读还不够，我们每天还会回答 S 老师布置的问题，当天看书当天答题，我们社群有个全新的文化——日毕。我参加过几期这样的专题读书活动，也深刻感受到 S 老师出题之深刻，就比如：调研和概述中国近20年的财政情况、股票市场是否存在稳赚不赔的方法、2018年中美贸易摩擦到现在的变化情况，以及搜集近五年政府工作报告分析财政与货币在政策上的变化等。这些问题无一不是好几篇研究生甚至博士生所研究的问题，因此我们在回答这些问题的时候会经常性地去关注学术论文是怎样看待这些问题的。
 既然要看学术论文，有没有什么常识或者说常用的套路呢？回到最开始提及的那位老师，徐铭梓。我好奇地拿着她的名字在谷歌上搜了一下，没想到直接找到了她在去年4月份在知网上发表的一篇免费教学PPT——《论文阅读与写作入门》，里面详细地讲述了作为一个科研人员，需要保持什么样的做学术和看论文的正确理念，分类地讲述了不同段位的研究者应该从哪里、看什么、怎样看论文，详尽地阐述了论文的基本阅读方法。
@@ -292,10 +292,10 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
     
     <item>
       <title>Go 翻山越岭——调试2</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day4-run/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day4-run/</link>
       <pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day4-run/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day4-run/</guid>
       <description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
 [toc]
 实验环境与回顾  操作系统：CentOS 7
@@ -310,10 +310,10 @@ Go：1.14.12
     
     <item>
       <title>Go 翻山越岭——调试2</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-11-go-top-day4-run/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-11-go-top-day4-run/</link>
       <pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-11-go-top-day4-run/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-11-go-top-day4-run/</guid>
       <description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
 [toc]
 实验环境与回顾  操作系统：CentOS 7
@@ -328,10 +328,10 @@ Go：1.14.12
     
     <item>
       <title>Go 翻山越岭——调试1</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day3-run/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day3-run/</link>
       <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day3-run/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day3-run/</guid>
       <description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
 既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
  操作系统：CentOS7 或其他 Linux 环境
@@ -347,10 +347,10 @@ Go 调试工具：readelf
     
     <item>
       <title>Go 翻山越岭——调试1</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-09-go-top-day3-run/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-09-go-top-day3-run/</link>
       <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-09-go-top-day3-run/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-09-go-top-day3-run/</guid>
       <description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
 既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
  操作系统：CentOS7 或其他 Linux 环境
@@ -366,10 +366,10 @@ Go 调试工具：readelf
     
     <item>
       <title>微信公众排版</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-08-wxpb/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-08-wxpb/</link>
       <pubDate>Sun, 08 Aug 2021 14:42:49 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-08-wxpb/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-08-wxpb/</guid>
       <description>已经开通微信公众号两周了，但公众号的发文机制和排版机制让我有些头疼，今天来探讨一下——微信公众号的排版与运作机制，先列出我在这里写作最直观的感受：
  不能用 Markdown 写文章，识别不出来，空行也会被解析掉。 一天只能发布一篇文章，第二天才有新的可发布量。 可以修改文章，但修改后的关注公众号的读者看的文章还是以前的文章。 修改后想让读者看到，就需要重新发一篇，以前的会保留。  所以我的问题来了：
  文本输入不能支持 Markdown 语法那支持什么语法？还是说有什么办法可以转化？ 一天只有一篇文章的发布量，是否有什么方法增加发布量？或者说有预发布功能？ 想要修改文章、能够让读者看见，又不减少发布量，有可行的方法吗？  作为程序员，我们一般习惯用 Markdown 来写文章，因为排版的方式有点类似于代码的方式，并且操作的方式也类似于编码的方式，有快捷键、能插入不同语言代码。如果你想试用，这里推荐你试用一下 Typora，一个看起来非常的美观的基于 Markdown 的编辑和预览器，这个软件还有一个视图查看方式就叫做“源代码模式”。但是问题就出在，直接复制用 Markdown 写好的源代码文章，粘贴到微信公众号却不能直接识别出来，里面的文本和标识符识被识别为了纯文本，空行没有了，文字上的超链接没有了，图片也没有了。真的有点，气急败坏。然后尝试直接复制 Typora 预览模式下的文章到公众号。确实效果达到了，但也出现了一个问题：用了引用的格式却不能删除、多复制了几段空行却不能删除。又是气急败坏，去找了下解决方案，一开始找到了网站 Mardkown 转 微信公众号，经过一次尝试发现有的图片没有加载进去，遂放弃。后来几经折腾发现还是这个网站有用。第一次真的眼睛瞎了，为啥没尽早用到！！
@@ -381,10 +381,10 @@ Go 调试工具：readelf
     
     <item>
       <title>Go 翻山越岭——调度-day2</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day2-scheduler/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day2-scheduler/</link>
       <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day2-scheduler/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day2-scheduler/</guid>
       <description>上回说到 Go 的调度流程本质上是⼀个⽣产-消费流程，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。
 当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&amp;gt; runqgrab 这个流程。
 当 goroutine 处于消费端时，执行的是一个循环：runtime.schedule → execute → runtime.gogo → runtime.goexit → runtime.schedule（回到原点），并且最终 P.schedtick = 0。
@@ -400,19 +400,19 @@ Go 调试工具：readelf
     
     <item>
       <title>Go 翻山越岭——调度-day2</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-05-go-top-day2-scheduler/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-05-go-top-day2-scheduler/</link>
       <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-05-go-top-day2-scheduler/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-05-go-top-day2-scheduler/</guid>
       <description>1package main 2 3// sd1 4 5func main() { 6 // test 7} </description>
     </item>
     
     <item>
       <title>如何在 Go 高级工程师训练营生存</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-04-how-to-survive-in-senior-go-class/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-04-how-to-survive-in-senior-go-class/</link>
       <pubDate>Wed, 04 Aug 2021 14:42:49 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-04-how-to-survive-in-senior-go-class/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-04-how-to-survive-in-senior-go-class/</guid>
       <description>前言 大家好，我是 Jupiter，目前从事的是 Pyhon 和 Go 的后端开发，现在是我们 Go 高级工程师第一期的学员，也是 3 班 7 组的组长。这周三的时候谢大邀请我来做个学习交流，很荣幸能有这样的机会给大家做个这样的交流。
 一听到第一期学员，大家是不是觉得很厉害的样子。啊，没错，面向谷歌编程，复制粘贴代码的能力还是挺厉害的。不是，这期训练营教会我的当然不是复制粘贴那么简单，而是一个全方面的提高、一次格局拓展的经历。
 像大家一样，看到有这么一个大咖云集的训练营，曹大、谢大、askuy、小 R 大（额，这里有的套娃）、听闻、邓大明、博锋，已经热血沸腾。再看了看价格，也不算很贵。相比于出门左转右转看到的黑马达内千峰，在价格上已经比较低了。机不可失时不再来，如果要问还有没有下一期，那可能我们第二期可能就是最后一期，嗯，最后一个第二期。
@@ -426,10 +426,10 @@ Go 调试工具：readelf
     
     <item>
       <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day1-scheduler/</link>
+      <link>https://jupiterxue.github.io/go-to-top/go-top-day1-scheduler/</link>
       <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day1-scheduler/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/go-top-day1-scheduler/</guid>
       <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
  Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
@@ -447,10 +447,10 @@ Goroutine 消费过程
     
     <item>
       <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-03-go-top-day1-scheduler/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-03-go-top-day1-scheduler/</link>
       <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-03-go-top-day1-scheduler/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-03-go-top-day1-scheduler/</guid>
       <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
  Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
@@ -468,10 +468,10 @@ Goroutine 消费过程
     
     <item>
       <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-03-scheduler/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</link>
       <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-03-scheduler/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</guid>
       <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
  Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
@@ -489,10 +489,10 @@ Goroutine 消费过程
     
     <item>
       <title>从“名家谈写作”我学到了什么</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-02-learn-from-top-writer/</link>
+      <link>https://jupiterxue.github.io/posts/2021-08-02-learn-from-top-writer/</link>
       <pubDate>Mon, 02 Aug 2021 09:36:25 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-08-02-learn-from-top-writer/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-08-02-learn-from-top-writer/</guid>
       <description>下定决心想要做好写文章的习惯。给自己树立的目标是先行动起来，并且完成不那么困难的事情，当行动系统建立起来了，当日毕日更做到了，再是说更高的目标，更宏远的理想。
 我创立这个公众号与技术博客（后续会开通）的原意在于做些技术分享，并且坚持更新，在一个领域中做到扎根与深入。我也清醒地认识到，这个目标过于长远，还得从长计议，因此目前的计划是给自己一个缓冲的时间，一天更新纯技术一天更新技术心得或生活感悟，这样不会有太大难度的技术壁垒，也能够形成一个缓冲期，后面形成了习惯就能做纯技术输出。
 我认为，既然要开始写作，那么掌握写作的框架结构和常用套路是很有必要的。去看了几位写作名家谈论如何写作，包括：胡鞍钢、毛泽东、矛盾等。以下来谈谈我的心得体会。
@@ -506,10 +506,10 @@ Goroutine 消费过程
     
     <item>
       <title>Grafana 条形图实践</title>
-      <link>https://jupiterxue.github.i/posts/2021-07-29-grafana-bar-chart/</link>
+      <link>https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/</link>
       <pubDate>Thu, 29 Jul 2021 09:56:39 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-07-29-grafana-bar-chart/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/</guid>
       <description>前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
 特点 让我们康康 Grafana 是怎样的：
  免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
@@ -524,10 +524,10 @@ Goroutine 消费过程
     
     <item>
       <title>Python 答疑复盘</title>
-      <link>https://jupiterxue.github.i/posts/2021-07-28-python-replay/</link>
+      <link>https://jupiterxue.github.io/posts/2021-07-28-python-replay/</link>
       <pubDate>Wed, 28 Jul 2021 09:49:15 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-07-28-python-replay/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-07-28-python-replay/</guid>
       <description>在成长会中，我们会自发组建小组学习各种知识与技能，比如新概念英语朗读、经济学专题晨读、瘦下来、相亲、太极、书法、早起锁定以及 Python 基础入门小组。如果没有你感兴趣的小组，也可以你来组建这么个小组，因为，成长会的同学五湖四海，肯定有喜欢你的人 :)
 今年的 2 月到 6 月我在保险学专题晨读活动中担任小队队长，听起来有点高大上，做起来就是催作业（其实不是）。我们的晨读活动是每天看一两章专业领域的书，然后当天答题，没答题的就会被踢出群。而我作为队长，并没有过多地去催作业，我们小队的同学都比较自觉，嘻嘻。更重要的是，在担任队长期间，我去开发了一套小程序，能够帮助我和其他12个队长统计作业、统计没有完成名单、收集本队作业以及统计复盘。虽然已经有一套比较复杂的工程软件来统计，但普通人一般用不了，比较麻烦，所以最后还是落到人工统计上，而队长所谓的人工统计，就是让队员自己统计？自从我在当队员的时候看到这个问题，就开始萌生要做一个统计软件的想法。现在已经实现了，并且不同主题晨读活动的队长拿着我的代码也能够进行作业统计，只需要看我的文档就会操作，一般不需要辅导。因为里面已经有封装为 exe 的程序或者源码和一两部操作就能跑的说明。
 大概7月初，我们在成长会的知识星球会写个人的半年总结，我写到了些事。有一天一个成长会的同学想组织大家学 Python，通过知识星球的半年总结帖发现了我 Python 用的还可以，就让我进入小组担任答疑官。于是就有了今天组织大家线上答疑复盘的经历。
@@ -538,28 +538,28 @@ Goroutine 消费过程
     
     <item>
       <title>Go 实用小工具</title>
-      <link>https://jupiterxue.github.i/posts/2021-07-26-go-tools-kit/</link>
+      <link>https://jupiterxue.github.io/posts/2021-07-26-go-tools-kit/</link>
       <pubDate>Mon, 26 Jul 2021 11:00:46 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-07-26-go-tools-kit/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-07-26-go-tools-kit/</guid>
       <description>Go 小工具 执行命令行 1package main 2 3import ( 4	&amp;#34;flag&amp;#34; 5	&amp;#34;fmt&amp;#34; 6	&amp;#34;runtime&amp;#34; 7 &amp;#34;os/exec&amp;#34; 8 &amp;#34;strings&amp;#34; 9) 10 11func main() { 12	// flag 包使用方法：flag.Type(&amp;#34;flagName&amp;#34;,defaultValue,&amp;#34;help message&amp;#34;) *Type 13	var name = flag.String(&amp;#34;name&amp;#34;,&amp;#34;ls&amp;#34;,&amp;#34;info: 命令&amp;#34;) 14	var args = flag.String(&amp;#34;args&amp;#34;,&amp;#34;-h&amp;#34;,&amp;#34;info: 多个参数&amp;#34;) 15 flag.Parse() 16	fmt.Println(*name) 17	fmt.Println(*args) 18	cmd := *name + &amp;#34; &amp;#34; + *args 19	fmt.Println(&amp;#34;Command: %s&amp;#34;, cmd) 20	out, err := exec.Command(&amp;#34;bash&amp;#34;, &amp;#34;-c&amp;#34;, cmd).CombinedOutput() 21	if runtime.GOOS == &amp;#34;windows&amp;#34; &amp;amp;&amp;amp; err !</description>
     </item>
     
     <item>
       <title>About me</title>
-      <link>https://jupiterxue.github.i/about/</link>
+      <link>https://jupiterxue.github.io/about/</link>
       <pubDate>Sat, 24 Jul 2021 17:51:42 +0000</pubDate>
       
-      <guid>https://jupiterxue.github.i/about/</guid>
+      <guid>https://jupiterxue.github.io/about/</guid>
       <description>Github: Jupiter</description>
     </item>
     
     <item>
       <title>王垠的智慧</title>
-      <link>https://jupiterxue.github.i/posts/2021-07-23-idea-from-wangyin/</link>
+      <link>https://jupiterxue.github.io/posts/2021-07-23-idea-from-wangyin/</link>
       <pubDate>Fri, 23 Jul 2021 18:21:05 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2021-07-23-idea-from-wangyin/</guid>
+      <guid>https://jupiterxue.github.io/posts/2021-07-23-idea-from-wangyin/</guid>
       <description>王垠的智慧 王垠是谁？去谷歌知乎简单搜搜就能很快知道这个大名鼎鼎之人。对我来说，他是具有叛逆精神、擅长质疑与逻辑推断的人。他的求学经历让我感到惋惜，与此同时，他的学习能力让我膜拜，他对计算器编译器的深刻洞见让我崇拜。最让我痴迷的是，还是他在自己的博客 “当然我在扯淡”中记录了四篇他的智慧：
 参考链接
 《编程的智慧》http://www.yinwang.org/blog-cn/2015/11/21/programming-philosophy
@@ -576,28 +576,28 @@ Goroutine 消费过程
     
     <item>
       <title>Algorithms - Graphs</title>
-      <link>https://jupiterxue.github.i/posts/2020-05-01-algorithms-graphs/</link>
+      <link>https://jupiterxue.github.io/posts/2020-05-01-algorithms-graphs/</link>
       <pubDate>Fri, 01 May 2020 09:00:00 +0000</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2020-05-01-algorithms-graphs/</guid>
+      <guid>https://jupiterxue.github.io/posts/2020-05-01-algorithms-graphs/</guid>
       <description>Undirected Graphs Some problems  Path Shortest path Cycle Ehler tour: A cycle that uses each edge excatly once. Hamilton tour: A cycle that uses each vertex exactly once  classical NP-complete problem.   Connectivity MST: Biconnectivity: A vertex whose removal disconnects the graph Planarity Graph isomorphism: Are two graphs identical?  No one knows so far. A lonstanding open problem    Representations Real-world graphs tend to be sparse (huge number of vertices, small average vertex degree).</description>
     </item>
     
     <item>
       <title>Racket notes</title>
-      <link>https://jupiterxue.github.i/posts/2020-02-29-racket/</link>
+      <link>https://jupiterxue.github.io/posts/2020-02-29-racket/</link>
       <pubDate>Sat, 29 Feb 2020 09:00:00 +0000</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2020-02-29-racket/</guid>
+      <guid>https://jupiterxue.github.io/posts/2020-02-29-racket/</guid>
       <description>Basic 1#lang racket 2(provide (all-defined-out)) 3 4;this is a comment 5 6(define s &amp;#34;hello&amp;#34;) 7 8(define x 3) 9(define y (+ x 2)) 10 11(define cube1 12 (lambda (x) 13 (* x (* x x)))) 14 15(define cube2 16 (lambda (x) 17 (* x x x))) 18 19(define (cube3 x) 20 (* x x x)) 21 22(define (pow1 x y) 23 (if (=y 0) 24 1 25 (* x (pow1 x (- y 1))))) 26 27; currying 28(define pow2 29 (lambda (x) 30 (lambda (y) 31 (pow1 x y)))) 32 List  Empty list: null  () doesn&amp;quot;t work for null but &#39;() does   build a list: (list e1 .</description>
     </item>
     
     <item>
       <title>ruby学习笔记</title>
-      <link>https://jupiterxue.github.i/posts/2016-12-08-ruby-notes/</link>
+      <link>https://jupiterxue.github.io/posts/2016-12-08-ruby-notes/</link>
       <pubDate>Thu, 08 Dec 2016 22:54:49 +0000</pubDate>
       
-      <guid>https://jupiterxue.github.i/posts/2016-12-08-ruby-notes/</guid>
+      <guid>https://jupiterxue.github.io/posts/2016-12-08-ruby-notes/</guid>
       <description>regular expressions =~是用于正则表达式的匹配操作符。返回匹配到的字符串位置或nil。
 1&amp;#34;abcdef&amp;#34; =~ /d/ # return 3 2&amp;#34;aaaaaa&amp;#34; =~ /d/ # return nil !和? The exclamation point (!, sometimes pronounced aloud as &amp;ldquo;bang!&amp;quot;) indicates something potentially destructive, that is to say, something that can change the value of what it touches.
 ruby&amp;gt; s1 = &amp;quot;forth&amp;quot; &amp;quot;forth&amp;quot; ruby&amp;gt; s1.chop! # This changes s1. &amp;quot;fort&amp;quot; ruby&amp;gt; s2 = s1.chop # This puts a changed copy in s2, &amp;quot;for&amp;quot; ruby&amp;gt; s1 # .</description>

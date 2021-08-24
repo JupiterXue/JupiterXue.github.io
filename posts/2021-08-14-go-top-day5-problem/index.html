@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title> Go 翻山越岭——常见业务问题 | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.i/posts/2021-08-14-go-top-day5-problem/'>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
@@ -20,7 +20,7 @@
 1// 代码1 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var a = &amp;person{111} 10 fmt.Println(a) 11} 1// 对比代码2 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var b = person {111} 10 var a = &amp;b 11 fmt.Println(a) 12} 场景2，类型转换的原理是怎样的？
 1package main 2 3func main() { 4 var a = &#34;hello&#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.i/posts/2021-08-14-go-top-day5-problem/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-14T09:38:51+08:00" />
 <meta property="article:modified_time" content="2021-08-14T09:38:51+08:00" />
 
@@ -38,7 +38,7 @@
     
   
   
-  <link rel="stylesheet" href="https://jupiterxue.github.i/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
 
   
   
@@ -62,7 +62,7 @@
 
 
   
-<link rel="icon" type="image/png" href="https://jupiterxue.github.i/images/favicon.ico" />
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
 
   
   
@@ -96,14 +96,14 @@
       <ul>
         
         <li>
-          <a class="icon" href=" https://jupiterxue.github.i/posts/2021-08-13-when-man-love/" aria-label="Previous">
+          <a class="icon" href=" https://jupiterxue.github.io/posts/2021-08-13-when-man-love/" aria-label="Previous">
             <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
           </a>
         </li>
         
         
         <li>
-          <a class="icon" href="https://jupiterxue.github.i/go-to-top/go-top-day5-problem/" aria-label="Next">
+          <a class="icon" href="https://jupiterxue.github.io/go-to-top/go-top-day5-problem/" aria-label="Next">
             <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
           </a>
         </li>
@@ -138,7 +138,7 @@
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.i%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="Github">
         <i class="fab fa-github " aria-hidden="true"></i>
     </a>
   </li>
@@ -147,7 +147,7 @@
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.i%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="QQ">
       <i class="fab fa-qq " aria-hidden="true"></i>
     </a>
   </li>
@@ -156,7 +156,7 @@
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.i%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="微信">
       <i class="fab fa-weixin " aria-hidden="true"></i>
     </a>
   </li>
@@ -265,7 +265,7 @@
             <i class="fas fa-tag"></i>
             
             
-            <a class="tag-link" href="/tags/go" rel="tag">Go</a>
+            <a class="tag-link" href="/tags/Go" rel="tag">Go</a>
             
         </div>
         
@@ -377,7 +377,7 @@
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.i%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="Github">
         <i class="fab fa-github fa-lg" aria-hidden="true"></i>
     </a>
   </li>
@@ -386,7 +386,7 @@
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.i%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="QQ">
       <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
     </a>
   </li>
@@ -395,7 +395,7 @@
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.i%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-14-go-top-day5-problem%2f" aria-label="微信">
       <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
     </a>
   </li>

@@ -1,132 +1,53 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Go on 木夜星空的个人博客</title>
-    <link>https://jupiterxue.github.i/tags/go/</link>
-    <description>Recent content in Go on 木夜星空的个人博客</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-CN</language>
-    <copyright>JupiterXue</copyright>
-    <lastBuildDate>Sun, 22 Aug 2021 22:51:00 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.i/tags/go/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Go 翻山越岭——解释器</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day10-parser/</link>
-      <pubDate>Sun, 22 Aug 2021 22:51:00 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day10-parser/</guid>
-      <description>上期文章遗留了一个问题“三个 panic 在 runtime 代码的具体哪个位置输出”，如果通过汇编调试工具找出来。今天来动手实践，并且尝试解决另一个业务问题。
-问题回顾  分别有三种情况的 panic：
- 往已经关闭的 channel中写入数据 关闭一个是 nil 值的 channel 关闭一个已经是关闭状态的 channel   要找出它们在 runtime 代码中具体位置，首先我们先写几个小型代码，来完全模拟这几种情况。
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go on 木夜星空的个人博客</title><link>https://jupiterxue.github.io/tags/go/</link><description>Recent content in Go on 木夜星空的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>JupiterXue</copyright><lastBuildDate>Sun, 22 Aug 2021 22:51:00 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml"/><item><title>Go 翻山越岭——解释器</title><link>https://jupiterxue.github.io/go-to-top/go-top-day10-parser/</link><pubDate>Sun, 22 Aug 2021 22:51:00 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day10-parser/</guid><description>上期文章遗留了一个问题“三个 panic 在 runtime 代码的具体哪个位置输出”，如果通过汇编调试工具找出来。今天来动手实践，并且尝试解决另一个业务问题。
+问题回顾 分别有三种情况的 panic：
+往已经关闭的 channel中写入数据 关闭一个是 nil 值的 channel 关闭一个已经是关闭状态的 channel 要找出它们在 runtime 代码中具体位置，首先我们先写几个小型代码，来完全模拟这几种情况。
 情况1：往已经关闭的 channel中写入数据，文件名 send_to_close.go
 1package main 2 3func main() { 4 var ch chan int 5 close(ch) 6 ch &amp;lt;- 1 7} 1go tool compile -S send_to_close.go | grep &amp;#34;send_to_close.go:6&amp;#34; 通过反汇编和文本搜索，找到了关键信息 runtime.chansend1(SB)
 情况2：关闭一个是 nil 值的 channel，文件名 close_nil.go
-1package main 2 3func main() { 4 var ch chan int 5 ch = nil 6 close(ch) 7} 1go tool compile -S close_nil.</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——语法分析实现</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day9-parsing_implementation/</link>
-      <pubDate>Sun, 22 Aug 2021 08:34:33 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day9-parsing_implementation/</guid>
-      <description>之前的文章提到：Go 程序编译和链接涉及到工具 go tool compile 、go tool objdump 和 SSA func build 将源代码转化成静态单赋值形式的中间代码。这些工具都可以直接上手玩一玩，即便对编译原理的理论不熟悉，在实践后还是会逐步明白的，Go 的工程化在这方面做得挺不错。今天来讲一讲“GO 语言语法分析的具体实现”
+1package main 2 3func main() { 4 var ch chan int 5 ch = nil 6 close(ch) 7} 1go tool compile -S close_nil.</description></item><item><title>Go 翻山越岭——语法分析实现</title><link>https://jupiterxue.github.io/go-to-top/go-top-day9-parsing_implementation/</link><pubDate>Sun, 22 Aug 2021 08:34:33 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day9-parsing_implementation/</guid><description>之前的文章提到：Go 程序编译和链接涉及到工具 go tool compile 、go tool objdump 和 SSA func build 将源代码转化成静态单赋值形式的中间代码。这些工具都可以直接上手玩一玩，即便对编译原理的理论不熟悉，在实践后还是会逐步明白的，Go 的工程化在这方面做得挺不错。今天来讲一讲“GO 语言语法分析的具体实现”
 调试工具回顾 通过命令 readelf -h 可以查看 ELF 可执行文件的头信息，发现调试入口的十六进制地址码，然后用 dlv 来调试 Go 程序。
 在 dlv 中，打断点有三种常用方式：
- b * 地址 b 函数名 b 文件名:行数  指令 c 是从一个断点跳到另一个断点。如果打多个断点，那么可以做连续代码的跳转。
+b * 地址 b 函数名 b 文件名:行数 指令 c 是从一个断点跳到另一个断点。如果打多个断点，那么可以做连续代码的跳转。
 指令 si 是单步调试，调试汇编时常用于使用 si 到 jmp 目标位置，即一步步跳转。
 我们用工具 go tool objdump 来做反汇编，而它输出的是 plan9 形式的汇编。其实在 dlv 中内置了反汇编工具，disass，不过它输出的是另一种形式的汇编。这里，我们可以掌握多种调试工具，平时就用自己擅长点的，而遇到了没弄明白的，也许另一个工具换来使用有不一样的效果。
 之前我们都是遇到问题搜资料，我想系统学习 dlv 怎么办呢？就像上期文章讲到的，还是去看官方文档：https://github.com/go-delve/delve/tree/master/Documentation/cli
-简单浏览一下官方文档可以发现，官方也在逐步添加新的功能。比如说，现在有一个地址，我可以直接用 dlv 中的 x 指令查看一段连续内存里存储的值，这个有点像 gdb 中的 x（另一个调试工具，用于查看内存地址的值）。这个指令在 runtime 中有些开头是 len，然后跟着 unsafe pointer 之类的，我能看到 unsafe pointer ，但它后面的结构直接调试可能看不到，这时候用到 x 指令就可以看到它后面内存里存储的是什么值了。</description>
-    </item>
-    
-    <item>
-      <title>2021 08 21 Go Top Day8 Disassembly</title>
-      <link>https://jupiterxue.github.i/go-to-top/2021-08-21-go-top-day8-disassembly/</link>
-      <pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/2021-08-21-go-top-day8-disassembly/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——反编译2</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day8-disassembly/</link>
-      <pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day8-disassembly/</guid>
-      <description>Go 语言常用的两个查看汇编代码的工具是 go tool compile 和 go tool objdump。上期文章说到通过 go tool compile -S 可以查看实现相同功能，两个不同的代码在性能上有什么区别，可从反编译出的汇编代码看出，二者的性能一样。今天再来聊一聊另外一个工具的使用。
- 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
- 在解决这种类似问题之前，我们其实可以查阅官方的资料 spec，国外源地址：https://golang.org/ref/spec ，国内看这个：https://golang.google.cn/ref/spec
+简单浏览一下官方文档可以发现，官方也在逐步添加新的功能。比如说，现在有一个地址，我可以直接用 dlv 中的 x 指令查看一段连续内存里存储的值，这个有点像 gdb 中的 x（另一个调试工具，用于查看内存地址的值）。这个指令在 runtime 中有些开头是 len，然后跟着 unsafe pointer 之类的，我能看到 unsafe pointer ，但它后面的结构直接调试可能看不到，这时候用到 x 指令就可以看到它后面内存里存储的是什么值了。</description></item><item><title>2021 08 21 Go Top Day8 Disassembly</title><link>https://jupiterxue.github.io/go-to-top/2021-08-21-go-top-day8-disassembly/</link><pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/2021-08-21-go-top-day8-disassembly/</guid><description/></item><item><title>Go 翻山越岭——反编译2</title><link>https://jupiterxue.github.io/go-to-top/go-top-day8-disassembly/</link><pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day8-disassembly/</guid><description>Go 语言常用的两个查看汇编代码的工具是 go tool compile 和 go tool objdump。上期文章说到通过 go tool compile -S 可以查看实现相同功能，两个不同的代码在性能上有什么区别，可从反编译出的汇编代码看出，二者的性能一样。今天再来聊一聊另外一个工具的使用。
+场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
+在解决这种类似问题之前，我们其实可以查阅官方的资料 spec，国外源地址：https://golang.org/ref/spec ，国内看这个：https://golang.google.cn/ref/spec
 这个 spec 讲述了 Go 语言内部的语法可以怎么用。在 spec 中出现的东西，也就是官方认为是正确的东西。而如果一个用法没有在 spec 中提到，那么我们就没有办法去依赖输出结论。
 举个例子，我们用到一个函数，这个函数用到了指针和 Error，如果这个返回的 Error 是非空的时候，我就不能依赖它的指针返回值。我们要依赖这个值，就需要 Error 是空。这种情况就是语言的确定性，如果我们依赖了有 Error 的结果，那么就是非确定性的。这个非确定性，我们会经常看到一个名词叫做 Undefined Behavior。我们初学 Go 语言，或者习惯于写动态语言，如 Python 的同学，会非常依赖这种写代码习惯，这其实是非常危险的。它可能会给我们带来隐藏的线上 Bug，很多时候都是难发现的，特别是在做语言 SDK 升级的时候，可能会导致比较严重的问题。
 所以我们要去查询 Go 语言内部的函数或者结构的用法的话，一定要去看官方的资料。不要去看网上的博客来作为自己的结论，因为别人写的不一定对，尤其是当我们使用了错误的博客内容来操作，会给业务带来更多麻烦。
 OK，打开 spec 网址，我们来看看，哥们，你这瓜多少钱一斤？
 spec 告诉我们，make 可以用在三种结构上的：slice，map，channel。也就说明，我们要研究 make 的实现，就去看这三种结构上执行 make 具体会执行哪个函数就好。
 我们来实现这段代码，文件名为 make.go
-1package main 2 3func main() { 4 // make slice 5 // 空间开的比较大，是为了让这个 slice 分配到堆上。空间小的话会默认分配到栈上，而栈上的 slice 和堆上的 slice 底层实现会不一样。 6 var sl = make([]int, 100000) 7 println(sl) 8 9 // make channel 10 var ch = make(chan int, 5) 11 println(ch) 12 13 // make map 14 var m = make(map[int]int, 22) 15 println(m) 16} 1&amp;gt;&amp;gt;&amp;gt; go build make.</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——编译与反编译</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day7-assembly/</link>
-      <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day7-assembly/</guid>
-      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
+1package main 2 3func main() { 4 // make slice 5 // 空间开的比较大，是为了让这个 slice 分配到堆上。空间小的话会默认分配到栈上，而栈上的 slice 和堆上的 slice 底层实现会不一样。 6 var sl = make([]int, 100000) 7 println(sl) 8 9 // make channel 10 var ch = make(chan int, 5) 11 println(ch) 12 13 // make map 14 var m = make(map[int]int, 22) 15 println(m) 16} 1&amp;gt;&amp;gt;&amp;gt; go build make.</description></item><item><title>Go 翻山越岭——编译与反编译</title><link>https://jupiterxue.github.io/go-to-top/go-top-day7-assembly/</link><pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day7-assembly/</guid><description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
 重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
 具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
 编译与反编译工具 我们学习掌握 Go 语言编译原理理论的过程，会相对有些枯燥。不过通过实践，我们能够很好地将所学到的理论融汇贯通，并且即便你对理论不是很熟悉，也能够玩转这些工具。我会提到平时我们在研究 GO 汇编底层经常用到的工具，让我们来看看它是什么，跟着我一起动动手。
 1go tool 这里我标注出了两个最常用的工具 go tool compile 和 go tool objdump。在我们卷 Go 汇编底层的时候，业内还有这么一句黑话：
- 几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
- 再让我们看看这两句指令在具体场合下都是什么意思：
- go tool compile -S main.go # 反编译代码为汇编代码。
-  go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
-go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description>
-    </item>
-    
-    <item>
-      <title>编译与反编译</title>
-      <link>https://jupiterxue.github.i/go-to-top/2021-08-19-go-top-day7-assembly/</link>
-      <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/2021-08-19-go-top-day7-assembly/</guid>
-      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
+几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
+再让我们看看这两句指令在具体场合下都是什么意思：
+go tool compile -S main.go # 反编译代码为汇编代码。
+go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
+go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description></item><item><title>编译与反编译</title><link>https://jupiterxue.github.io/go-to-top/2021-08-19-go-top-day7-assembly/</link><pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/2021-08-19-go-top-day7-assembly/</guid><description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
 重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
 具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
 编译与反编译工具 我们学习掌握 Go 语言编译原理理论的过程，会相对有些枯燥。不过通过实践，我们能够很好地将所学到的理论融汇贯通，并且即便你对理论不是很熟悉，也能够玩转这些工具。我会提到平时我们在研究 GO 汇编底层经常用到的工具，让我们来看看它是什么，跟着我一起动动手。
 1go tool 这里我标注出了两个最常用的工具 go tool compile 和 go tool objdump。在我们卷 Go 汇编底层的时候，业内还有这么一句黑话：
- 几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
- 再让我们看看这两句指令在具体场合下都是什么意思：
- go tool compile -S main.go # 反编译代码为汇编代码。
-  go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
-go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description>
-    </item>
-    
-    <item>
-      <title>编译与反编译</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-19-go-top-day7-assembly/</link>
-      <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-19-go-top-day7-assembly/</guid>
-      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
+几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
+再让我们看看这两句指令在具体场合下都是什么意思：
+go tool compile -S main.go # 反编译代码为汇编代码。
+go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
+go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description></item><item><title>编译与反编译</title><link>https://jupiterxue.github.io/posts/2021-08-19-go-top-day7-assembly/</link><pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-19-go-top-day7-assembly/</guid><description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
 重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
 具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
 编译与反编译工具 我们学习掌握 Go 语言编译原理理论的过程，会相对有些枯燥。不过通过实践，我们能够很好地将所学到的理论融汇贯通，并且即便你对理论不是很熟悉，也能够玩转这些工具。我会提到平时我们在研究 GO 汇编底层经常用到的工具，让我们来看看它是什么，跟着我一起动动手。
 1go tool 这里我标注出了两个最常用的工具 go tool compile 和 go tool objdump。在我们卷 Go 汇编底层的时候，业内还有这么一句黑话：
- 几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
- 再让我们看看这两句指令在具体场合下都是什么意思：
- go tool compile -S main.go # 反编译代码为汇编代码。
-  go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
-go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——编译原理基础</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day6-parse/</link>
-      <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day6-parse/</guid>
-      <description>上回我们说到 8 个常见 Go 业务场景，并且可以通过探究 Go 语法背后的秘密就能去解决的问题，在我们开始动手之前，先打好“Go 语言中编译原理的基础”
+几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
+再让我们看看这两句指令在具体场合下都是什么意思：
+go tool compile -S main.go # 反编译代码为汇编代码。
+go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
+go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description></item><item><title>Go 翻山越岭——编译原理基础</title><link>https://jupiterxue.github.io/go-to-top/go-top-day6-parse/</link><pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day6-parse/</guid><description>上回我们说到 8 个常见 Go 业务场景，并且可以通过探究 Go 语法背后的秘密就能去解决的问题，在我们开始动手之前，先打好“Go 语言中编译原理的基础”
 回顾 Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，我们可以通过这句代码，编译一段简单的 “Hello World！” 程序看到：
 1go build -x hello.go 编译原理基础 我们可以把编译分为两个部分：编译器前端和编译器后端，如图所示：（这些都是我们软件工程专业课上的基础知识）
 **词法分析（Lexical Analysis）**是计算机科学中将字符序列转换为标记（token）序列的过程。
@@ -137,16 +58,7 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
 这里提供一个在线编译 AST 的网站：https://astexplorer.net/，将上面的代码粘贴进来，就可以发现如下结果：
 左边是代码，右边会把所有代码相应地转换成了树结构呈现出来。（建议大家动手玩一玩，里面会有语法高亮和代码与树一一匹配的功能。如果未来你有机会写一些解释器，很可能会用到这个）
 语义分析（Semantic Analysis）是对结构上正确的源程序进行上下文有关性质的审查，进行类型审查。比如我们写了类似这样的代码：
-1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 var x int = &amp;#34;abc&amp;#34; 7 println(x) 8} 作为一个找茬小能手（当然不是买瓜），可以发现，字符串 &amp;ldquo;abc&amp;rdquo; 是不能赋值为 int 变量 x，这时候我们直接编译 go build 就会出现如下问题：</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——编译原理基础</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-15-go-top-day6-parse/</link>
-      <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-15-go-top-day6-parse/</guid>
-      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接。看似简单，但其中蕴藏着极大的能量，尤其在面对不能一时半会就解决的业务场景中，稍微深挖编译与链接的过程就有奇效。今天我们就来聊聊 “Go 语言中编译原理的基础”。
+1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 var x int = &amp;#34;abc&amp;#34; 7 println(x) 8} 作为一个找茬小能手（当然不是买瓜），可以发现，字符串 &amp;ldquo;abc&amp;rdquo; 是不能赋值为 int 变量 x，这时候我们直接编译 go build 就会出现如下问题：</description></item><item><title>Go 翻山越岭——编译原理基础</title><link>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</link><pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</guid><description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接。看似简单，但其中蕴藏着极大的能量，尤其在面对不能一时半会就解决的业务场景中，稍微深挖编译与链接的过程就有奇效。今天我们就来聊聊 “Go 语言中编译原理的基础”。
 上期文章提到了 8 个常见 Go 业务场景，虽说都是业务场景，但在代码性能、数据结构转换和系统设计中偏细颗粒度的实践中我们通常感到茫然和繁琐。这是因为在平时开发中，编译器会自动帮我们屏蔽掉代码编译的过程，我们只用关注最后的 ELF 可执行文件。那么我们就来看看，编译器会帮我们做些什么工作，进一步理解我们所写的程序发生了什么样的转化。
 编译原理概述 我们可以把编译分为两个部分：编译器前端和编译器后端，如图所示：（这些都是我们软件工程专业课上的基础知识）
 **词法分析（Lexical Analysis）**是计算机科学中将字符序列转换为标记（token）序列的过程。
@@ -157,208 +69,96 @@ go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所�
 这里提供一个在线编译 AST 的网站：https://astexplorer.net/，将上面的代码粘贴进来，就可以发现如下结果：
 左边是代码，右边会把所有代码相应地转换成了树结构呈现出来。（建议大家动手玩一玩，里面会有语法高亮和代码与树一一匹配的功能。如果未来你有机会写一些解释器，很可能会用到这个）
 语义分析（Semantic Analysis）是对结构上正确的源程序进行上下文有关性质的审查，进行类型审查。比如我们写了类似这样的代码：
-1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 var x int = &amp;#34;abc&amp;#34; 7 println(x) 8} 作为一个找茬小能手（当然不是买瓜），可以发现，字符串 &amp;ldquo;abc&amp;rdquo; 是不能赋值为 int 变量 x，这时候我们直接编译 go build 就会出现如下问题：</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——常见业务问题</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day5-problem/</link>
-      <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day5-problem/</guid>
-      <description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 var x int = &amp;#34;abc&amp;#34; 7 println(x) 8} 作为一个找茬小能手（当然不是买瓜），可以发现，字符串 &amp;ldquo;abc&amp;rdquo; 是不能赋值为 int 变量 x，这时候我们直接编译 go build 就会出现如下问题：</description></item><item><title>Go 翻山越岭——常见业务问题</title><link>https://jupiterxue.github.io/go-to-top/go-top-day5-problem/</link><pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day5-problem/</guid><description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
 常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
 场景1，这两段代码运行速度怎样？第一个比第二个快？
 1// 代码1 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var a = &amp;amp;person{111} 10 fmt.Println(a) 11} 1// 对比代码2 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var b = person {111} 10 var a = &amp;amp;b 11 fmt.Println(a) 12} 场景2，类型转换的原理是怎样的？
-1package main 2 3func main() { 4 var a = &amp;#34;hello&amp;#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——常见业务问题</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-14-go-top-day5-problem/</link>
-      <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-14-go-top-day5-problem/</guid>
-      <description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+1package main 2 3func main() { 4 var a = &amp;#34;hello&amp;#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</description></item><item><title>Go 翻山越岭——常见业务问题</title><link>https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/</link><pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/</guid><description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
 常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
 场景1，这两段代码运行速度怎样？第一个比第二个快？
 1// 代码1 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var a = &amp;amp;person{111} 10 fmt.Println(a) 11} 1// 对比代码2 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var b = person {111} 10 var a = &amp;amp;b 11 fmt.Println(a) 12} 场景2，类型转换的原理是怎样的？
-1package main 2 3func main() { 4 var a = &amp;#34;hello&amp;#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调试2</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day4-run/</link>
-      <pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day4-run/</guid>
-      <description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
+1package main 2 3func main() { 4 var a = &amp;#34;hello&amp;#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</description></item><item><title>Go 翻山越岭——调试2</title><link>https://jupiterxue.github.io/go-to-top/go-top-day4-run/</link><pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day4-run/</guid><description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
 [toc]
-实验环境与回顾  操作系统：CentOS 7
+实验环境与回顾 操作系统：CentOS 7
 Go：1.14.12
 调试工具：readelf、dlv
- 这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
+这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
 1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 4# 进入项目目录 5cd /project/work/ch01 6# 查看文件 7ls 8 这里的绿色 hello，就是我们 Go 语言编译后产生的 ELF 格式可执行程序（ELF 不知道是什么，可回顾上期文章）
 我们一般通过工具 readelf 来找到进入可执行程序底层的入口 entry point address，通过以下命令来实现，这里的 -h 表示去读取 header
- -h &amp;ndash;file-header	Display the ELF file header
- 1readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调试2</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-11-go-top-day4-run/</link>
-      <pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-11-go-top-day4-run/</guid>
-      <description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
+-h &amp;ndash;file-header Display the ELF file header
+1readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。</description></item><item><title>Go 翻山越岭——调试2</title><link>https://jupiterxue.github.io/posts/2021-08-11-go-top-day4-run/</link><pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-11-go-top-day4-run/</guid><description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
 [toc]
-实验环境与回顾  操作系统：CentOS 7
+实验环境与回顾 操作系统：CentOS 7
 Go：1.14.12
 调试工具：readelf、dlv
- 这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
+这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
 1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 4# 进入项目目录 5cd /project/work/ch01 6# 查看文件 7ls 8 这里的绿色 hello，就是我们 Go 语言编译后产生的 ELF 格式可执行程序（ELF 不知道是什么，可回顾上期文章）
 我们一般通过工具 readelf 来找到进入可执行程序底层的入口 entry point address，通过以下命令来实现，这里的 -h 表示去读取 header
- -h &amp;ndash;file-header	Display the ELF file header
- 1readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调试1</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day3-run/</link>
-      <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day3-run/</guid>
-      <description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
+-h &amp;ndash;file-header Display the ELF file header
+1readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。</description></item><item><title>Go 翻山越岭——调试1</title><link>https://jupiterxue.github.io/go-to-top/go-top-day3-run/</link><pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day3-run/</guid><description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
 既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
- 操作系统：CentOS7 或其他 Linux 环境
+操作系统：CentOS7 或其他 Linux 环境
 Go：1.14.12
 Go 调试工具：readelf
- 是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
- 搭建实验环境  1docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
-1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 创建目录与文件  在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
+是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
+搭建实验环境 1docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
+1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 创建目录与文件 在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
 实验环境准备完毕。
-编写一段简单代码  我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
-1vi hello.go 1// hello.</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调试1</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-09-go-top-day3-run/</link>
-      <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-09-go-top-day3-run/</guid>
-      <description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
+编写一段简单代码 我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
+1vi hello.go 1// hello.</description></item><item><title>Go 翻山越岭——调试1</title><link>https://jupiterxue.github.io/posts/2021-08-09-go-top-day3-run/</link><pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-09-go-top-day3-run/</guid><description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
 既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
- 操作系统：CentOS7 或其他 Linux 环境
+操作系统：CentOS7 或其他 Linux 环境
 Go：1.14.12
 Go 调试工具：readelf
- 是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
- 搭建实验环境  1docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
-1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 创建目录与文件  在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
+是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
+搭建实验环境 1docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
+1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 创建目录与文件 在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
 实验环境准备完毕。
-编写一段简单代码  我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
-1vi hello.go 1// hello.</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调度-day2</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day2-scheduler/</link>
-      <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day2-scheduler/</guid>
-      <description>上回说到 Go 的调度流程本质上是⼀个⽣产-消费流程，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。
+编写一段简单代码 我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
+1vi hello.go 1// hello.</description></item><item><title>Go 翻山越岭——调度-day2</title><link>https://jupiterxue.github.io/go-to-top/go-top-day2-scheduler/</link><pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day2-scheduler/</guid><description>上回说到 Go 的调度流程本质上是⼀个⽣产-消费流程，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。
 当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&amp;gt; runqgrab 这个流程。
 当 goroutine 处于消费端时，执行的是一个循环：runtime.schedule → execute → runtime.gogo → runtime.goexit → runtime.schedule（回到原点），并且最终 P.schedtick = 0。
 初学 scheduler 对于以上的流程感受是比较浅的，再来看看这些符号所代表的含义，就能更好地理解了：
- G: goroutine，计算任务。由需要执行的代码和其上下文组成。（上下文包括：当前代码位置，栈顶、栈底地址，状态等）
-  M: machine，系统线程，执行实体，想要在 CPU 上来执行代码，必须有线程，与 C 语言中的线程相同，通过系统调用 clone 来创建。
-  P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷入休眠（后台监控线程除外），你也可以将其理解为一种 token，有了这个 token，才有在物理 CPU 核心上执行的权利。
- 上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
+G: goroutine，计算任务。由需要执行的代码和其上下文组成。（上下文包括：当前代码位置，栈顶、栈底地址，状态等）
+M: machine，系统线程，执行实体，想要在 CPU 上来执行代码，必须有线程，与 C 语言中的线程相同，通过系统调用 clone 来创建。
+P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷入休眠（后台监控线程除外），你也可以将其理解为一种 token，有了这个 token，才有在物理 CPU 核心上执行的权利。
+上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
 让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）
 案例1：
-// channel send: var ch = make(chan int) ch &amp;lt;- 1 // channel recv: var ch = make(chan int) &amp;lt;- ch 案例2：</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调度-day2</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-05-go-top-day2-scheduler/</link>
-      <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-05-go-top-day2-scheduler/</guid>
-      <description>1package main 2 3// sd1 4 5func main() { 6 // test 7} </description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.i/go-to-top/go-top-day1-scheduler/</link>
-      <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/go-to-top/go-top-day1-scheduler/</guid>
-      <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+// channel send: var ch = make(chan int) ch &amp;lt;- 1 // channel recv: var ch = make(chan int) &amp;lt;- ch 案例2：</description></item><item><title>Go 翻山越岭——调度-day2</title><link>https://jupiterxue.github.io/posts/2021-08-05-go-top-day2-scheduler/</link><pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-05-go-top-day2-scheduler/</guid><description>1package main 2 3// sd1 4 5func main() { 6 // test 7}</description></item><item><title>Go 翻山越岭——调度-day1</title><link>https://jupiterxue.github.io/go-to-top/go-top-day1-scheduler/</link><pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/go-to-top/go-top-day1-scheduler/</guid><description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
- Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
-Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
-Memory	：当代码需要内存时，负责内存分配工作
-Garbage	：当内存不再需要时，负责回收内存
- 而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+Scheduler ：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll ：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory ：当代码需要内存时，负责内存分配工作
+Garbage ：当内存不再需要时，负责回收内存
+而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
 调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
 什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
 1go func() { 2println(&amp;#34;hello world in goroutine!&amp;#34;) 3} 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
 Goroutine 生产过程3,4
 Goroutine 消费过程
-想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-03-go-top-day1-scheduler/</link>
-      <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-03-go-top-day1-scheduler/</guid>
-      <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description></item><item><title>Go 翻山越岭——调度-day1</title><link>https://jupiterxue.github.io/posts/2021-08-03-go-top-day1-scheduler/</link><pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-03-go-top-day1-scheduler/</guid><description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
- Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
-Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
-Memory	：当代码需要内存时，负责内存分配工作
-Garbage	：当内存不再需要时，负责回收内存
- 而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+Scheduler ：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll ：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory ：当代码需要内存时，负责内存分配工作
+Garbage ：当内存不再需要时，负责回收内存
+而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
 调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
 什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
 1go func() { 2println(&amp;#34;hello world in goroutine!&amp;#34;) 3} 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
 Goroutine 生产过程3,4
 Goroutine 消费过程
-想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.i/posts/2021-08-03-scheduler/</link>
-      <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-08-03-scheduler/</guid>
-      <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description></item><item><title>Go 翻山越岭——调度-day1</title><link>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</link><pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</guid><description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
- Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
-Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
-Memory	：当代码需要内存时，负责内存分配工作
-Garbage	：当内存不再需要时，负责回收内存
- 而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+Scheduler ：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll ：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory ：当代码需要内存时，负责内存分配工作
+Garbage ：当内存不再需要时，负责回收内存
+而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
 调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
 什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
 1go func() { 2println(&amp;#34;hello world in goroutine!&amp;#34;) 3} 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
 Goroutine 生产过程3,4
 Goroutine 消费过程
-想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description>
-    </item>
-    
-    <item>
-      <title>Go 实用小工具</title>
-      <link>https://jupiterxue.github.i/posts/2021-07-26-go-tools-kit/</link>
-      <pubDate>Mon, 26 Jul 2021 11:00:46 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.i/posts/2021-07-26-go-tools-kit/</guid>
-      <description>Go 小工具 执行命令行 1package main 2 3import ( 4	&amp;#34;flag&amp;#34; 5	&amp;#34;fmt&amp;#34; 6	&amp;#34;runtime&amp;#34; 7 &amp;#34;os/exec&amp;#34; 8 &amp;#34;strings&amp;#34; 9) 10 11func main() { 12	// flag 包使用方法：flag.Type(&amp;#34;flagName&amp;#34;,defaultValue,&amp;#34;help message&amp;#34;) *Type 13	var name = flag.String(&amp;#34;name&amp;#34;,&amp;#34;ls&amp;#34;,&amp;#34;info: 命令&amp;#34;) 14	var args = flag.String(&amp;#34;args&amp;#34;,&amp;#34;-h&amp;#34;,&amp;#34;info: 多个参数&amp;#34;) 15 flag.Parse() 16	fmt.Println(*name) 17	fmt.Println(*args) 18	cmd := *name + &amp;#34; &amp;#34; + *args 19	fmt.Println(&amp;#34;Command: %s&amp;#34;, cmd) 20	out, err := exec.Command(&amp;#34;bash&amp;#34;, &amp;#34;-c&amp;#34;, cmd).CombinedOutput() 21	if runtime.GOOS == &amp;#34;windows&amp;#34; &amp;amp;&amp;amp; err !</description>
-    </item>
-    
-  </channel>
-</rss>
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description></item><item><title>Go 实用小工具</title><link>https://jupiterxue.github.io/posts/2021-07-26-go-tools-kit/</link><pubDate>Mon, 26 Jul 2021 11:00:46 +0800</pubDate><guid>https://jupiterxue.github.io/posts/2021-07-26-go-tools-kit/</guid><description>Go 小工具 执行命令行 1package main 2 3import ( 4 &amp;#34;flag&amp;#34; 5 &amp;#34;fmt&amp;#34; 6 &amp;#34;runtime&amp;#34; 7 &amp;#34;os/exec&amp;#34; 8 &amp;#34;strings&amp;#34; 9) 10 11func main() { 12 // flag 包使用方法：flag.Type(&amp;#34;flagName&amp;#34;,defaultValue,&amp;#34;help message&amp;#34;) *Type 13 var name = flag.String(&amp;#34;name&amp;#34;,&amp;#34;ls&amp;#34;,&amp;#34;info: 命令&amp;#34;) 14 var args = flag.String(&amp;#34;args&amp;#34;,&amp;#34;-h&amp;#34;,&amp;#34;info: 多个参数&amp;#34;) 15 flag.Parse() 16 fmt.Println(*name) 17 fmt.Println(*args) 18 cmd := *name + &amp;#34; &amp;#34; + *args 19 fmt.Println(&amp;#34;Command: %s&amp;#34;, cmd) 20 out, err := exec.Command(&amp;#34;bash&amp;#34;, &amp;#34;-c&amp;#34;, cmd).CombinedOutput() 21 if runtime.GOOS == &amp;#34;windows&amp;#34; &amp;amp;&amp;amp; err !</description></item></channel></rss>
