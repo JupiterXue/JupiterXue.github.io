@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 baseURL = "https://jupiterxue.github.io"
 disablePathToLower = true
-=======
-baseURL = "https://jupiterxue.github.i"
->>>>>>> 9a8d8e06c03a119e26de5d60f10013415cf85e5a
 languageCode = "zh-CN"
 title = "木夜星空的个人博客"
 theme = "cactus"
