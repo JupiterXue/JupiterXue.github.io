@@ -1,10 +1,12 @@
 baseURL = "https://jupiterxue.github.io"
+disablePathToLower = true
 languageCode = "zh-CN"
 title = "木夜星空的个人博客"
 theme = "cactus"
 copyright = "JupiterXue" # cactus will use title if copyright is not set
 disqusShortname = "example" # Used when comments is enabled. Cactus will use site title if not set
 # googleAnalytics = "UA-1234-5"
+
 
 
 # summaryLength = 2
@@ -24,6 +26,7 @@ weight = 2
 #name = "Go 源码到工程"
 #url = "/go-to-top"
 #weight = 2
+
 
 [[menu.main]]
 name = "归档"
