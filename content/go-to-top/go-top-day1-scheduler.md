@@ -52,7 +52,7 @@ Goroutine 消费过程
 
 __相关链接__
 
-[^1]: Go 高级工程师实战营第一课, 草春晖
+[^1]: Go 高级工程师实战营第一课, 曹春晖
 
 [^2]: [go-scheduler](https://qcrao.com/ishare/go-scheduler/), 饶全成, 博客
 

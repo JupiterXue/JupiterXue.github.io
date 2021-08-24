@@ -1,3 +1,15 @@
+# 2021-08-23
+1. 修改新建内容模板
+
+# 2021-8-22
+1. Typora 主题更换为 academic
+
+# 2021-08-18
+宽度：屏幕80%。定制，拓宽文章视图
+D:\Project\GoProject\jupiter-blog\themes\cactus\layouts\posts\single.html
+<div class="content" itemprop="articleBody" style="width: 120%;margin-left: -10%;">
+
+
 # 2021-08-16
 1. Typora 代码风格换为 Dracula。可以实现在文中写代码，并且可查看到光标
 

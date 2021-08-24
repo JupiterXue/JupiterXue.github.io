@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>分享 on 木夜星空的个人博客</title>
+    <link>http://jupiterxue.com/tags/%E5%88%86%E4%BA%AB/</link>
+    <description>Recent content in 分享 on 木夜星空的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>JupiterXue</copyright>
+    <lastBuildDate>Wed, 04 Aug 2021 14:42:49 +0800</lastBuildDate><atom:link href="http://jupiterxue.com/tags/%E5%88%86%E4%BA%AB/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>如何在 Go 高级工程师训练营生存</title>
+      <link>http://jupiterxue.com/posts/2021-08-04-how-to-survive-in-senior-go-class/</link>
+      <pubDate>Wed, 04 Aug 2021 14:42:49 +0800</pubDate>
+      
+      <guid>http://jupiterxue.com/posts/2021-08-04-how-to-survive-in-senior-go-class/</guid>
+      <description>前言 大家好，我是 Jupiter，目前从事的是 Pyhon 和 Go 的后端开发，现在是我们 Go 高级工程师第一期的学员，也是 3 班 7 组的组长。这周三的时候谢大邀请我来做个学习交流，很荣幸能有这样的机会给大家做个这样的交流。
+一听到第一期学员，大家是不是觉得很厉害的样子。啊，没错，面向谷歌编程，复制粘贴代码的能力还是挺厉害的。不是，这期训练营教会我的当然不是复制粘贴那么简单，而是一个全方面的提高、一次格局拓展的经历。
+像大家一样，看到有这么一个大咖云集的训练营，曹大、谢大、askuy、小 R 大（额，这里有的套娃）、听闻、邓大明、博锋，已经热血沸腾。再看了看价格，也不算很贵。相比于出门左转右转看到的黑马达内千峰，在价格上已经比较低了。机不可失时不再来，如果要问还有没有下一期，那可能我们第二期可能就是最后一期，嗯，最后一个第二期。
+制定学习计划 在这次训练营开始前 5 月初时候，我是有点焦虑的。我是从 Python 转到 Go，几乎是没有什么 Go 基础，而这个训练营是面向 Go 高级工程师的。好像大家常见的语言转换和零基础，都被我撞上了。好在开营还有十多天，我做了两件事，让我在后面的学习节奏保持一个相对稳定的状态。
+第一个就是制定学习计划。为期四个月的时间，120天，我很期待这期间所能够发生的许多奇妙化学反应。像往常一样，课前XXX，课中XXX，课后XXX。
+课前：
+   学习工具：搭建好环境、购买好 tizi 和相关工具 预习：把曹大推荐资料都读完，课程大纲自己绘制熟悉于心 问题：每次提前阅读完材料，一定要带着问题去听直播    课中：
+   社群：积极参与任务，主动担当队长、副队长、主动去整理资料告知信息争做小助手 社区：每日浏览 GoCN 新闻，浏览关注的Go博主公众号和 Up 主视频 直播课堂：每次直播课都准时到，积极参加回答 大佬：多和老师曹大、助教、谢大沟通    课后：
+   整理课堂笔记，发知识星球或者成立小组。整理出 github 博客 每次作业最迟第二天完成，不拖到第三天。 每天掌握一个面试问答。需要记录下来，整理出 github 博客    当然还不止这些，我还用到了风险管理与保险原理的一些方法。我向自己提问，风险有哪些？防控措施有哪些？</description>
+    </item>
+    
+  </channel>
+</rss>
