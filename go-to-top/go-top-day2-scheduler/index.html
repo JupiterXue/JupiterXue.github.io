@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——调度-day2 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'http://jupiterxue.com/go-to-top/go-top-day2-scheduler/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——调度-day2" />
+<meta property="og:description" content="上回说到 Go 的调度流程本质上是⼀个⽣产-消费流程，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。
+当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&gt; runqgrab 这个流程。
+当 goroutine 处于消费端时，执行的是一个循环：runtime.schedule → execute → runtime.gogo → runtime.goexit → runtime.schedule（回到原点），并且最终 P.schedtick = 0。
+初学 scheduler 对于以上的流程感受是比较浅的，再来看看这些符号所代表的含义，就能更好地理解了：
+ G: goroutine，计算任务。由需要执行的代码和其上下文组成。（上下文包括：当前代码位置，栈顶、栈底地址，状态等）
+  M: machine，系统线程，执行实体，想要在 CPU 上来执行代码，必须有线程，与 C 语言中的线程相同，通过系统调用 clone 来创建。
+  P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷入休眠（后台监控线程除外），你也可以将其理解为一种 token，有了这个 token，才有在物理 CPU 核心上执行的权利。
+ 上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
+让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）
+案例1：
+// channel send: var ch = make(chan int) ch &lt;- 1 // channel recv: var ch = make(chan int) &lt;- ch 案例2：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://jupiterxue.com/go-to-top/go-top-day2-scheduler/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-08-05T14:45:19+08:00" />
+<meta property="article:modified_time" content="2021-08-05T14:45:19+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——调度-day2"/>
+<meta name="twitter:description" content="上回说到 Go 的调度流程本质上是⼀个⽣产-消费流程，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。
+当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&gt; runqgrab 这个流程。
+当 goroutine 处于消费端时，执行的是一个循环：runtime.schedule → execute → runtime.gogo → runtime.goexit → runtime.schedule（回到原点），并且最终 P.schedtick = 0。
+初学 scheduler 对于以上的流程感受是比较浅的，再来看看这些符号所代表的含义，就能更好地理解了：
+ G: goroutine，计算任务。由需要执行的代码和其上下文组成。（上下文包括：当前代码位置，栈顶、栈底地址，状态等）
+  M: machine，系统线程，执行实体，想要在 CPU 上来执行代码，必须有线程，与 C 语言中的线程相同，通过系统调用 clone 来创建。
+  P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷入休眠（后台监控线程除外），你也可以将其理解为一种 token，有了这个 token，才有在物理 CPU 核心上执行的权利。
+ 上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
+让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）
+案例1：
+// channel send: var ch = make(chan int) ch &lt;- 1 // channel recv: var ch = make(chan int) &lt;- ch 案例2："/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="http://jupiterxue.com/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="http://jupiterxue.com/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="http://jupiterxue.com">
+  
+    <div id="logo" style="background-image: url(http://jupiterxue.com/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/posts">文章</a></li>
+      
+        <li><a href="/tags">归档</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p>上回说到 <a href="https://mp.weixin.qq.com/s?__biz=Mzg3MjYzMzQzMQ==&amp;mid=2247483687&amp;idx=1&amp;sn=a357de9b46d3dbf466b9f52f6e2f413a&amp;scene=21#wechat_redirect">Go 的调度流程本质上是⼀个⽣产-消费流程</a>，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。</p>
+<p>当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&gt; runqgrab 这个流程。</p>
+<p>当 goroutine 处于消费端时，执行的是一个循环：runtime.schedule → execute → runtime.gogo → runtime.goexit → runtime.schedule（回到原点），并且最终 P.schedtick = 0。</p>
+<p>初学 scheduler 对于以上的流程感受是比较浅的，再来看看这些符号所代表的含义，就能更好地理解了：</p>
+<blockquote>
+<p>G: goroutine，计算任务。由需要执行的代码和其上下文组成。（上下文包括：当前代码位置，栈顶、栈底地址，状态等）</p>
+</blockquote>
+<blockquote>
+<p>M: machine，系统线程，执行实体，想要在 CPU 上来执行代码，必须有线程，与 C 语言中的线程相同，通过系统调用 clone 来创建。</p>
+</blockquote>
+<blockquote>
+<p>P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷入休眠（后台监控线程除外），你也可以将其理解为一种 token，有了这个 token，才有在物理 CPU 核心上执行的权利。</p>
+</blockquote>
+<p>上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？</p>
+<p>让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）</p>
+<p>案例1：</p>
+<pre><code>// channel send:
+var ch = make(chan int)
+ch &lt;- 1
+
+// channel recv:
+var ch = make(chan int)
+&lt;- ch
+</code></pre><p>案例2：</p>
+<pre><code>// net read
+var c net.Conn
+var buf = make([]byte, 1024)
+
+// data not ready, block here
+n, err := c.Read(buf)
+
+// net write
+var c net.Conn
+var buf = []byte(&quot;hello&quot;)
+
+// send buffer full, write blocked
+n, err := c.Write(buf)
+</code></pre><p>案例3：</p>
+<pre><code>var (
+    ch1 = make(chan int)
+    ch2 = make(chan int)
+)
+
+// no case ready, block
+select {
+    case &lt;- ch1:
+        println(&quot;ch1 ready&quot;)
+    case &lt;- ch2:
+        println(&quot;ch2 ready&quot;)
+}
+</code></pre><p>案例4：</p>
+<pre><code>// common func
+time.Sleep(time.Hour)
+
+
+var l sync.RWMutex
+// somebody already grab the lock
+// block here
+l.Lock()
+</code></pre><p>以上这些情况不会阻塞调度循环，而是会把 goroutine 挂起。挂起，其实是让 g 先进某个数据结构，待 ready 后再继续进行，并不会占用线程。这时候，线程会进入 scedule，继续消费队列，执行其他的 g。那么我们如何应对以上的情况呢？正确使用锁。</p>
+<p>下面还有三种应用阻塞在锁的情况：</p>
+<ol>
+<li>按 lock addr 排列的二叉搜索树。</li>
+<li>按 ticker 排列的小顶堆。</li>
+<li>ticket 是每个 sudog 初始化时用 fastrand 生成的</li>
+</ol>
+<p>用了锁又会遇到新的问题：为啥有的等待是 sudog，有的是 g？让我们看官方怎么说：</p>
+<blockquote>
+<p>sudog represents a g in a wait list, such as for sending/receiving on a chnnel.</p>
+</blockquote>
+<blockquote>
+<p>sudog is necessary because the g ↔ synchronization boject relation is many-to-many. A g can be on many wait lists, so there may be many sudogs for one g; and many gs may be waiting on the same synchronization object, so there may be many sudogs for one object.</p>
+</blockquote>
+<p>啥意思？也就是说，一个 g 可能对应多个 sudog，比如一个 g 会同时 select 多个 channel。</p>
+<p>呼，好像终于告一段落了。等等，前面这些都是能够被 runtime 拦截到的阻塞。来看看英文解释：</p>
+<blockquote>
+<p>sysnb: syscall nonblocking</p>
+</blockquote>
+<blockquote>
+<p>sys: syscall blocking</p>
+</blockquote>
+<p>一些 runtime 无法拦截的例子：</p>
+<pre><code>package main
+
+/*
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+void output(char *str) {
+    usleep(1000000);
+    printf(&quot;%s\n&quot;, str);
+}
+*/
+
+import &quot;c&quot;
+import &quot;unsafe&quot;
+</code></pre><p>我们在执行 c 代码，或者阻塞在 syscall 上时（这个没有列出来），必须占用一个线程</p>
+<p>遇到这种问题，我们聪明的程序员还是有解决办法：sysmon——system monitor，它有着高优先级，能够在专有线程中执行，不需要绑定 P 也能执行</p>
+<blockquote>
+<p>Check for deadlock situtation.</p>
+</blockquote>
+<blockquote>
+<p>The check is based on number of runnint M`s, if 0 → deadlock.</p>
+</blockquote>
+<p>有四个主要注意的地方：</p>
+<ol>
+<li>checkdead，常见误解为可以检查死锁。</li>
+<li>netpoll，inject g list to global run queue</li>
+<li>retake，如果是 syscall 卡了很久，那就把 p 剥离(handoff p)</li>
+<li>retake，如果是用户 g 运行很久了，那么发信号 SIGURG 去抢占过长时间的 G。</li>
+</ol>
+<p>关于调度，就暂时告一段落。理解比较浅显，更多的是在重复课上的内容。后续在实践中积累了更多经验后再来做深入分析。</p>
+
+  
+  </div>
+</article>
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>
