@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Promethues on 木夜星空的个人博客</title>
-    <link>http://jupiterxue.com/tags/promethues/</link>
+    <link>https://jupiterxue.github.i/tags/promethues/</link>
     <description>Recent content in Promethues on 木夜星空的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Thu, 29 Jul 2021 09:56:39 +0800</lastBuildDate><atom:link href="http://jupiterxue.com/tags/promethues/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Jul 2021 09:56:39 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.i/tags/promethues/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Grafana 条形图实践</title>
-      <link>http://jupiterxue.com/posts/2021-07-29-grafana-bar-chart/</link>
+      <link>https://jupiterxue.github.i/posts/2021-07-29-grafana-bar-chart/</link>
       <pubDate>Thu, 29 Jul 2021 09:56:39 +0800</pubDate>
       
-      <guid>http://jupiterxue.com/posts/2021-07-29-grafana-bar-chart/</guid>
+      <guid>https://jupiterxue.github.i/posts/2021-07-29-grafana-bar-chart/</guid>
       <description>前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
 特点 让我们康康 Grafana 是怎样的：
  免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
