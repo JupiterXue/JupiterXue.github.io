@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title> Go 翻山越岭——解释器 | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/go-top-day10-parser/'>
+  <link rel = 'canonical' href = 'http://jupiterxue.com/go-to-top/go-top-day10-parser/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
@@ -22,7 +22,7 @@
 情况2：关闭一个是 nil 值的 channel，文件名 close_nil.go
 1package main 2 3func main() { 4 var ch chan int 5 ch = nil 6 close(ch) 7} 1go tool compile -S close_nil." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/go-top-day10-parser/" /><meta property="article:section" content="go-to-top" />
+<meta property="og:url" content="http://jupiterxue.com/go-to-top/go-top-day10-parser/" /><meta property="article:section" content="go-to-top" />
 <meta property="article:published_time" content="2021-08-22T22:51:00+08:00" />
 <meta property="article:modified_time" content="2021-08-22T22:51:00+08:00" />
 
@@ -42,7 +42,7 @@
     
   
   
-  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+  <link rel="stylesheet" href="http://jupiterxue.com/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
 
   
   
@@ -66,7 +66,7 @@
 
 
   
-<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+<link rel="icon" type="image/png" href="http://jupiterxue.com/images/favicon.ico" />
 
   
   
@@ -78,9 +78,9 @@
   <div class="content index py4">
 
     <header id="header">
-  <a href="https://jupiterxue.github.io/">
+  <a href="http://jupiterxue.com">
   
-    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+    <div id="logo" style="background-image: url(http://jupiterxue.com/images/logo.png)"></div>
   
   <div id="title">
     <h1>木夜星空的个人博客</h1>
@@ -157,7 +157,7 @@
 <p>其实我们还有一种投机的方法来找到以上三个情况。假设我们经过多年的调试，已经知道 channel 的实现一定是在 runtime下 chan.go 这个文件里。在 Goland 中双击 shift 点击 Files 文件搜索 &ldquo;chan.go&rdquo;，进入这个文件后 ctrl+f 搜索关键字 &ldquo;panic&rdquo; 就找到了。如图所示：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108240000237.png" alt="image-20210823234924519"></p>
 <p>并且再根据函数名找找关闭 channel 的函数。</p>
-<p>其实在反汇编工具 dlv 中，panic 默认就是一个断点。</p>
+<p>其实还有第三种方法，在反汇编工具 dlv 中，panic 默认就是一个断点。</p>
 <p>OK，GO 语言语法分析实现已经帮我们解决了业务3的问题，我们继续往前走。</p>
 <h1 id="parser-场景">Parser 场景</h1>
 <blockquote>
@@ -173,16 +173,50 @@
 <li>用户信息 posts=143，invest=2042</li>
 <li>规则：post&gt;100 &amp;&amp; invest &gt; 10000    invest &gt; 1000</li>
 </ol>
-<p>（因为图不会画，借用曹大的图）</p>
-<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108240000339.png" alt="image-20210823235116013"></p>
-<p>Go 语言中有个内置的 Parser 能够帮助我们做些工作：简单的规则引擎。这里可以简单理解为最上方的一句布尔表达式，下方图示暂时不做详解，后续会再来分析。这里我们先来看另外一个 Parser 场景，能够更好地理解，为什么要使用这种 AST 抽象语法树的结构。</p>
-<p>Beego 大家或多或少都见过，尤其是这段 comment 一定不陌生。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108242225467.png" alt="内置 AST 工具 - 简单的规则引擎"></p>
+<p>Go 语言中有个内置的 Parser 能够帮助我们做些工作：简单的规则引擎。这里可以简单理解为最上方的一句布尔表达式，以语法树结构展示。下方图示暂时不做详解，后续有机会再来详细分析。这里我们先来看另外一个 Parser 场景，能够更好地理解，为什么要使用这种 AST 抽象语法树的结构。</p>
+<p>如果大家用过 Beego ，代码中这段类似的注释 comment 一定不陌生。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108240000484.png" alt="image-20210823235449303"></p>
 <p>这段代码中会从 Go 的注释到 swagger 的 json 文件。其实不光是这段代码，我们只要能够读到这些 comment，就可以转换成为符合 swagger 规范的 json。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108240000213.png" alt="image-20210823235627367"></p>
-<p>那么问题来了，什么是 swagger？swagger 是一个规范和完整的框架，用于生成、描述、调用和可视化 RESTful 风格的 Web 服务。 即 API 文档生成工具。</p>
-<p>我们不了解 swagger可能不了解注释是怎样生成代码的，但我们懂一点点 Go 语言内置的工具，就能自己来实现这样的功能了。</p>
-<p>预告：下期文章讲解如何用 Go 语言实现 swagger功能。</p>
+<p>那么问题来了，什么是 swagger？swagger 是开源界做得比较好的一个规范和完整的框架，用于生成、描述、调用和可视化 RESTful 风格的 Web 服务。 即 <strong>API 文档生成工具</strong>。</p>
+<p>我们不了解 swagger 可能不知道注释是怎么生成代码的，但我们懂一点点 Go 语言内置的工具，那么我们自己来做从注释到 json 的工具也就《简单》了。</p>
+<p>代码不多，来跟我动手实践吧，主文件，文件名 main.go</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span style="color:#75715e">// this is the comment for main function
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>}
+</code></pre></div><p>Parser 工具，文件名 output.go</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span style="color:#f92672">import</span> (
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>	<span style="color:#e6db74">&#34;go/ast&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>	<span style="color:#e6db74">&#34;go/parser&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>	<span style="color:#e6db74">&#34;go/token&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>	<span style="color:#a6e22e">fset</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">NewFileSet</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>	<span style="color:#a6e22e">f</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseFile</span>(<span style="color:#a6e22e">fset</span>, <span style="color:#e6db74">&#34;./main.go&#34;</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">Mode</span>(<span style="color:#ae81ff">4</span>))
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">d</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">Comments</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>		<span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Print</span>(<span style="color:#a6e22e">fset</span>, <span style="color:#a6e22e">d</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>	}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>}
+</code></pre></div><p>执行这段代码，我们也能够实现一小段注释到 json 的功能：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>go run output.go
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108242246501.png" alt="image-20210824224559554"></p>
+<p>第一段代码不用多说，第二段代码用到了 Go 语言自带的工具 ast、parser 和 token。第 10 行定义一个文件符号集合，11 行解析单个Go源文件的源代码并返回对应的ast.File节点。14 行打印从AST节点x到w开始的（子）树。最后我们得到了ast 格式的 json 数据结构。</p>
+<h1 id="总结">总结</h1>
+<p>今天我们学到了，<strong>三种方法找到 channel 中的 panic</strong>：</p>
+<ol>
+<li>反汇编调试工具 go tool compile 或者 go tool objdump</li>
+<li>根据常识，在 Goland 中全路径搜索 runtime 下的 chan.go 文件并搜索关键词 &ldquo;panic&rdquo;。</li>
+<li>Go 语言调试工具 dlv，直接运行，自动在 panic 处打断点停下。</li>
+</ol>
+<p>还学到了 <strong>什么是 Parser ，以及一段小 Parser demo 的应用</strong>。</p>
+<p>下期预告：讲解更加复杂的 Parser 应用场景。</p>
 
   
   </div>

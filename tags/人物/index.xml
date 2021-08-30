@@ -2,18 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>人物 on 木夜星空的个人博客</title>
-    <link>http://JupiterXue.github.io/tags/%E4%BA%BA%E7%89%A9/</link>
+    <link>https://jupiterxue.github.io/tags/%E4%BA%BA%E7%89%A9/</link>
     <description>Recent content in 人物 on 木夜星空的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <lastBuildDate>Fri, 23 Jul 2021 18:21:05 +0800</lastBuildDate><atom:link href="http://JupiterXue.github.io/tags/%E4%BA%BA%E7%89%A9/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-CN</language>
+    <copyright>JupiterXue</copyright>
+    <lastBuildDate>Fri, 23 Jul 2021 18:21:05 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/%E4%BA%BA%E7%89%A9/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>王垠的智慧</title>
-      <link>http://JupiterXue.github.io/posts/2021-07-23-idea-from-wangyin/</link>
+      <link>https://jupiterxue.github.io/posts/2021-07-23-idea-from-wangyin/</link>
       <pubDate>Fri, 23 Jul 2021 18:21:05 +0800</pubDate>
       
-      <guid>http://JupiterXue.github.io/posts/2021-07-23-idea-from-wangyin/</guid>
-      <description>王垠的智慧 王垠是谁？去谷歌知乎简单搜搜就能很快知道这个大名鼎鼎之人。对我来说，他是具有叛逆精神、擅长质疑与逻辑推断的人。他的求学经历让我感到</description>
+      <guid>https://jupiterxue.github.io/posts/2021-07-23-idea-from-wangyin/</guid>
+      <description>王垠的智慧 王垠是谁？去谷歌知乎简单搜搜就能很快知道这个大名鼎鼎之人。对我来说，他是具有叛逆精神、擅长质疑与逻辑推断的人。他的求学经历让我感到惋惜，与此同时，他的学习能力让我膜拜，他对计算器编译器的深刻洞见让我崇拜。最让我痴迷的是，还是他在自己的博客 “当然我在扯淡”中记录了四篇他的智慧：
+参考链接
+《编程的智慧》http://www.yinwang.org/blog-cn/2015/11/21/programming-philosophy
+《生活的智慧》http://www.yinwang.org/blog-cn/2017/07/08/living-philosophy
+《旅行的智慧》http://www.yinwang.org/blog-cn/2017/08/14/travel-wisdom
+《学习的智慧》http://www.yinwang.org/blog-cn/2019/07/12/learning-philosophy
+心得感悟 我是从大学开始接触编程，也是从大学才接触到的王垠。那时候无意之间闯入了 GNU 的新世界，王垠已经在这个广阔天地被人们称为了大牛。和计算机课本上那些枯燥、机械的例子不同，他将算法的思想融入到了生活的点点滴滴当中。不管你是否是从事计算机行业，相信看了这几篇文章都会被他的思想吸引住，想去一一尝试一下。
+如果你从事计算机行业，掌握编程，那么你很荣幸，我们最大的乐趣就在于创造，它能让你脱离低级的趣味。我们学习技术，最直观的学习是在实践中进行的，学了代码就去写，掌握思想就能改，实践多了就能大胆创新。这时候，编辑器你的画笔，可以让你成为神笔马良；编译器是你的电脑笔友，细心地告诉你在哪里你要去往哪里。
+我们做程序的，习惯叫自己程序员 / 程序媛 / 码农，就从码农可以看出，是勤勤恳恳的。确实，在编程领域当中，一分耕耘一分收获。大家学习技术，也许不单纯为了一份工作，我相信热爱技术的你，是想通过自己的双手，通过对技术的理解，创造出对世界、对社会有价值、有贡献的东西。当然，我们沉迷技术，却不是脱离生活，我们希望技术能够改善生活，我们希望算法的思想能够让这个社会变得更加美好，我们希望这个世界变得更加智慧。
+生活不止眼前的代码，还有流淌于柴米油盐之间的智慧。
+参考资料 [1]
+[2] 最“狂”天才，保送清华读博，3次退学，怒怼阿里 P10，被微软全球封杀！ https://jishuin.proginn.com/p/763bfbd2b5c2</description>
     </item>
     
   </channel>
