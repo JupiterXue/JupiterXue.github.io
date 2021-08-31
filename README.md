@@ -1,12 +1,6 @@
-## Jupiter Xue`s blog
+# Get Code
 
-## 安装
+> git clone https://github.com/JupiterXue/JupiterXue.github.io.git blog
 
-```bash
-git clone https://github.com/Jupiterxue.io blog
-```
-
-
-
-## 文档结构
-
+# View Web
+https://jupiterxue.github.io/

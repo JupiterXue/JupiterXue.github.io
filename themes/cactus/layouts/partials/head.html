@@ -32,6 +32,9 @@
     <![endif]-->
   ` | safeHTML }}
 
+<!--  添加 Google 分析 -->
+  {{ partial "google-analytics.html" . }}
+
   {{ partial "favicon.html" . }}
   {{ if .Site.Params.rss }}
   {{ with .OutputFormats.Get "RSS" }}

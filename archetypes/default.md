@@ -1,6 +1,10 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
-draft: true
+category: tech
+tags:
+    - Go
+keywords:
+    - 理论
 ---
 
