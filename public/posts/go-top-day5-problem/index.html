@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——常见业务问题 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'http://jupiterxue.com/posts/go-top-day5-problem/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——常见业务问题" />
+<meta property="og:description" content="上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
+场景1，这两段代码运行速度怎样？第一个比第二个快？
+1// 代码1 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var a = &amp;person{111} 10 fmt.Println(a) 11} 1// 对比代码2 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var b = person {111} 10 var a = &amp;b 11 fmt.Println(a) 12} 场景2，类型转换的原理是怎样的？
+1package main 2 3func main() { 4 var a = &#34;hello&#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://jupiterxue.com/posts/go-top-day5-problem/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-14T09:38:51+08:00" />
+<meta property="article:modified_time" content="2021-08-14T09:38:51+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——常见业务问题"/>
+<meta name="twitter:description" content="上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
+场景1，这两段代码运行速度怎样？第一个比第二个快？
+1// 代码1 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var a = &amp;person{111} 10 fmt.Println(a) 11} 1// 对比代码2 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var b = person {111} 10 var a = &amp;b 11 fmt.Println(a) 12} 场景2，类型转换的原理是怎样的？
+1package main 2 3func main() { 4 var a = &#34;hello&#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="http://jupiterxue.com/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="http://jupiterxue.com/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" http://jupiterxue.com/posts/2021-08-13-when-man-love/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="http://jupiterxue.com/go-to-top/go-top-day5-problem/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&text=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&title=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&is_video=false&description=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&title=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&title=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&name=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&description=%e4%b8%8a%e5%9b%9e%e8%af%b4%e5%88%b0%e9%80%9a%e8%bf%87%e5%b7%a5%e5%85%b7%20readelf%20%e5%92%8c%20dlv%20%e8%b0%83%e8%af%95%20Go%20%e8%af%ad%e8%a8%80%e7%a8%8b%e5%ba%8f%ef%bc%8c%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%bf%99%e4%b9%88%e5%81%9a%e8%b0%83%e8%af%95%e4%bb%a3%e7%a0%81%e5%91%a2%ef%bc%9f%e6%88%91%e5%8d%95%e7%ba%af%e5%9c%b0%e6%83%b3%e5%86%99%e4%b8%aa%e4%bb%a3%e7%a0%81%ef%bc%8c%e4%b8%8d%e8%a1%8c%e5%90%97%ef%bc%8c%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e4%b8%8d%e9%83%bd%e6%98%af%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0%e6%b2%a1%e6%9c%89%e5%90%ac%e8%b0%81%e8%af%b4%e8%bf%87%e8%a6%81%e8%bf%9b%e8%a1%8c%e5%ba%95%e5%b1%82%e8%b0%83%e8%af%95%e5%95%8a%e3%80%82%e5%85%b3%e4%ba%8e%e4%b8%9a%e5%8a%a1%ef%bc%8c%e5%86%99%e4%bb%a3%e7%a0%81%e5%bd%93%e7%84%b6%e5%8f%af%e4%bb%a5%ef%bc%8c%e8%80%8c%e5%bd%93%e6%88%91%e4%bb%ac%e9%9d%a2%e4%b8%b4%e6%80%a7%e8%83%bd%e9%97%ae%e9%a2%98%e6%97%b6%ef%bc%8c%e5%b0%b1%e9%9c%80%e8%a6%81%e6%b6%89%e5%8f%8a%e7%ae%97%e6%b3%95%e4%b8%8e%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e3%80%82%e7%b3%9f%e7%b3%95%ef%bc%8c%e4%bd%a0%e4%b8%80%e8%af%b4%e5%88%b0%e7%ae%97%e6%b3%95%e6%88%91%e5%b0%b1%e5%bf%83%e8%99%9a%e3%80%82%e5%a6%82%e6%9e%9c%e4%bd%a0%e7%ae%97%e6%b3%95%e5%9f%ba%e7%a1%80%e8%96%84%e4%b8%80%e7%82%b9%ef%bc%8c%e6%b2%a1%e5%85%b3%e7%b3%bb%ef%bc%8c%e4%b8%9c%e6%96%b9%e4%b8%8d%e4%ba%ae%e8%a5%bf%e6%96%b9%e4%ba%ae%ef%bc%8c%e7%ae%97%e6%b3%95%e8%b5%b0%e4%b8%8d%e9%80%9a%ef%bc%8c%e6%88%91%e4%bb%ac%e8%b5%b0%e6%9f%a5%e7%9c%8b%e4%bf%ae%e6%94%b9%e5%ba%95%e5%b1%82%e4%bb%a3%e7%a0%81%e5%81%9a%e8%b5%b7%ef%bc%8c%e4%bb%85%e9%9c%80%e8%a6%81%e7%bb%86%e5%bf%83%e5%92%8c%e9%80%bb%e8%be%91%e6%8e%a8%e7%90%86%e5%b0%b1%e8%83%bd%e8%a7%a3%e5%86%b3%e9%83%a8%e5%88%86%e9%97%ae%e9%a2%98%e3%80%82%e5%9b%a0%e6%ad%a4%ef%bc%8c%e4%bb%8a%e5%a4%a9%e7%9a%84%e4%b8%bb%e9%a2%98%e6%98%af%e2%80%9c%e6%8e%a2%e7%a9%b6%20Go%20%e8%af%ad%e6%b3%95%e8%83%8c%e5%90%8e%e7%9a%84%e7%a7%98%e5%af%86%e2%80%9d%e3%80%82%0a%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e5%9c%ba%e6%99%af%20%e4%bd%a0%e8%af%b4%e5%86%99%e4%b8%9a%e5%8a%a1%e4%b8%8d%e7%94%a8%e5%85%b3%e5%bf%83%e5%ba%95%e5%b1%82%ef%bc%8cOK%ef%bc%8c%e9%82%a3%e6%88%91%e4%bb%ac%e4%bb%8a%e5%a4%a9%e5%85%88%e8%ae%b2%e5%8e%9f%e7%90%86%ef%bc%8c%e7%9b%b4%e6%8e%a5%e4%b8%8a%e4%b8%9a%e5%8a%a1%e5%9c%ba%e6%99%af%e3%80%82%0a%e5%9c%ba%e6%99%af1%ef%bc%8c%e8%bf%99%e4%b8%a4%e6%ae%b5%e4%bb%a3%e7%a0%81%e8%bf%90%e8%a1%8c%e9%80%9f%e5%ba%a6%e6%80%8e%e6%a0%b7%ef%bc%9f%e7%ac%ac%e4%b8%80%e4%b8%aa%e6%af%94%e7%ac%ac%e4%ba%8c%e4%b8%aa%e5%bf%ab%ef%bc%9f%0a1%2f%2f%20%e4%bb%a3%e7%a0%811%202package%20main%203%204type%20person%20struct%20%7b%205%20age%20int%206%7d%207%208func%20main%28%29%20%7b%209%20var%20a%20%3d%20%26amp%3bperson%7b111%7d%2010%20fmt.Println%28a%29%2011%7d%201%2f%2f%20%e5%af%b9%e6%af%94%e4%bb%a3%e7%a0%812%202package%20main%203%204type%20person%20struct%20%7b%205%20age%20int%206%7d%207%208func%20main%28%29%20%7b%209%20var%20b%20%3d%20person%20%7b111%7d%2010%20var%20a%20%3d%20%26amp%3bb%2011%20fmt.Println%28a%29%2012%7d%20%e5%9c%ba%e6%99%af2%ef%bc%8c%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2%e7%9a%84%e5%8e%9f%e7%90%86%e6%98%af%e6%80%8e%e6%a0%b7%e7%9a%84%ef%bc%9f%0a1package%20main%202%203func%20main%28%29%20%7b%204%20var%20a%20%3d%20%26%2334%3bhello%26%2334%3b%205%20var%20b%20%3d%20%5b%5dbyte%28a%29%206%20println%28b%29%207%7d%20%e5%9c%ba%e6%99%af3%ef%bc%8c%e6%80%8e%e4%b9%88%e6%89%be%e5%88%b0%20make%20%e5%92%8c%20new%20%e8%bf%99%e7%a7%8d%20Go%20%e8%af%ad%e8%a8%80%e8%87%aa%e5%b8%a6%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e7%9a%84%e5%85%b7%e4%bd%93%e5%ae%9e%e7%8e%b0%ef%bc%9f" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&t=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents"></nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        Go 翻山越岭——常见业务问题
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2021-08-14 09:38:51 &#43;0800 CST" itemprop="datePublished">2021-08-14</time>
+          
+        </div>
+        
+        
+        <div class="article-read-time">
+          <i class="far fa-clock"></i>
+          
+          6 minute read
+        </div>
+        
+        
+        
+        <div class="article-tag">
+            <i class="fas fa-tag"></i>
+            
+            
+            <a class="tag-link" href="/tags/go" rel="tag">Go</a>
+            
+        </div>
+        
+      </div>
+    </header>
+
+  
+
+    <div class="content" itemprop="articleBody" style="width: 120%;margin-left: -10%;">
+      <p>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。</p>
+<h1 id="常见业务场景">常见业务场景</h1>
+<p>你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。</p>
+<p>场景1，这两段代码运行速度怎样？第一个比第二个快？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#75715e">// 代码1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">person</span> <span style="color:#66d9ef">struct</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#a6e22e">age</span> <span style="color:#66d9ef">int</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">person</span>{<span style="color:#ae81ff">111</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>}
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#75715e">// 对比代码2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">person</span> <span style="color:#66d9ef">struct</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#a6e22e">age</span> <span style="color:#66d9ef">int</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> = <span style="color:#a6e22e">person</span> {<span style="color:#ae81ff">111</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
+</code></pre></div><p>场景2，类型转换的原理是怎样的？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> = <span style="color:#e6db74">&#34;hello&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> = []byte(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>    println(<span style="color:#a6e22e">b</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span>}
+</code></pre></div><p>场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</p>
+<p>场景4，有一个中台服务，划分了许多用户等级，具体规则如下：（以下场景都没遇到过，不过可以来做分析）</p>
+<p>初级会员，发帖数 &gt; 10</p>
+<p>中级会员，充值 &gt; 1000 RMB</p>
+<p>高级会员，发帖数 &gt; 100 ，充值 &gt; 10000 RMB</p>
+<p>如果其中项目数量 = 几百，那么每个项目都应该有自己的会员规则吗？也就是说，我们需要单独定制这么几百个代码吗？</p>
+<p>场景5，有一个数据查询服务的需求，我们想要做成一个统一的流程，目标是想简化部门的数据获取需求：</p>
+<p>（1）由用户提供查询条件，但用户分散在不同领域或部门，并且没有统一标准，并且会经常变。</p>
+<p>（2）需要用到代理去查询不同模块的数据</p>
+<p>（3）外部模块没有统一的数据获取规范</p>
+<p>如果每次用户修改了数据并提出了需求，我们就一定要写一遍代码吗？（小剧透：所以我们需要去做一套中间数据获取层）</p>
+<p>场景6，公司非常看好 gRPC，尤其在上 K8s 之后 gPRC 显得更云原生些，我们想从 Thrift 切换到 gRPC，但是之前的项目都是 Thrift，怎么办？</p>
+<p>（1）之前的项目已经有几千甚至上万的 Thrift 服务、已经有单独的仓库去管理 Thrift IDL</p>
+<p>（2）想提供 gRPC 接口</p>
+<p>（3）目前的解决方案是手动把 Thrift IDL 按照 pb 文件的格式模仿抄写一遍，但效率太低。</p>
+<p>场景7，我是个 DBA，了解 MySQL 的索引机制，了解哪些数据表是数据量比较大的核心表，我也可以将用户代码中的 SQL 都提前出来，不过我希望在上线的时候能够自动做一些工作，比如做一个拦截器，提醒用户要给表加索引才能添加数据（这个问题在我们实际线上会经常遇到，一旦发生还是比较蠢的）。</p>
+<p>（1）我是 SQL 专家</p>
+<p>（2）我知道怎么获取到表的索引
+（3）我可以把用户代码里的SQL扫描出来</p>
+<p>场景8，我们公司是做 ToB 的服务，我们的软件会先编译完再卖出去，比如我们公司是用 Go 开发的，假如我们是卖 gRPC 服务的，而用户想要在此基础上做一些定制，他们也有自己的开发人员，比如说实现内部的 RPC 协议。用户想定制，而我们想不给他们源代码并且能够支持他们的定制需求，这就需要些技术手段来解决。（特别是 Go 语言的生态还不是很完善，并且每个方案都有自己的缺陷）</p>
+<p>总共罗列了 <strong>8 个业务场景</strong>，我们可以通过探究 Go 语法背后的秘密就能去解决的问题，有没有哪个场景是你所遇到的？下回我将进行一一细致地讲解。</p>
+
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">主页</a></li>
+         
+          <li><a href="/posts">文章</a></li>
+         
+          <li><a href="/tags">归档</a></li>
+         
+          <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents"></nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&text=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&title=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&is_video=false&description=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&body=Check out this article: http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&title=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&title=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&name=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98&description=%e4%b8%8a%e5%9b%9e%e8%af%b4%e5%88%b0%e9%80%9a%e8%bf%87%e5%b7%a5%e5%85%b7%20readelf%20%e5%92%8c%20dlv%20%e8%b0%83%e8%af%95%20Go%20%e8%af%ad%e8%a8%80%e7%a8%8b%e5%ba%8f%ef%bc%8c%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%bf%99%e4%b9%88%e5%81%9a%e8%b0%83%e8%af%95%e4%bb%a3%e7%a0%81%e5%91%a2%ef%bc%9f%e6%88%91%e5%8d%95%e7%ba%af%e5%9c%b0%e6%83%b3%e5%86%99%e4%b8%aa%e4%bb%a3%e7%a0%81%ef%bc%8c%e4%b8%8d%e8%a1%8c%e5%90%97%ef%bc%8c%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e4%b8%8d%e9%83%bd%e6%98%af%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0%e6%b2%a1%e6%9c%89%e5%90%ac%e8%b0%81%e8%af%b4%e8%bf%87%e8%a6%81%e8%bf%9b%e8%a1%8c%e5%ba%95%e5%b1%82%e8%b0%83%e8%af%95%e5%95%8a%e3%80%82%e5%85%b3%e4%ba%8e%e4%b8%9a%e5%8a%a1%ef%bc%8c%e5%86%99%e4%bb%a3%e7%a0%81%e5%bd%93%e7%84%b6%e5%8f%af%e4%bb%a5%ef%bc%8c%e8%80%8c%e5%bd%93%e6%88%91%e4%bb%ac%e9%9d%a2%e4%b8%b4%e6%80%a7%e8%83%bd%e9%97%ae%e9%a2%98%e6%97%b6%ef%bc%8c%e5%b0%b1%e9%9c%80%e8%a6%81%e6%b6%89%e5%8f%8a%e7%ae%97%e6%b3%95%e4%b8%8e%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e3%80%82%e7%b3%9f%e7%b3%95%ef%bc%8c%e4%bd%a0%e4%b8%80%e8%af%b4%e5%88%b0%e7%ae%97%e6%b3%95%e6%88%91%e5%b0%b1%e5%bf%83%e8%99%9a%e3%80%82%e5%a6%82%e6%9e%9c%e4%bd%a0%e7%ae%97%e6%b3%95%e5%9f%ba%e7%a1%80%e8%96%84%e4%b8%80%e7%82%b9%ef%bc%8c%e6%b2%a1%e5%85%b3%e7%b3%bb%ef%bc%8c%e4%b8%9c%e6%96%b9%e4%b8%8d%e4%ba%ae%e8%a5%bf%e6%96%b9%e4%ba%ae%ef%bc%8c%e7%ae%97%e6%b3%95%e8%b5%b0%e4%b8%8d%e9%80%9a%ef%bc%8c%e6%88%91%e4%bb%ac%e8%b5%b0%e6%9f%a5%e7%9c%8b%e4%bf%ae%e6%94%b9%e5%ba%95%e5%b1%82%e4%bb%a3%e7%a0%81%e5%81%9a%e8%b5%b7%ef%bc%8c%e4%bb%85%e9%9c%80%e8%a6%81%e7%bb%86%e5%bf%83%e5%92%8c%e9%80%bb%e8%be%91%e6%8e%a8%e7%90%86%e5%b0%b1%e8%83%bd%e8%a7%a3%e5%86%b3%e9%83%a8%e5%88%86%e9%97%ae%e9%a2%98%e3%80%82%e5%9b%a0%e6%ad%a4%ef%bc%8c%e4%bb%8a%e5%a4%a9%e7%9a%84%e4%b8%bb%e9%a2%98%e6%98%af%e2%80%9c%e6%8e%a2%e7%a9%b6%20Go%20%e8%af%ad%e6%b3%95%e8%83%8c%e5%90%8e%e7%9a%84%e7%a7%98%e5%af%86%e2%80%9d%e3%80%82%0a%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e5%9c%ba%e6%99%af%20%e4%bd%a0%e8%af%b4%e5%86%99%e4%b8%9a%e5%8a%a1%e4%b8%8d%e7%94%a8%e5%85%b3%e5%bf%83%e5%ba%95%e5%b1%82%ef%bc%8cOK%ef%bc%8c%e9%82%a3%e6%88%91%e4%bb%ac%e4%bb%8a%e5%a4%a9%e5%85%88%e8%ae%b2%e5%8e%9f%e7%90%86%ef%bc%8c%e7%9b%b4%e6%8e%a5%e4%b8%8a%e4%b8%9a%e5%8a%a1%e5%9c%ba%e6%99%af%e3%80%82%0a%e5%9c%ba%e6%99%af1%ef%bc%8c%e8%bf%99%e4%b8%a4%e6%ae%b5%e4%bb%a3%e7%a0%81%e8%bf%90%e8%a1%8c%e9%80%9f%e5%ba%a6%e6%80%8e%e6%a0%b7%ef%bc%9f%e7%ac%ac%e4%b8%80%e4%b8%aa%e6%af%94%e7%ac%ac%e4%ba%8c%e4%b8%aa%e5%bf%ab%ef%bc%9f%0a1%2f%2f%20%e4%bb%a3%e7%a0%811%202package%20main%203%204type%20person%20struct%20%7b%205%20age%20int%206%7d%207%208func%20main%28%29%20%7b%209%20var%20a%20%3d%20%26amp%3bperson%7b111%7d%2010%20fmt.Println%28a%29%2011%7d%201%2f%2f%20%e5%af%b9%e6%af%94%e4%bb%a3%e7%a0%812%202package%20main%203%204type%20person%20struct%20%7b%205%20age%20int%206%7d%207%208func%20main%28%29%20%7b%209%20var%20b%20%3d%20person%20%7b111%7d%2010%20var%20a%20%3d%20%26amp%3bb%2011%20fmt.Println%28a%29%2012%7d%20%e5%9c%ba%e6%99%af2%ef%bc%8c%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2%e7%9a%84%e5%8e%9f%e7%90%86%e6%98%af%e6%80%8e%e6%a0%b7%e7%9a%84%ef%bc%9f%0a1package%20main%202%203func%20main%28%29%20%7b%204%20var%20a%20%3d%20%26%2334%3bhello%26%2334%3b%205%20var%20b%20%3d%20%5b%5dbyte%28a%29%206%20println%28b%29%207%7d%20%e5%9c%ba%e6%99%af3%ef%bc%8c%e6%80%8e%e4%b9%88%e6%89%be%e5%88%b0%20make%20%e5%92%8c%20new%20%e8%bf%99%e7%a7%8d%20Go%20%e8%af%ad%e8%a8%80%e8%87%aa%e5%b8%a6%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e7%9a%84%e5%85%b7%e4%bd%93%e5%ae%9e%e7%8e%b0%ef%bc%9f" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2fjupiterxue.com%2fposts%2fgo-top-day5-problem%2f&t=Go%20%e7%bf%bb%e5%b1%b1%e8%b6%8a%e5%b2%ad%e2%80%94%e2%80%94%e5%b8%b8%e8%a7%81%e4%b8%9a%e5%8a%a1%e9%97%ae%e9%a2%98" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+
+
+
+</html>

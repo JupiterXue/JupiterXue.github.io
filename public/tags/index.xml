@@ -2,11 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on 木夜星空的个人博客</title>
+<<<<<<< HEAD
     <link>http://jupiterxue.com/tags/</link>
+=======
+    <link>https://jupiterxue.github.io/tags/</link>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
     <description>Recent content in Tags on 木夜星空的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
+<<<<<<< HEAD
     <lastBuildDate>Sun, 29 Aug 2021 14:47:52 +0800</lastBuildDate><atom:link href="http://jupiterxue.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go</title>
@@ -14,6 +19,123 @@
       <pubDate>Sun, 29 Aug 2021 14:47:52 +0800</pubDate>
       
       <guid>http://jupiterxue.com/tags/go/</guid>
+=======
+    <lastBuildDate>Sun, 22 Aug 2021 22:51:00 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go</title>
+      <link>https://jupiterxue.github.io/tags/Go/</link>
+      <pubDate>Sun, 22 Aug 2021 22:51:00 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/Go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>科研</title>
+      <link>https://jupiterxue.github.io/tags/%E7%A7%91%E7%A0%94/</link>
+      <pubDate>Wed, 18 Aug 2021 22:01:22 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E7%A7%91%E7%A0%94/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>写作</title>
+      <link>https://jupiterxue.github.io/tags/%E5%86%99%E4%BD%9C/</link>
+      <pubDate>Mon, 16 Aug 2021 22:52:49 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E5%86%99%E4%BD%9C/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>电影</title>
+      <link>https://jupiterxue.github.io/tags/%E7%94%B5%E5%BD%B1/</link>
+      <pubDate>Fri, 13 Aug 2021 14:42:49 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E7%94%B5%E5%BD%B1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>杂谈</title>
+      <link>https://jupiterxue.github.io/tags/%E6%9D%82%E8%B0%88/</link>
+      <pubDate>Sun, 08 Aug 2021 14:42:49 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E6%9D%82%E8%B0%88/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>分享</title>
+      <link>https://jupiterxue.github.io/tags/%E5%88%86%E4%BA%AB/</link>
+      <pubDate>Wed, 04 Aug 2021 14:42:49 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E5%88%86%E4%BA%AB/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Grafana</title>
+      <link>https://jupiterxue.github.io/tags/Grafana/</link>
+      <pubDate>Thu, 29 Jul 2021 09:56:39 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/Grafana/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Promethues</title>
+      <link>https://jupiterxue.github.io/tags/Promethues/</link>
+      <pubDate>Thu, 29 Jul 2021 09:56:39 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/Promethues/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://jupiterxue.github.io/tags/Python/</link>
+      <pubDate>Thu, 29 Jul 2021 09:56:39 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/Python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>人物</title>
+      <link>https://jupiterxue.github.io/tags/%E4%BA%BA%E7%89%A9/</link>
+      <pubDate>Fri, 23 Jul 2021 18:21:05 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E4%BA%BA%E7%89%A9/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithms</title>
+      <link>https://jupiterxue.github.io/tags/Algorithms/</link>
+      <pubDate>Fri, 01 May 2020 09:00:00 +0000</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/Algorithms/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>racket</title>
+      <link>https://jupiterxue.github.io/tags/racket/</link>
+      <pubDate>Sat, 29 Feb 2020 09:00:00 +0000</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/racket/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ruby</title>
+      <link>https://jupiterxue.github.io/tags/ruby/</link>
+      <pubDate>Thu, 08 Dec 2016 22:54:49 +0000</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/ruby/</guid>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
       <description></description>
     </item>
     
