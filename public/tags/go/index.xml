@@ -144,26 +144,6 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
     </item>
     
     <item>
-      <title>Go 翻山越岭——编译原理基础</title>
-      <link>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</link>
-      <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</guid>
-      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接。看似简单，但其中蕴藏着极大的能量，尤其在面对不能一时半会就解决的业务场景中，稍微深挖编译与链接的过程就有奇效。今天我们就来聊聊 “Go 语言中编译原理的基础”。
-上期文章提到了 8 个常见 Go 业务场景，虽说都是业务场景，但在代码性能、数据结构转换和系统设计中偏细颗粒度的实践中我们通常感到茫然和繁琐。这是因为在平时开发中，编译器会自动帮我们屏蔽掉代码编译的过程，我们只用关注最后的 ELF 可执行文件。那么我们就来看看，编译器会帮我们做些什么工作，进一步理解我们所写的程序发生了什么样的转化。
-编译原理概述 我们可以把编译分为两个部分：编译器前端和编译器后端，如图所示：（这些都是我们软件工程专业课上的基础知识）
-**词法分析（Lexical Analysis）**是计算机科学中将字符序列转换为标记（token）序列的过程。
-1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 println(1 + 2) 7} 我们这里有一段简单代码，通过词法分析的方法，转化为 token 就是如下结果：
-我们在 Go 语言中没有分号，但其实像很多其他编程语言一样，是需要的。
-语法分析（syntactic analysis，又称 parsing）是根据某种给定的形式文法对由单词序列（如英语单词序列）构成的输入文本进行分析并确定其语法结构的一种过程。当我们对 Go 源代码进行词法分析后，会形成上图的 token 流，我们想要把这个再转换成汇编还是不行，还需要转换一步，转换为另一种数据结构——AST 语法树，才能够用计算机的逻辑去处理。
-抽象语法树（Abstract Syntax Tree，AST），或简称语法树（Syntax tree），是源代码语法结构的一种抽象表示。
-这里提供一个在线编译 AST 的网站：https://astexplorer.net/，将上面的代码粘贴进来，就可以发现如下结果：
-左边是代码，右边会把所有代码相应地转换成了树结构呈现出来。（建议大家动手玩一玩，里面会有语法高亮和代码与树一一匹配的功能。如果未来你有机会写一些解释器，很可能会用到这个）
-语义分析（Semantic Analysis）是对结构上正确的源程序进行上下文有关性质的审查，进行类型审查。比如我们写了类似这样的代码：
-1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 var x int = &amp;#34;abc&amp;#34; 7 println(x) 8} 作为一个找茬小能手（当然不是买瓜），可以发现，字符串 &amp;ldquo;abc&amp;rdquo; 是不能赋值为 int 变量 x，这时候我们直接编译 go build 就会出现如下问题：</description>
-    </item>
-    
-    <item>
       <title>Go 翻山越岭——常见业务问题</title>
       <link>https://jupiterxue.github.io/go-to-top/day5-problem/</link>
       <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
@@ -228,27 +208,6 @@ Go 调试工具：readelf
       <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day1-scheduler/</guid>
-      <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
-Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
- Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
-Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
-Memory	：当代码需要内存时，负责内存分配工作
-Garbage	：当内存不再需要时，负责回收内存
- 而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
-调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
-什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
-1go func() { 2println(&amp;#34;hello world in goroutine!&amp;#34;) 3} 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
-Goroutine 生产过程3,4
-Goroutine 消费过程
-想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description>
-    </item>
-    
-    <item>
-      <title>Go 翻山越岭——调度-day1</title>
-      <link>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</link>
-      <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</guid>
       <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
  Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
