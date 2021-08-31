@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Day13 Data Structure | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day13-data-structure/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Day13 Data Structure" />
+<meta property="og:description" content="内置数据结构是一门编程语言的基础核心，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。
+首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：
+既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。
+Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：
+图上省略了：
+ select dafault 的情况。 逻辑执行时碰到 ch 已 close 的情况。  从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：
+图上也省略了：
+ select default 的情况。 逻辑执行时碰到 ch 已经 close 的情况。  对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。
+我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：
+1// chansend 源码 2func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool { 3 if c ==nil { 4 if !" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day13-data-structure/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-08-29T14:47:52+08:00" />
+<meta property="article:modified_time" content="2021-08-29T14:47:52+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Day13 Data Structure"/>
+<meta name="twitter:description" content="内置数据结构是一门编程语言的基础核心，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。
+首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：
+既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。
+Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：
+图上省略了：
+ select dafault 的情况。 逻辑执行时碰到 ch 已 close 的情况。  从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：
+图上也省略了：
+ select default 的情况。 逻辑执行时碰到 ch 已经 close 的情况。  对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。
+我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：
+1// chansend 源码 2func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool { 3 if c ==nil { 4 if !"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+=======
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+=======
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Day13 Data Structure | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day13-data-structure/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Day13 Data Structure" />
+<meta property="og:description" content="内置数据结构是一门编程语言的基础核心，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。
+首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：
+既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。
+Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：
+图上省略了：
+ select dafault 的情况。 逻辑执行时碰到 ch 已 close 的情况。  从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：
+图上也省略了：
+ select default 的情况。 逻辑执行时碰到 ch 已经 close 的情况。  对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。
+我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：
+1// chansend 源码 2func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool { 3 if c ==nil { 4 if !" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day13-data-structure/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-08-29T14:47:52+08:00" />
+<meta property="article:modified_time" content="2021-08-29T14:47:52+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Day13 Data Structure"/>
+<meta name="twitter:description" content="内置数据结构是一门编程语言的基础核心，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。
+首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：
+既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。
+Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：
+图上省略了：
+ select dafault 的情况。 逻辑执行时碰到 ch 已 close 的情况。  从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：
+图上也省略了：
+ select default 的情况。 逻辑执行时碰到 ch 已经 close 的情况。  对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。
+我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：
+1// chansend 源码 2func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool { 3 if c ==nil { 4 if !"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+=======
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://jupiterxue.github.io/">
+  
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/posts">文章</a></li>
+      
+        <li><a href="/tags">归档</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p><strong>内置数据结构是一门编程语言的基础核心</strong>，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。</p>
+<p>首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291453518.png" alt="未命名文件"></p>
+<p>既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。</p>
+<h1 id="channel">Channel</h1>
+<p>之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291706892.png" alt="chansend 流程图"></p>
+<p>图上省略了：</p>
+<ol>
+<li>select dafault 的情况。</li>
+<li>逻辑执行时碰到 ch 已 close 的情况。</li>
+</ol>
+<p>从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291706194.png" alt="chanrecv 流程图"></p>
+<p>图上也省略了：</p>
+<ol>
+<li>select default 的情况。</li>
+<li>逻辑执行时碰到 ch 已经 close 的情况。</li>
+</ol>
+<p>对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。</p>
+<p>我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#75715e">// chansend 源码
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">chansend</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>, <span style="color:#a6e22e">ep</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>, <span style="color:#a6e22e">block</span> <span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">callerpc</span> <span style="color:#66d9ef">uintptr</span>) <span style="color:#66d9ef">bool</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">==</span><span style="color:#66d9ef">nil</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>        <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">block</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>        <span style="color:#a6e22e">gopark</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">waitReasonChanSendNilChan</span>, <span style="color:#a6e22e">traceEvGoStop</span>, <span style="color:#ae81ff">2</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>        <span style="color:#a6e22e">throw</span>(<span style="color:#e6db74">&#34;unreachable&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#a6e22e">lock</span>.(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">lock</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span style="color:#75715e">// chanrecv 源码
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">chanrecv</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>, <span style="color:#a6e22e">ep</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>, <span style="color:#a6e22e">block</span> <span style="color:#66d9ef">bool</span>) (<span style="color:#a6e22e">selected</span>, <span style="color:#a6e22e">received</span> <span style="color:#66d9ef">bool</span>) {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">==</span><span style="color:#66d9ef">nil</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>        <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">block</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>        <span style="color:#a6e22e">gopark</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">waitReasonChanReceiveNilChan</span>, <span style="color:#a6e22e">traceEvGoStop</span>, <span style="color:#ae81ff">2</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>        <span style="color:#a6e22e">throw</span>(<span style="color:#e6db74">&#34;unreachable&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span>    <span style="color:#a6e22e">lock</span>.(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">lock</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span style="color:#75715e">// closechan 源码
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">closechan</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>) {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span>        panic(<span style="color:#a6e22e">plainError</span>(<span style="color:#e6db74">&#34;close of nil channel&#34;</span>))
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span>    <span style="color:#a6e22e">lock</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">lock</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span>}
+</code></pre></div><p>虽然我们在用户态完全看不到，但我们可以从底层源码看到这个明显的加锁操作，并且这个加锁的操作基本上都是在函数开始加锁，函数结束解锁，除了 goready() 要放在锁外面，其他也没有什么特殊的，这便是达成并发安全的条件之一。</p>
+<p>第二个并发安全的条件就是挂起和唤醒。刚刚提到了两个关键的函数 gopark 和 goready，这里我们可以记住两三个结论：</p>
+<ul>
+<li>Sender 挂起，一定是由 receiver（或 close）唤醒</li>
+<li>Receiver 挂起，一定是由 sender（或 close）唤醒</li>
+<li>结对操作。只要有用到 gopark，那么代码中一定有另外一个地方在执行 goready</li>
+</ul>
+<p>在之前的文章中提到，可接管的阻塞，均是由 gopark 挂起，每一个 gopark 都会对应一个唤醒方。</p>
+<p>以上第一二点，在代码中如何体现呢？比如 Sender 挂起，也就是 chansend 中的流程，当 buffer 满了需要执行一个 gopark，把 goroutine 和线程解绑，让 goroutine 进入 sendq 的等待队列。之后在 chanrecv 或 chanclose 的时候，检查等待队列，把 goroutine 从等待队列弹出，再用 goready 把它唤醒，并且 close 操作会把所有 goroutine 唤醒。Receiver 流程和 Sender 是相对的，代码都非常对称，就不逐一赘述。</p>
+<p>基于以上第三点，这里总结一下与 gopark 对应的 goready 位置：</p>
+<ul>
+<li>channel send → channel recv/close</li>
+<li>Lock → Unlock</li>
+<li>Read → Read Ready，epoll_wait 返回了该 fd 事件时</li>
+<li>Timer → checkTimers，检查到期唤醒</li>
+</ul>
+<p>具体找的方法，可以在 Goland 中双击 shfit 搜索 runtime 中 chan.go 源码，如图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291658456.png" alt="image-20210829165005782"></p>
+<p>当我们知道了“与 gopark 对应的 goready 位置”，在自己看 channel 源码的时候就能够抓大放小、有的放矢。</p>
+
+  
+  </div>
+</article>
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

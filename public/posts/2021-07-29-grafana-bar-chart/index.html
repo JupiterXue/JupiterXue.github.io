@@ -1,0 +1,1957 @@
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<!DOCTYPE html>
+<html lang="zh-CN">
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Grafana 条形图实践 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Grafana 条形图实践" />
+<meta property="og:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-29T09:56:39+08:00" />
+<meta property="article:modified_time" content="2021-07-29T09:56:39+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Grafana 条形图实践"/>
+<meta name="twitter:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+=======
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+=======
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Grafana 条形图实践 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Grafana 条形图实践" />
+<meta property="og:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-29T09:56:39+08:00" />
+<meta property="article:modified_time" content="2021-07-29T09:56:39+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Grafana 条形图实践"/>
+<meta name="twitter:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+=======
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" https://jupiterxue.github.io/posts/2021-07-28-python-replay/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="https://jupiterxue.github.io/posts/2021-08-02-learn-from-top-writer/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+=======
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#特点">特点</a></li>
+    <li><a href="#准备工作-采集器">准备工作-采集器</a></li>
+    <li><a href="#准备工作-定制化">准备工作-定制化</a></li>
+    <li><a href="#制作一个条形图">制作一个条形图</a>
+      <ul>
+        <li><a href="#版本">版本</a></li>
+        <li><a href="#看官网看官网看官网">看官网！看官网！看官网</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#1-匿名访问">1. 匿名访问</a></li>
+    <li><a href="#2-全屏化展示">2. 全屏化展示</a></li>
+    <li><a href="#3-支持-emoji-啦-">3. 支持 Emoji 啦 😄</a></li>
+  </ul>
+</nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        Grafana 条形图实践
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2021-07-29 09:56:39 &#43;0800 CST" itemprop="datePublished">2021-07-29</time>
+          
+        </div>
+        
+        
+        <div class="article-read-time">
+          <i class="far fa-clock"></i>
+          
+          6 minute read
+        </div>
+        
+        
+        
+        <div class="article-tag">
+            <i class="fas fa-tag"></i>
+            
+            
+            <a class="tag-link" href="/tags/grafana" rel="tag">Grafana</a>
+            
+             ,  
+            <a class="tag-link" href="/tags/promethues" rel="tag">Promethues</a>
+            
+             ,  
+            <a class="tag-link" href="/tags/python" rel="tag">Python</a>
+            
+        </div>
+        
+      </div>
+    </header>
+
+  
+
+    <div class="content" itemprop="articleBody" style="width: 120%;margin-left: -10%;">
+      <h1 id="前言">前言</h1>
+<p>可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。</p>
+<h2 id="特点">特点</h2>
+<p>让我们康康 Grafana 是怎样的：</p>
+<ol>
+<li>免费。Grafana 是一个<strong>开源</strong>的独立日志分析和监视工具。</li>
+<li>开发少可直接用。面向分析师和一般使用者，一般<strong>不需要做多少编码</strong>工作就能直接拿来分析数据、搭建可视化系统。</li>
+<li>界面炫酷。来看看官网的展示 <a href="https://grafana.com/grafana/">Grafana 官网概述</a></li>
+<li>丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。</li>
+<li>用户交互体验好。展示连续<strong>实时监控</strong>指标（如 CPU 负载，内存）、对数据提供自定义<strong>实时警报</strong>、提供基于数据库及其查询语法的<strong>命令列界面</strong>。</li>
+</ol>
+<h2 id="准备工作-采集器">准备工作-采集器</h2>
+<p>一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 <strong>promethues</strong> 来作为数据管理端。</p>
+<p>作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter，
+有了这些采集器就可以直接搭建起监控和警报</p>
+<p><strong><a href="https://grafana.com/grafana/dashboards/8919">服务器监控</a></strong>
+<img src="https://grafana.com/api/dashboards/8919/images/8260/image" alt="img"></p>
+<p><strong><a href="https://grafana.com/grafana/dashboards/249">进程监控</a></strong>
+<img src="https://grafana.com/api/dashboards/249/images/439/image" alt="img"></p>
+<p><strong><a href="https://grafana.com/grafana/dashboards/9965">服务监控</a></strong>
+<img src="https://grafana.com/api/dashboards/9965/images/6248/image" alt="img"></p>
+<p>最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。
+<img src="https://img2.baidu.com/it/u=1337695316,4281005371&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" alt="img"></p>
+<h2 id="准备工作-定制化">准备工作-定制化</h2>
+<p>有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。</p>
+<p>用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！</p>
+<h2 id="制作一个条形图">制作一个条形图</h2>
+<p>其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。</p>
+<p>而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：</p>
+<p><img src="https://grafana.com/static/img/docs/bar-chart-panel/bar-chart-example-v8-0.png" alt="img"></p>
+<p>今天来彻底搞定这个问题！！</p>
+<h3 id="版本">版本</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">工具</th>
+<th style="text-align:left">版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Docker</td>
+<td style="text-align:left">1.13.1</td>
+</tr>
+<tr>
+<td style="text-align:center">Go</td>
+<td style="text-align:left">1.16.5</td>
+</tr>
+<tr>
+<td style="text-align:center">Python</td>
+<td style="text-align:left">3.6.8</td>
+</tr>
+<tr>
+<td style="text-align:center">Promethues</td>
+<td style="text-align:left">2.28.1</td>
+</tr>
+<tr>
+<td style="text-align:center">Grafana</td>
+<td style="text-align:left">v8.1.0-30031pre（这个太重要了！！！）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="看官网看官网看官网">看官网！看官网！看官网</h3>
+<ol>
+<li>首先需要有表格化的数据，并且这些数据都是 number 类型，而不是 string，你的 Grafana Metrics browser 可以长这样：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#75715e"># data1</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>custom_market<span style="color:#f92672">{</span>browser_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Chrome&#34;</span><span style="color:#f92672">}</span> 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span style="color:#75715e"># data2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>custom_market<span style="color:#f92672">{</span>browser_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Safari&#34;</span><span style="color:#f92672">}</span> 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span style="color:#75715e"># data3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span>custom_market<span style="color:#f92672">{</span>browser_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Edge&#34;</span><span style="color:#f92672">}</span> 
+</code></pre></div><ol start="2">
+<li>Format 格式都是 Table，Instant 瞬间值都要打开。最终你获得了像这样的表数据（打开 Tabel View 可以看到）</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">浏览器</th>
+<th style="text-align:center">市场占比</th>
+<th style="text-align:center">CPU占用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Chrome</td>
+<td style="text-align:center">65.88</td>
+<td style="text-align:center">5%</td>
+</tr>
+<tr>
+<td style="text-align:center">Safari</td>
+<td style="text-align:center">18.50</td>
+<td style="text-align:center">3%</td>
+</tr>
+<tr>
+<td style="text-align:center">Edge</td>
+<td style="text-align:center">3.29</td>
+<td style="text-align:center">3.4%</td>
+</tr>
+</tbody>
+</table>
+<ol start="3">
+<li>
+<p>在 Transform 中转换展示方式。选择 Concatenate fields 再选择 → Copy frame name to field name</p>
+</li>
+<li>
+<p>在 Transform 中选择需要展示的数据。选择 Filter by name，点选你需要展示的数据</p>
+</li>
+<li>
+<p>最后，还是在 Transform 中重命名字段。选择 Organize fields，将英文转化为中文吧（如果你需要的话）。</p>
+</li>
+</ol>
+<p>完美收工！就得到了上图的右边部分显示的相同样式。</p>
+<p><strong>参考链接</strong></p>
+<p>[1] <a href="https://grafana.com/docs/grafana/latest/panels/visualizations/bar-chart/">官网：Bar chart</a></p>
+<p>[2] <a href="https://chartio.com/learn/charts/bar-chart-complete-guide/">A Complete Guide to Bar Charts</a></p>
+<p>[3] <a href="https://chartio.com/learn/charts/stacked-bar-chart-complete-guide/">A Complete Guide to Stacked Bar Charts</a></p>
+<p>[4] <a href="https://cdn2.hubspot.net/hubfs/392937/How-To-Choose-The-Right-Data-Visualization.pdf">《How to Choose the Right Data Visualization》</a></p>
+<h1 id="其他补充">其他补充</h1>
+<h2 id="1-匿名访问">1. 匿名访问</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>docker run 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    -itd --name grafana -p 3000:3000 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>    -e <span style="color:#e6db74">&#34;GF_AUTH_PROXY_ENABLED=true&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>    -e <span style="color:#e6db74">&#34;GF_AUTH_ANONYMOUS_ENABLED=true&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>    -e <span style="color:#e6db74">&#34;GF_SECURITY_ALLOW_EMBEDDING=true&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>    grafana/grafana
+</code></pre></div><p>这里解释一下：GF_SECURITY_ALLOW_EMBEDDING,用于网页嵌套的。如果需要在 iframe 中嵌套 Grafana，那么把这个变量设置为true；</p>
+<h2 id="2-全屏化展示">2. 全屏化展示</h2>
+<p>想让 Grafana 分享的面板全屏化，在分享的 URL 后面跟上</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>&amp;kiosk<span style="color:#f92672">=</span>true
+</code></pre></div><p>再加上按钮 <strong>F11</strong>，食用效果更佳。</p>
+<h2 id="3-支持-emoji-啦-">3. 支持 Emoji 啦 😄</h2>
+<p>虽然 Grafana 的显示都是文本不能显示图片 🤔，但是支持 emoji ！！！✌</p>
+<p>[1] <a href="http://emojihomepage.com/">emoji 点击复制版</a> 👈</p>
+<p>[2] <a href="https://unicode.org/emoji/charts/full-emoji-list.html">emoji 大全版</a> 🔮</p>
+<h1 id="结语">结语</h1>
+<p>今天关于 Grafana 的分享就到这里结束啦，如果你感兴趣，欢迎联系我 🤙</p>
+
+    </div>
+  </article>
+  
+
+
+  
+  
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">主页</a></li>
+         
+          <li><a href="/posts">文章</a></li>
+         
+          <li><a href="/tags">归档</a></li>
+         
+          <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#特点">特点</a></li>
+    <li><a href="#准备工作-采集器">准备工作-采集器</a></li>
+    <li><a href="#准备工作-定制化">准备工作-定制化</a></li>
+    <li><a href="#制作一个条形图">制作一个条形图</a>
+      <ul>
+        <li><a href="#版本">版本</a></li>
+        <li><a href="#看官网看官网看官网">看官网！看官网！看官网</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#1-匿名访问">1. 匿名访问</a></li>
+    <li><a href="#2-全屏化展示">2. 全屏化展示</a></li>
+    <li><a href="#3-支持-emoji-啦-">3. 支持 Emoji 啦 😄</a></li>
+  </ul>
+</nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+=======
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+
+
+
+</html>
+=======
+<!DOCTYPE html>
+<html lang="zh-CN">
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Grafana 条形图实践 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Grafana 条形图实践" />
+<meta property="og:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-29T09:56:39+08:00" />
+<meta property="article:modified_time" content="2021-07-29T09:56:39+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Grafana 条形图实践"/>
+<meta name="twitter:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+=======
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+=======
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Grafana 条形图实践 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Grafana 条形图实践" />
+<meta property="og:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-29T09:56:39+08:00" />
+<meta property="article:modified_time" content="2021-07-29T09:56:39+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Grafana 条形图实践"/>
+<meta name="twitter:description" content="前言 可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。
+特点 让我们康康 Grafana 是怎样的：
+ 免费。Grafana 是一个开源的独立日志分析和监视工具。 开发少可直接用。面向分析师和一般使用者，一般不需要做多少编码工作就能直接拿来分析数据、搭建可视化系统。 界面炫酷。来看看官网的展示 Grafana 官网概述 丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。 用户交互体验好。展示连续实时监控指标（如 CPU 负载，内存）、对数据提供自定义实时警报、提供基于数据库及其查询语法的命令列界面。  准备工作-采集器 一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 promethues 来作为数据管理端。
+作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter， 有了这些采集器就可以直接搭建起监控和警报
+服务器监控 进程监控 服务监控 最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。 准备工作-定制化 有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。
+用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！
+制作一个条形图 其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。
+而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：
+今天来彻底搞定这个问题！！
+版本    工具 版本     Docker 1.13.1   Go 1."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+=======
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" https://jupiterxue.github.io/posts/2021-07-28-python-replay/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="https://jupiterxue.github.io/posts/2021-08-02-learn-from-top-writer/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+=======
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#特点">特点</a></li>
+    <li><a href="#准备工作-采集器">准备工作-采集器</a></li>
+    <li><a href="#准备工作-定制化">准备工作-定制化</a></li>
+    <li><a href="#制作一个条形图">制作一个条形图</a>
+      <ul>
+        <li><a href="#版本">版本</a></li>
+        <li><a href="#看官网看官网看官网">看官网！看官网！看官网</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#1-匿名访问">1. 匿名访问</a></li>
+    <li><a href="#2-全屏化展示">2. 全屏化展示</a></li>
+    <li><a href="#3-支持-emoji-啦-">3. 支持 Emoji 啦 😄</a></li>
+  </ul>
+</nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        Grafana 条形图实践
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2021-07-29 09:56:39 &#43;0800 CST" itemprop="datePublished">2021-07-29</time>
+          
+        </div>
+        
+        
+        <div class="article-read-time">
+          <i class="far fa-clock"></i>
+          
+          6 minute read
+        </div>
+        
+        
+        
+        <div class="article-tag">
+            <i class="fas fa-tag"></i>
+            
+            
+            <a class="tag-link" href="/tags/grafana" rel="tag">Grafana</a>
+            
+             ,  
+            <a class="tag-link" href="/tags/promethues" rel="tag">Promethues</a>
+            
+             ,  
+            <a class="tag-link" href="/tags/python" rel="tag">Python</a>
+            
+        </div>
+        
+      </div>
+    </header>
+
+  
+
+    <div class="content" itemprop="articleBody" style="width: 120%;margin-left: -10%;">
+      <h1 id="前言">前言</h1>
+<p>可视化平台有很多，最重要的是选择符合业务需求的方案，费用低、学习曲线低、易于上手、集成性好这些都是加分项。众望所归，我选择了 Grafana。</p>
+<h2 id="特点">特点</h2>
+<p>让我们康康 Grafana 是怎样的：</p>
+<ol>
+<li>免费。Grafana 是一个<strong>开源</strong>的独立日志分析和监视工具。</li>
+<li>开发少可直接用。面向分析师和一般使用者，一般<strong>不需要做多少编码</strong>工作就能直接拿来分析数据、搭建可视化系统。</li>
+<li>界面炫酷。来看看官网的展示 <a href="https://grafana.com/grafana/">Grafana 官网概述</a></li>
+<li>丰富集成。Grafana 是跨平台工具，它提供了与各种平台和数据库的集成，持 InfluxDB，AWS，MySQL，PostgreSQL 等。</li>
+<li>用户交互体验好。展示连续<strong>实时监控</strong>指标（如 CPU 负载，内存）、对数据提供自定义<strong>实时警报</strong>、提供基于数据库及其查询语法的<strong>命令列界面</strong>。</li>
+</ol>
+<h2 id="准备工作-采集器">准备工作-采集器</h2>
+<p>一个可视化平台，重要的是有数据来做支撑，像上面所说的数据库。本文采取具有灵活查询和实时报警构建的时序数据库 <strong>promethues</strong> 来作为数据管理端。</p>
+<p>作为圣火的传人，promethues 有着各种采集器小弟，如服务器资源采集器 node-exporter、进程资源采集器 process-exporter、服务资源采集器 blackbox-exporter，
+有了这些采集器就可以直接搭建起监控和警报</p>
+<p><strong><a href="https://grafana.com/grafana/dashboards/8919">服务器监控</a></strong>
+<img src="https://grafana.com/api/dashboards/8919/images/8260/image" alt="img"></p>
+<p><strong><a href="https://grafana.com/grafana/dashboards/249">进程监控</a></strong>
+<img src="https://grafana.com/api/dashboards/249/images/439/image" alt="img"></p>
+<p><strong><a href="https://grafana.com/grafana/dashboards/9965">服务监控</a></strong>
+<img src="https://grafana.com/api/dashboards/9965/images/6248/image" alt="img"></p>
+<p>最后再配有 docker 微服务，你的监控和警报平台就能够一键部署起来了。
+<img src="https://img2.baidu.com/it/u=1337695316,4281005371&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" alt="img"></p>
+<h2 id="准备工作-定制化">准备工作-定制化</h2>
+<p>有了各种采集器，其实能够满足大部分通用监控的需求，但往往我们的业务是不一样的，那么就需要进行定制。</p>
+<p>用到了胶水语言 Python 在 promethues 的模块 promethues_client，就能开始定制了！</p>
+<h2 id="制作一个条形图">制作一个条形图</h2>
+<p>其实这个标题，我最先想取 “fuck the bar chart”，其他定制化的数据，表格、饼图、折线图都是能够在粗略熟悉 Grafana 后可以自己上手做的。</p>
+<p>而这个条形图困扰了我整整一周的时间，各种找插件、换版本、调格式、选展示方式，都没有达到理想效果：</p>
+<p><img src="https://grafana.com/static/img/docs/bar-chart-panel/bar-chart-example-v8-0.png" alt="img"></p>
+<p>今天来彻底搞定这个问题！！</p>
+<h3 id="版本">版本</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">工具</th>
+<th style="text-align:left">版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Docker</td>
+<td style="text-align:left">1.13.1</td>
+</tr>
+<tr>
+<td style="text-align:center">Go</td>
+<td style="text-align:left">1.16.5</td>
+</tr>
+<tr>
+<td style="text-align:center">Python</td>
+<td style="text-align:left">3.6.8</td>
+</tr>
+<tr>
+<td style="text-align:center">Promethues</td>
+<td style="text-align:left">2.28.1</td>
+</tr>
+<tr>
+<td style="text-align:center">Grafana</td>
+<td style="text-align:left">v8.1.0-30031pre（这个太重要了！！！）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="看官网看官网看官网">看官网！看官网！看官网</h3>
+<ol>
+<li>首先需要有表格化的数据，并且这些数据都是 number 类型，而不是 string，你的 Grafana Metrics browser 可以长这样：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#75715e"># data1</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>custom_market<span style="color:#f92672">{</span>browser_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Chrome&#34;</span><span style="color:#f92672">}</span> 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span style="color:#75715e"># data2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>custom_market<span style="color:#f92672">{</span>browser_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Safari&#34;</span><span style="color:#f92672">}</span> 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span style="color:#75715e"># data3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span>custom_market<span style="color:#f92672">{</span>browser_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Edge&#34;</span><span style="color:#f92672">}</span> 
+</code></pre></div><ol start="2">
+<li>Format 格式都是 Table，Instant 瞬间值都要打开。最终你获得了像这样的表数据（打开 Tabel View 可以看到）</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">浏览器</th>
+<th style="text-align:center">市场占比</th>
+<th style="text-align:center">CPU占用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Chrome</td>
+<td style="text-align:center">65.88</td>
+<td style="text-align:center">5%</td>
+</tr>
+<tr>
+<td style="text-align:center">Safari</td>
+<td style="text-align:center">18.50</td>
+<td style="text-align:center">3%</td>
+</tr>
+<tr>
+<td style="text-align:center">Edge</td>
+<td style="text-align:center">3.29</td>
+<td style="text-align:center">3.4%</td>
+</tr>
+</tbody>
+</table>
+<ol start="3">
+<li>
+<p>在 Transform 中转换展示方式。选择 Concatenate fields 再选择 → Copy frame name to field name</p>
+</li>
+<li>
+<p>在 Transform 中选择需要展示的数据。选择 Filter by name，点选你需要展示的数据</p>
+</li>
+<li>
+<p>最后，还是在 Transform 中重命名字段。选择 Organize fields，将英文转化为中文吧（如果你需要的话）。</p>
+</li>
+</ol>
+<p>完美收工！就得到了上图的右边部分显示的相同样式。</p>
+<p><strong>参考链接</strong></p>
+<p>[1] <a href="https://grafana.com/docs/grafana/latest/panels/visualizations/bar-chart/">官网：Bar chart</a></p>
+<p>[2] <a href="https://chartio.com/learn/charts/bar-chart-complete-guide/">A Complete Guide to Bar Charts</a></p>
+<p>[3] <a href="https://chartio.com/learn/charts/stacked-bar-chart-complete-guide/">A Complete Guide to Stacked Bar Charts</a></p>
+<p>[4] <a href="https://cdn2.hubspot.net/hubfs/392937/How-To-Choose-The-Right-Data-Visualization.pdf">《How to Choose the Right Data Visualization》</a></p>
+<h1 id="其他补充">其他补充</h1>
+<h2 id="1-匿名访问">1. 匿名访问</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>docker run 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    -itd --name grafana -p 3000:3000 
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>    -e <span style="color:#e6db74">&#34;GF_AUTH_PROXY_ENABLED=true&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>    -e <span style="color:#e6db74">&#34;GF_AUTH_ANONYMOUS_ENABLED=true&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>    -e <span style="color:#e6db74">&#34;GF_SECURITY_ALLOW_EMBEDDING=true&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>    grafana/grafana
+</code></pre></div><p>这里解释一下：GF_SECURITY_ALLOW_EMBEDDING,用于网页嵌套的。如果需要在 iframe 中嵌套 Grafana，那么把这个变量设置为true；</p>
+<h2 id="2-全屏化展示">2. 全屏化展示</h2>
+<p>想让 Grafana 分享的面板全屏化，在分享的 URL 后面跟上</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span>&amp;kiosk<span style="color:#f92672">=</span>true
+</code></pre></div><p>再加上按钮 <strong>F11</strong>，食用效果更佳。</p>
+<h2 id="3-支持-emoji-啦-">3. 支持 Emoji 啦 😄</h2>
+<p>虽然 Grafana 的显示都是文本不能显示图片 🤔，但是支持 emoji ！！！✌</p>
+<p>[1] <a href="http://emojihomepage.com/">emoji 点击复制版</a> 👈</p>
+<p>[2] <a href="https://unicode.org/emoji/charts/full-emoji-list.html">emoji 大全版</a> 🔮</p>
+<h1 id="结语">结语</h1>
+<p>今天关于 Grafana 的分享就到这里结束啦，如果你感兴趣，欢迎联系我 🤙</p>
+
+    </div>
+  </article>
+  
+
+
+  
+  
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">主页</a></li>
+         
+          <li><a href="/posts">文章</a></li>
+         
+          <li><a href="/tags">归档</a></li>
+         
+          <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#特点">特点</a></li>
+    <li><a href="#准备工作-采集器">准备工作-采集器</a></li>
+    <li><a href="#准备工作-定制化">准备工作-定制化</a></li>
+    <li><a href="#制作一个条形图">制作一个条形图</a>
+      <ul>
+        <li><a href="#版本">版本</a></li>
+        <li><a href="#看官网看官网看官网">看官网！看官网！看官网</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#1-匿名访问">1. 匿名访问</a></li>
+    <li><a href="#2-全屏化展示">2. 全屏化展示</a></li>
+    <li><a href="#3-支持-emoji-啦-">3. 支持 Emoji 啦 😄</a></li>
+  </ul>
+</nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+=======
+<ul>
+  
+  
+    
+  
+  
+
+  
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=Grafana%20%e6%9d%a1%e5%bd%a2%e5%9b%be%e5%ae%9e%e8%b7%b5&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-07-29-grafana-bar-chart%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/posts">文章</a></li>
+         
+        <li><a href="/tags">归档</a></li>
+         
+        <li><a href="/about">关于</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+
+
+
+</html>
+>>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
