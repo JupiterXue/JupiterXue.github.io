@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Python on 木夜星空的个人博客</title>
-    <link>https://jupiterxue.github.io/tags/Python/</link>
+    <link>https://jupiterxue.github.io/tags/python/</link>
     <description>Recent content in Python on 木夜星空的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Thu, 29 Jul 2021 09:56:39 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/Python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Jul 2021 09:56:39 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Grafana 条形图实践</title>
       <link>https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/</link>
