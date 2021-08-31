@@ -1,9 +1,9 @@
 echo 编译测试
 hugo
 if [ $? -ne 0 ]; then
-    echo failed
+    echo Failed !!!
 else
-    echo succeed
+    echo Successfully
 fi
 
 git add .
