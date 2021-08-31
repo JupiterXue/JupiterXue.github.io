@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-name: Deploy Hugo 
-
-on:
-  push:
-    branches:
-      [main] # master 更新触发
-
-jobs:
-  build-deploy:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: latest
-          extended: true
-
-
-      - name: Build 
-        run: hugo
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.PRESONAL_TOKEN }} # cicd_token 这里新建一个 https://github.com/settings/tokens
-          PUBLISH_BRANCH: gh-pages  # 推送到当前 gh-pages 分支
-          PUBLISH_DIR: ./public  # hugo 生成到 public 作为跟目录
-          commit_message: ${{ github.event.head_commit.message }}
-=======
 name: Deploy Hugo 
 
 on:
@@ -49,7 +17,6 @@ jobs:
           hugo-version: latest
           extended: true
 
-
       - name: Build 
         run: hugo
 
@@ -60,4 +27,3 @@ jobs:
           PUBLISH_BRANCH: gh-pages  # 推送到当前 gh-pages 分支
           PUBLISH_DIR: ./public  # hugo 生成到 public 作为跟目录
           commit_message: ${{ github.event.head_commit.message }}
->>>>>>> 0cae884533b7a5e0cf3eb8be746627712e680e3e
