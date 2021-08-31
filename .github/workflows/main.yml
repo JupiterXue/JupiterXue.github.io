@@ -1,4 +1,3 @@
-
 name: Deploy Hugo 
 
 on:
@@ -17,7 +16,6 @@ jobs:
         with:
           hugo-version: latest
           extended: true
-
 
       - name: Build 
         run: hugo
