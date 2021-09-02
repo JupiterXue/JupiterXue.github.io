@@ -1,3 +1,5 @@
+rm -rf ./public
+
 echo 编译测试
 hugo
 if [ $? -ne 0 ]; then
