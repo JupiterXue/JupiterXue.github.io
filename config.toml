@@ -16,17 +16,17 @@ url = "/"
 weight = 1
 
 [[menu.main]]
-name = "文章"
+name = "时间轴"
 url = "/posts"
 weight = 2
 
 [[menu.main]]
-name = "归档"
+name = "分类"
 url = "/tags"
 weight = 3
 
 [[menu.main]]
-name = "关于"
+name = "关于我"
 url = "/about"
 weight = 4
 
