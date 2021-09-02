@@ -7,13 +7,13 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Day12 Parser_3 | 木夜星空的个人博客</title>
+  <title> Go 翻山越岭——编译器应用（3） | 木夜星空的个人博客</title>
   <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day12-parser_3/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="Day12 Parser_3" />
+  <meta property="og:title" content="Go 翻山越岭——编译器应用（3）" />
 <meta property="og:description" content="上期说到两种复杂的 Parser场景，通过借鉴业界成熟的技术方案，能够大大节约我们自己的时间。今天再来谈谈最后一个 Parser 应用场景和 Parser 总结。
 客户定制需求  场景8，我们公司是做 ToB 的服务，我们的软件会先编译完再卖出去，比如我们公司是用 Go 开发的，假如我们是卖 gRPC 服务的，而用户想要在此基础上做一些定制，他们也有自己的开发人员，比如说实现内部的 RPC 协议。用户想定制，而我们想不给他们源代码并且能够支持他们的定制需求，这就需要些技术手段来解决。（特别是 Go 语言的生态还不是很完善，并且每个方案都有自己的缺陷）
  我们在给客户交接系统的时候，客户想要自己的 RD去做些开发工作（一般指研发工程师）。而我们知道，Go 程序需要编译成二进制文件才能使用，因此让 Go 模块去做热更新是非常难的。为了满足这样的需求，我们应该怎样来做扩展呢？业界目前有四种方案：
@@ -34,7 +34,7 @@ Parser 总结 OK，到目前为止，我们了解了编译和反编译工具去�
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Day12 Parser_3"/>
+<meta name="twitter:title" content="Go 翻山越岭——编译器应用（3）"/>
 <meta name="twitter:description" content="上期说到两种复杂的 Parser场景，通过借鉴业界成熟的技术方案，能够大大节约我们自己的时间。今天再来谈谈最后一个 Parser 应用场景和 Parser 总结。
 客户定制需求  场景8，我们公司是做 ToB 的服务，我们的软件会先编译完再卖出去，比如我们公司是用 Go 开发的，假如我们是卖 gRPC 服务的，而用户想要在此基础上做一些定制，他们也有自己的开发人员，比如说实现内部的 RPC 协议。用户想定制，而我们想不给他们源代码并且能够支持他们的定制需求，这就需要些技术手段来解决。（特别是 Go 语言的生态还不是很完善，并且每个方案都有自己的缺陷）
  我们在给客户交接系统的时候，客户想要自己的 RD去做些开发工作（一般指研发工程师）。而我们知道，Go 程序需要编译成二进制文件才能使用，因此让 Go 模块去做热更新是非常难的。为了满足这样的需求，我们应该怎样来做扩展呢？业界目前有四种方案：

@@ -7,13 +7,13 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Go 翻山越岭——反编译2 | 木夜星空的个人博客</title>
+  <title> Go 翻山越岭——反编译 | 木夜星空的个人博客</title>
   <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day8-disassembly/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="Go 翻山越岭——反编译2" />
+  <meta property="og:title" content="Go 翻山越岭——反编译" />
 <meta property="og:description" content="Go 语言常用的两个查看汇编代码的工具是 go tool compile 和 go tool objdump。上期文章说到通过 go tool compile -S 可以查看实现相同功能，两个不同的代码在性能上有什么区别，可从反编译出的汇编代码看出，二者的性能一样。今天再来聊一聊另外一个工具的使用。
  场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
  在解决这种类似问题之前，我们其实可以查阅官方的资料 spec，国外源地址：https://golang.org/ref/spec ，国内看这个：https://golang.google.cn/ref/spec
@@ -31,7 +31,7 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Go 翻山越岭——反编译2"/>
+<meta name="twitter:title" content="Go 翻山越岭——反编译"/>
 <meta name="twitter:description" content="Go 语言常用的两个查看汇编代码的工具是 go tool compile 和 go tool objdump。上期文章说到通过 go tool compile -S 可以查看实现相同功能，两个不同的代码在性能上有什么区别，可从反编译出的汇编代码看出，二者的性能一样。今天再来聊一聊另外一个工具的使用。
  场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
  在解决这种类似问题之前，我们其实可以查阅官方的资料 spec，国外源地址：https://golang.org/ref/spec ，国内看这个：https://golang.google.cn/ref/spec
