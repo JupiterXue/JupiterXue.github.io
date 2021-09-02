@@ -7,13 +7,13 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Github_action 和 Review_dog | 木夜星空的个人博客</title>
+  <title> 两个自动化管理工具 | 木夜星空的个人博客</title>
   <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-08-25-github_action-and-review_dog/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="Github_action 和 Review_dog" />
+  <meta property="og:title" content="两个自动化管理工具" />
 <meta property="og:description" content="最近在写微信公众号的同时，也在同步开通 Hugo 搭建的个人博客。在曹大的课上了解到了两个开源工具：Github Action 和 Reviewdog，都是和 CI/CD 自动化相关的。而我最早是在 B 站一个 UP 主“遇见狂神说” 的 10 分钟短视频讲解中了解到的 CI/CD。惊奇地发现 Hugo 搭建的博客特别适合用到这两个工具。于是怀着特别的兴趣和好奇，去了解了一下。今天仅简单地来谈谈这两个工具的相关介绍。
 CI/CD 首先，什么是 CI/CD？其实说的是三件事情：持续集成 (Continuous Integration, CI)、持续交付(Continuous Delivery)、持续部署 (Continuous Deployment)。其实这里单独一件事拎出来做也能做个不错的项目，不过三者搭配食用，风味更佳。
 持续集成 (Continuous Integration, CI)，通常是指在程序员合并 merge 代码的时候不断对代码变更进行验证。一般用于集成时跑单元测试或者接口测试，如果未通过，那么工作流会用社交软件或者邮件通知相应的开发者。更重要的是，CI 流程中的测试代码既保证了新代码不会破坏老的业务功能，还保证新代码能编译通过。预期输入应该能够得到预期输出，如不符合的结果要报错飘红。
@@ -36,7 +36,7 @@ https://linux.cn/article-9926-1.html" />
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Github_action 和 Review_dog"/>
+<meta name="twitter:title" content="两个自动化管理工具"/>
 <meta name="twitter:description" content="最近在写微信公众号的同时，也在同步开通 Hugo 搭建的个人博客。在曹大的课上了解到了两个开源工具：Github Action 和 Reviewdog，都是和 CI/CD 自动化相关的。而我最早是在 B 站一个 UP 主“遇见狂神说” 的 10 分钟短视频讲解中了解到的 CI/CD。惊奇地发现 Hugo 搭建的博客特别适合用到这两个工具。于是怀着特别的兴趣和好奇，去了解了一下。今天仅简单地来谈谈这两个工具的相关介绍。
 CI/CD 首先，什么是 CI/CD？其实说的是三件事情：持续集成 (Continuous Integration, CI)、持续交付(Continuous Delivery)、持续部署 (Continuous Deployment)。其实这里单独一件事拎出来做也能做个不错的项目，不过三者搭配食用，风味更佳。
 持续集成 (Continuous Integration, CI)，通常是指在程序员合并 merge 代码的时候不断对代码变更进行验证。一般用于集成时跑单元测试或者接口测试，如果未通过，那么工作流会用社交软件或者邮件通知相应的开发者。更重要的是，CI 流程中的测试代码既保证了新代码不会破坏老的业务功能，还保证新代码能编译通过。预期输入应该能够得到预期输出，如不符合的结果要报错飘红。
@@ -156,21 +156,21 @@ https://linux.cn/article-9926-1.html"/>
 
   
   <li>
-    <a class="icon" href="mailto:?subject=Github_action%20%e5%92%8c%20Review_dog&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=%e4%b8%a4%e4%b8%aa%e8%87%aa%e5%8a%a8%e5%8c%96%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="Github">
         <i class="fab fa-github " aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Github_action%20%e5%92%8c%20Review_dog&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=%e4%b8%a4%e4%b8%aa%e8%87%aa%e5%8a%a8%e5%8c%96%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="QQ">
       <i class="fab fa-qq " aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Github_action%20%e5%92%8c%20Review_dog&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=%e4%b8%a4%e4%b8%aa%e8%87%aa%e5%8a%a8%e5%8c%96%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="微信">
       <i class="fab fa-weixin " aria-hidden="true"></i>
     </a>
   </li>
@@ -254,7 +254,7 @@ https://linux.cn/article-9926-1.html"/>
   <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
     <header>
       <h1 class="posttitle" itemprop="name headline">
-        Github_action 和 Review_dog
+        两个自动化管理工具
       </h1>
       <div class="meta">
         
@@ -363,21 +363,21 @@ https://linux.cn/article-9926-1.html"/>
 
   
   <li>
-    <a class="icon" href="mailto:?subject=Github_action%20%e5%92%8c%20Review_dog&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=%e4%b8%a4%e4%b8%aa%e8%87%aa%e5%8a%a8%e5%8c%96%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="Github">
         <i class="fab fa-github fa-lg" aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Github_action%20%e5%92%8c%20Review_dog&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=%e4%b8%a4%e4%b8%aa%e8%87%aa%e5%8a%a8%e5%8c%96%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="QQ">
       <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=Github_action%20%e5%92%8c%20Review_dog&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=%e4%b8%a4%e4%b8%aa%e8%87%aa%e5%8a%a8%e5%8c%96%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-08-25-github_action-and-review_dog%2f" aria-label="微信">
       <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
     </a>
   </li>
