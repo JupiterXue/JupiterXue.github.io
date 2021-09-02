@@ -9,16 +9,21 @@
     <copyright>JupiterXue</copyright>
     <lastBuildDate>Mon, 30 Aug 2021 23:13:54 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day14 Data Structure_2</title>
+      <title>Go 翻山越岭——内置数据结构（2）</title>
       <link>https://jupiterxue.github.io/go-to-top/day14-data-structure_2/</link>
       <pubDate>Mon, 30 Aug 2021 23:13:54 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day14-data-structure_2/</guid>
-      <description></description>
+      <description>上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer 和 Map。
+Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。
+从这张图可以看到**，最早的 Timer 就是一个四叉堆**。我们平时写算法的时候二叉堆见得比较多，那是不是理解这个更困难？不是的，我们着重看 Timer 的结构和演进。像最早的 time.Sleep 或者 time.After 这两个函数，实际上我们创建了两个 Timer 类，这个 Timer 会最终加到我们的 runtime 维护的四叉堆里面。这个四叉堆其实是很好理解的，其实是有个基准的。
+堆顶要放什么元素，元素如何排列？都是以触发时间为准。也就是说离当前时间最近的，一定是在堆顶的。如果来了一个新的 Timer ，它是在这个时间之后，它就会继续往堆下面走。如果比堆顶小就会涉及到对当前四叉堆的调整了，这个和写二叉堆调整算法很类似。
+最老的 Timer 实现全局只有一个四叉堆，这个四叉堆专门启用一个叫做 timerproc 的 goroutine。这个 goroutine 的逻辑也不复杂，就是用一个 for 循环。这个 for 循环会不断地检查堆顶元素是不是已经到期了，如果到期了就会触发，在触发的同时会逐渐地调整堆，直到把所有需要触发的 Timer 都触发完毕为止，继续去休眠。
+但这种单一的四叉堆会有一个问题。当前 Go 程序所有的 goroutine 在执行 Timer 相关操作的时候都需要去抢占操作这个堆的全局锁，而其实这个锁都是写锁。如果并发量很高，那么就会导致程序整体的吞吐量下降。全局锁对于任何程序来说，性能影响都比较大，这个问题导致了 go 程序在多核处理器上性能不佳，有人专门提了一个 issues：https://github.com/golang/go/issues/15133。（就 python 来说， 虽然 python 支持多进程，也支持多线程。但因为 GIL 全局解释器锁的存在，python 的多线程程序在同一时间只有一个线程在运行。所以多线程 Python 程序只是并发，而不是并行）</description>
     </item>
     
     <item>
-      <title>2021 08 29 Two Meal</title>
+      <title>自己做菜自己吃，两个小汤菜</title>
       <link>https://jupiterxue.github.io/posts/2021-08-29-two-meal/</link>
       <pubDate>Sun, 29 Aug 2021 18:24:02 +0800</pubDate>
       
@@ -44,7 +49,7 @@
     </item>
     
     <item>
-      <title>2021 08 29 Minimalism</title>
+      <title>对于&#39;极简主义&#39;的一点看法</title>
       <link>https://jupiterxue.github.io/posts/2021-08-29-minimalism/</link>
       <pubDate>Sun, 29 Aug 2021 18:21:22 +0800</pubDate>
       
@@ -69,7 +74,7 @@ https://www.thepaper.cn/newsDetail_forward_7120725</description>
     </item>
     
     <item>
-      <title>Day13 Data Structure</title>
+      <title>Go 翻山越岭——内置数据结构（1）</title>
       <link>https://jupiterxue.github.io/go-to-top/day13-data-structure/</link>
       <pubDate>Sun, 29 Aug 2021 14:47:52 +0800</pubDate>
       
@@ -87,7 +92,7 @@ Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语�
     </item>
     
     <item>
-      <title>Day12 Parser_3</title>
+      <title>Go 翻山越岭——编译器应用（3）</title>
       <link>https://jupiterxue.github.io/go-to-top/day12-parser_3/</link>
       <pubDate>Sat, 28 Aug 2021 15:14:37 +0800</pubDate>
       
@@ -162,7 +167,7 @@ https://linux.cn/article-9926-1.html</description>
     </item>
     
     <item>
-      <title>Go 翻山越岭——反编译2</title>
+      <title>Go 翻山越岭——反编译</title>
       <link>https://jupiterxue.github.io/go-to-top/day8-disassembly/</link>
       <pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate>
       
@@ -392,7 +397,17 @@ Go 调试工具：readelf
       <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day2-scheduler/</guid>
-      <description>1package main 2 3// sd1 4 5func main() { 6 // test 7} </description>
+      <description>上回说到 Go 的调度流程本质上是⼀个⽣产-消费流程，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。
+当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&amp;gt; runqgrab 这个流程。
+当 goroutine 处于消费端时，执行的是一个循环：runtime.schedule → execute → runtime.gogo → runtime.goexit → runtime.schedule（回到原点），并且最终 P.schedtick = 0。
+初学 scheduler 对于以上的流程感受是比较浅的，再来看看这些符号所代表的含义，就能更好地理解了：
+ G: goroutine，计算任务。由需要执行的代码和其上下文组成。（上下文包括：当前代码位置，栈顶、栈底地址，状态等）
+  M: machine，系统线程，执行实体，想要在 CPU 上来执行代码，必须有线程，与 C 语言中的线程相同，通过系统调用 clone 来创建。
+  P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必须陷入休眠（后台监控线程除外），你也可以将其理解为一种 token，有了这个 token，才有在物理 CPU 核心上执行的权利。
+ 上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
+让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）
+案例1：
+// channel send: var ch = make(chan int) ch &amp;lt;- 1 // channel recv: var ch = make(chan int) &amp;lt;- ch 案例2：</description>
     </item>
     
     <item>
@@ -497,7 +512,10 @@ Goroutine 消费过程
       <pubDate>Sat, 24 Jul 2021 17:51:42 +0000</pubDate>
       
       <guid>https://jupiterxue.github.io/about/</guid>
-      <description>Github: Jupiter</description>
+      <description>小公司后端研发，自我定位全栈工程师
+&amp;ndash;技能栈&amp;ndash; 语言：Golang、Python、JavaScript、Emacs Lisp 前端：Vue、Element-UI 后端：Spider、FastApi、 数据库：MySQL、Redis、ElasticSearch 运维：Docker 监控：Promethues、Grafana 大数据：Hadoop、Hive、Hbase
+Github 地址: Jupiter
+更多交流欢迎邮件：xfavor2top@gmail.com</description>
     </item>
     
     <item>

@@ -1,5 +1,5 @@
 ---
-title: "Day13 Data Structure"
+title: "Go 翻山越岭——内置数据结构（1）"
 date: 2021-08-29T14:47:52+08:00
 category: tech
 tags:
