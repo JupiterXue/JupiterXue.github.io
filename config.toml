@@ -75,8 +75,8 @@ engine = "utterances" # 评论引擎
 
 [params.utteranc]
 enable = true
-repo = "https://github.com/JupiterXue/BlogComment"
-issueTerm = "title"
+repo = "JupiterXue/BlogComment"
+issueTerm = "pathname"
 theme = "github-light"
 
 # the value of name should be an valid font awesome icon name (brands type)
