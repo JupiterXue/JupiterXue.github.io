@@ -16,25 +16,19 @@ url = "/"
 weight = 1
 
 [[menu.main]]
-name = "Go 语言系列"
-url = "/go-to-top"
+name = "文章"
+url = "/posts"
 weight = 2
 
-
 [[menu.main]]
-name = "杂谈"
-url = "/posts"
+name = "归档"
+url = "/tags"
 weight = 3
 
 [[menu.main]]
-name = "标签分类"
-url = "/tags"
-weight = 4
-
-[[menu.main]]
-name = "关于我"
+name = "关于"
 url = "/about"
-weight = 5
+weight = 4
 
 [markup]
 [markup.tableOfContents]
@@ -78,6 +72,12 @@ showReadTime = true # 显示阅读时间
 [params.comments]
 enabled = false # 显示评论
 engine = "disqus" # 评论引擎
+
+[params.utteranc]
+enable = true
+repo = "https://github.com/JupiterXue/BlogComment"
+issueTerm = "title"
+theme = "github-light"
 
 # the value of name should be an valid font awesome icon name (brands type)
 # https://fontawesome.com/icons?d=gallery&s=brands

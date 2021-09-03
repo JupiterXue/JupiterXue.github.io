@@ -1,5 +1,5 @@
 ---
-title: "Go 翻山越岭——内置数据结构（1）"
+title: "Day13 Data Structure"
 date: 2021-08-29T14:47:52+08:00
 category: tech
 tags:
@@ -123,3 +123,4 @@ func closechan(c *hchan) {
 
 
 当我们知道了“与 gopark 对应的 goready 位置”，在自己看 channel 源码的时候就能够抓大放小、有的放矢。
+

@@ -1,5 +1,5 @@
 ---
-title: "Go 翻山越岭——内置数据结构（2）"
+title: "Day14 Data Structure_2"
 date: 2021-08-30T23:13:54+08:00
 category: tech
 tags:
@@ -18,7 +18,7 @@ Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码
 
 
 
-
+![未命名文件 (1)](https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302359026.png)
 
 
 
@@ -42,7 +42,7 @@ Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码
 
 
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/MzRUv767TY179ScxuQLcGLTOMbhVoGxJWiajjzzzib2YUSN3VvHxk2c5fPLw0SUw7OKlPwv3LcIrfwwgeG65fjSg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![未命名文件 (2)](https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302358793.png)
 
 
 
@@ -57,22 +57,15 @@ Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码
 因此总结一下 Timer 1.14 的变化情况：
 
 - 调整：
-
-- - Timer headp 和 GMP 中的 P 绑定
+  - Timer headp 和 GMP 中的 P 绑定
   - 去除唤醒 goroutine：timerproc
-
 - 检查：
-
-- - 检查 timer 到期在特殊函数 checkTimer 中进行
+  - 检查 timer 到期在特殊函数 checkTimer 中进行
   - 检查 timer 操作移至调度循环中进行
-
 - 工作窃取：
-
-- - 在 work-stealing 中，会从其他 P 那里偷 timer
-
+  - 在 work-stealing 中，会从其他 P 那里偷 timer
 - 兜底：
-
-- - runtime.sysmon 中会为 timer 未被触发（timeSleepUntil）兜底，启动新线程
+  - runtime.sysmon 中会为 timer 未被触发（timeSleepUntil）兜底，启动新线程
 
 
 
@@ -80,12 +73,13 @@ Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码
 
 
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/MzRUv767TY179ScxuQLcGLTOMbhVoGxJzuANR3PJuTc7onrBhF60sy7zSly952HcxIH4FyQxbxCpBqIhZTj1DA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![image-20210830235814283](https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302358352.png)
 
 偷 timer
 
 
 
-
+![image-20210830235827727](https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302358770.png)
 
  runtime.sysmon 兜底
+
