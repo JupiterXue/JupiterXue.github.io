@@ -21,12 +21,12 @@ url = "/go-to-top"
 weight = 2
 
 [[menu.main]]
-name = "文章"
+name = "杂谈"
 url = "/posts"
 weight = 3
 
 [[menu.main]]
-name = "归档"
+name = "标签"
 url = "/tags"
 weight = 4
 
