@@ -102,13 +102,11 @@
       
         <li><a href="/">主页</a></li>
       
-        <li><a href="/go-to-top">Go 语言系列</a></li>
+        <li><a href="/posts">文章</a></li>
       
-        <li><a href="/posts">杂谈</a></li>
+        <li><a href="/tags">归档</a></li>
       
-        <li><a href="/tags">标签分类</a></li>
-      
-        <li><a href="/about">关于我</a></li>
+        <li><a href="/about">关于</a></li>
       
     </ul>
   </div>
@@ -137,7 +135,7 @@
 <p>上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？</p>
 <p>让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）</p>
 <p>案例1：</p>
-<pre><code>// channel send:
+<pre tabindex="0"><code>// channel send:
 var ch = make(chan int)
 ch &lt;- 1
 
@@ -145,7 +143,7 @@ ch &lt;- 1
 var ch = make(chan int)
 &lt;- ch
 </code></pre><p>案例2：</p>
-<pre><code>// net read
+<pre tabindex="0"><code>// net read
 var c net.Conn
 var buf = make([]byte, 1024)
 
@@ -159,7 +157,7 @@ var buf = []byte(&quot;hello&quot;)
 // send buffer full, write blocked
 n, err := c.Write(buf)
 </code></pre><p>案例3：</p>
-<pre><code>var (
+<pre tabindex="0"><code>var (
     ch1 = make(chan int)
     ch2 = make(chan int)
 )
@@ -172,7 +170,7 @@ select {
         println(&quot;ch2 ready&quot;)
 }
 </code></pre><p>案例4：</p>
-<pre><code>// common func
+<pre tabindex="0"><code>// common func
 time.Sleep(time.Hour)
 
 
@@ -203,7 +201,7 @@ l.Lock()
 <p>sys: syscall blocking</p>
 </blockquote>
 <p>一些 runtime 无法拦截的例子：</p>
-<pre><code>package main
+<pre tabindex="0"><code>package main
 
 /*
 #include &lt;stdio.h&gt;
@@ -249,13 +247,11 @@ import &quot;unsafe&quot;
          
         <li><a href="/">主页</a></li>
          
-        <li><a href="/go-to-top">Go 语言系列</a></li>
+        <li><a href="/posts">文章</a></li>
          
-        <li><a href="/posts">杂谈</a></li>
+        <li><a href="/tags">归档</a></li>
          
-        <li><a href="/tags">标签分类</a></li>
-         
-        <li><a href="/about">关于我</a></li>
+        <li><a href="/about">关于</a></li>
         
       </ul>
     </nav>

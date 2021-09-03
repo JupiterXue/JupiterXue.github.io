@@ -7,9 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Mon, 30 Aug 2021 23:13:54 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 02 Sep 2021 23:23:12 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Go 翻山越岭——内置数据结构（2）</title>
+      <title>Day15 Data Structure_3</title>
+      <link>https://jupiterxue.github.io/go-to-top/day15-data-structure_3/</link>
+      <pubDate>Thu, 02 Sep 2021 23:23:12 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day15-data-structure_3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Day14 Data Structure_2</title>
       <link>https://jupiterxue.github.io/go-to-top/day14-data-structure_2/</link>
       <pubDate>Mon, 30 Aug 2021 23:13:54 +0800</pubDate>
       
@@ -23,7 +32,7 @@ Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中
     </item>
     
     <item>
-      <title>Go 翻山越岭——内置数据结构（1）</title>
+      <title>Day13 Data Structure</title>
       <link>https://jupiterxue.github.io/go-to-top/day13-data-structure/</link>
       <pubDate>Sun, 29 Aug 2021 14:47:52 +0800</pubDate>
       

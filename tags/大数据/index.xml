@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>大数据 on 木夜星空的个人博客</title>
+    <link>https://jupiterxue.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/</link>
+    <description>Recent content in 大数据 on 木夜星空的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>JupiterXue</copyright>
+    <lastBuildDate>Thu, 02 Sep 2021 23:28:49 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>业界大数据备份，还看爱数</title>
+      <link>https://jupiterxue.github.io/posts/2021-09-02-bigdata-backup/</link>
+      <pubDate>Thu, 02 Sep 2021 23:28:49 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-09-02-bigdata-backup/</guid>
+      <description>随着进入信息时代，各行各业的数据都在爆炸性地增长，给人们带来便利的同时，也给人们对安全的担忧更胜一筹。目前，数据容灾备份领域呈现蓬勃发展，尤其在大数据软件灾备板块现实出了极大的市场潜力，比较知名和具有潜力的灾备公司有：爱数、精容数安、鼎甲科技。今天就来聊聊行业龙头“爱数”的大数据保护方案 Anyway。（图没有放，感兴趣可以看看参考资料）
+行情介绍 市场情况——大数据平台市场规模持续增长
+全球规模：4813.6亿 RMB
+中国大数据软硬件：677.3 亿 RMB
+中国大数据软件：92.2亿
+预计未来5年大数据平台市场平均增长率为 25%
+大数据分析业务，很重要，也是主要业务之一
+应用行业
+金融、医疗、电力、交通 等等各行各业
+风险
+一旦丢失，业务连续性无法得到保障！
+三个主要问题：
+  风险无法预测
+  物资无法调配
+  应急调度无法指挥
+  挑战与常见问题（各行各业）
+- PB 级数据，如何在有限的备份窗口内完成备份？
+- 长时间保留海量大数据备份副本，如何降低成本？
+- 如何确保备份数据的安全存储与合规保留？
+- 如何实现精准备份和异构版本兼容？
+爱数——AnyBackup 大数据平台保护方案 整个方案可以为不同大数据平台提供备份和恢复的能力，包括：Apache Hadoop、华为 Inside、CLOUDERA CDH、星环科技 TDH。
+在这些大数据平台下，爱数能够提供的备份能力：面向表级别粒度的备份恢复、数据一致性问题、基于 hdfs、hive 等不同组件来实现永久增量备份和多节点之间并发备份，还提供重复数据删除等基本能力。
+提供的恢复能力：表级粒度恢复，多并发恢复，任意时间点恢复，不同大数据平台之间异构的恢复能力，
+爱数还提供的独有能力：96 倍备份效率，90% 存储资源节省，数据安全存储和规范，面向不同的大数据平台、不同大数据组件提供全面保护
+具体说明-爱数的特点
+ 提升 96 倍以上备份效率  传统备份方案，全备数据量要备份 1PB，备份时间在 6-7 天。
+爱数完成全备后，后续都是增量备份，并且以 10T 为单位。在更短的备份窗口中完成全备
+节约 90%存储资源  通常在给用户做备份策略配置的时候，是保留一个月备份数据。其中会进行四次全备，每天实现增量备份。</description>
+    </item>
+    
+  </channel>
+</rss>
