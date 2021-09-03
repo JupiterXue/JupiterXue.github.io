@@ -71,7 +71,7 @@ showReadTime = true # 显示阅读时间
 
 [params.comments]
 enabled = true # 显示评论
-engine = "utteranc" # 评论引擎
+engine = "utterances" # 评论引擎
 
 [params.utteranc]
 enable = true
