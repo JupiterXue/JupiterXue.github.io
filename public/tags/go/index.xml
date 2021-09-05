@@ -7,14 +7,31 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Thu, 02 Sep 2021 23:23:12 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 05 Sep 2021 15:48:38 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day15 Data Structure_3</title>
+      <title>Go 翻山越岭——内置数据结构-Context</title>
+      <link>https://jupiterxue.github.io/go-to-top/day16-data-structure_4_context/</link>
+      <pubDate>Sun, 05 Sep 2021 15:48:38 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day16-data-structure_4_context/</guid>
+      <description>Go 语言在 1.16 版本之后加入了新的内置数据结构 Context，虽然在代码中使用都比较简单，但语言内部还是做了许多区分，今天来分析一下 Context。
+Context 虽然在使用 context 的时候，看起来都是 context.* 的结构，但 Go 语言内部做了这样一个区分：
+具体说明如下：
+ emptyCtx：所有 ctx 类型的根 valueCtx：主要为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成树形结构。 cancelCtx：取消程序的执行树 timerCtx：在 cancelCtx 上包了一层，支持基于时间的 cancel  这里有个例子
+1package main 2 3import ( 4 &amp;#34;context&amp;#34; 5 &amp;#34;fmt&amp;#34; 6) 7 8type orderID int 9 10func main() { 11 var x = context.TODO() 12 x = context.WithValue(x, orderID(1), &amp;#34;1234&amp;#34;) 13 x = context.</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——内置数据结构（3）</title>
       <link>https://jupiterxue.github.io/go-to-top/day15-data-structure_3/</link>
       <pubDate>Thu, 02 Sep 2021 23:23:12 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day15-data-structure_3/</guid>
-      <description></description>
+      <description>Map 有时能够返回一个值，有时候能够返回多个值，这是 Map 的特权语法。今天继续从底层角度来聊聊 Go 语言内置数据结构，Map。
+Map Map 中大量类似但又冗余的函数，原因之一便是没有泛型。
+1package main 2 3var m = make(map[int] int, 10) 4 5func main() { 6 v1 := m[1] 7 v2, ok := m[2] 8 println(v1, v2, ok) 9} 利用之前提到的工具 go tool objdump 能够获得反汇编后的函数：
+ make → runtime.makemap 10 → hint m[1] → runtime.mapaccess1_fast64 m[2] → runtime.mapaccess2_fast64  以上这些过程都是编译器帮我完成的，编译器判断赋值语句，如左边有一个值就翻译为 runtime.mapaccess1_fast64， 需要注意以下三点：
+ 当 hint 大小大于 8 时，采用的是 makemap 当 hint 小于 8 时，采用的是 makemap_small map 分配栈上时，不一定会调用 makemap  为什么一个 Go 语言内置数据结构就有这么多情况，那如果 Go 的 20 来个内置数据结构都有这种判定，岂不是底层就有差不多 60 个不同判定结构？确实是这样的，map 中存在大量类似但又冗余的函数，但不至于把性能拉低很多。这种问题主要是原因之一是 Go 语言在 1.</description>
     </item>
     
     <item>
