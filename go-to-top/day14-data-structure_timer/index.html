@@ -7,28 +7,28 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Day14 Data Structure_2 | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day14-data-structure_2/'>
+  <title> Go 翻山越岭——内置数据结构-Timer | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day14-data-structure_timer/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="Day14 Data Structure_2" />
-<meta property="og:description" content="上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer 和 Map。
+  <meta property="og:title" content="Go 翻山越岭——内置数据结构-Timer" />
+<meta property="og:description" content="上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。
 Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。
 从这张图可以看到**，最早的 Timer 就是一个四叉堆**。我们平时写算法的时候二叉堆见得比较多，那是不是理解这个更困难？不是的，我们着重看 Timer 的结构和演进。像最早的 time.Sleep 或者 time.After 这两个函数，实际上我们创建了两个 Timer 类，这个 Timer 会最终加到我们的 runtime 维护的四叉堆里面。这个四叉堆其实是很好理解的，其实是有个基准的。
 堆顶要放什么元素，元素如何排列？都是以触发时间为准。也就是说离当前时间最近的，一定是在堆顶的。如果来了一个新的 Timer ，它是在这个时间之后，它就会继续往堆下面走。如果比堆顶小就会涉及到对当前四叉堆的调整了，这个和写二叉堆调整算法很类似。
 最老的 Timer 实现全局只有一个四叉堆，这个四叉堆专门启用一个叫做 timerproc 的 goroutine。这个 goroutine 的逻辑也不复杂，就是用一个 for 循环。这个 for 循环会不断地检查堆顶元素是不是已经到期了，如果到期了就会触发，在触发的同时会逐渐地调整堆，直到把所有需要触发的 Timer 都触发完毕为止，继续去休眠。
 但这种单一的四叉堆会有一个问题。当前 Go 程序所有的 goroutine 在执行 Timer 相关操作的时候都需要去抢占操作这个堆的全局锁，而其实这个锁都是写锁。如果并发量很高，那么就会导致程序整体的吞吐量下降。全局锁对于任何程序来说，性能影响都比较大，这个问题导致了 go 程序在多核处理器上性能不佳，有人专门提了一个 issues：https://github.com/golang/go/issues/15133。（就 python 来说， 虽然 python 支持多进程，也支持多线程。但因为 GIL 全局解释器锁的存在，python 的多线程程序在同一时间只有一个线程在运行。所以多线程 Python 程序只是并发，而不是并行）" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day14-data-structure_2/" /><meta property="article:section" content="go-to-top" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day14-data-structure_timer/" /><meta property="article:section" content="go-to-top" />
 <meta property="article:published_time" content="2021-08-30T23:13:54+08:00" />
 <meta property="article:modified_time" content="2021-08-30T23:13:54+08:00" />
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Day14 Data Structure_2"/>
-<meta name="twitter:description" content="上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer 和 Map。
+<meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Timer"/>
+<meta name="twitter:description" content="上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。
 Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。
 从这张图可以看到**，最早的 Timer 就是一个四叉堆**。我们平时写算法的时候二叉堆见得比较多，那是不是理解这个更困难？不是的，我们着重看 Timer 的结构和演进。像最早的 time.Sleep 或者 time.After 这两个函数，实际上我们创建了两个 Timer 类，这个 Timer 会最终加到我们的 runtime 维护的四叉堆里面。这个四叉堆其实是很好理解的，其实是有个基准的。
 堆顶要放什么元素，元素如何排列？都是以触发时间为准。也就是说离当前时间最近的，一定是在堆顶的。如果来了一个新的 Timer ，它是在这个时间之后，它就会继续往堆下面走。如果比堆顶小就会涉及到对当前四叉堆的调整了，这个和写二叉堆调整算法很类似。
@@ -111,7 +111,7 @@ Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中
 
   <div class="content" itemprop="articleBody">
   
-    <p>上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer 和 Map。</p>
+    <p>上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。</p>
 <h1 id="timer">Timer</h1>
 <p>Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302359026.png" alt="未命名文件 (1)"></p>

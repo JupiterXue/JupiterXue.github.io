@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title> Go 翻山越岭——内置数据结构-Context | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day16-data-structure_4_context/'>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day16-data-structure_context/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
@@ -20,7 +20,7 @@ Context 虽然在使用 context 的时候，看起来都是 context.* 的结构�
  emptyCtx：所有 ctx 类型的根 valueCtx：主要为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成树形结构。 cancelCtx：取消程序的执行树 timerCtx：在 cancelCtx 上包了一层，支持基于时间的 cancel  这里有个例子
 1package main 2 3import ( 4 &#34;context&#34; 5 &#34;fmt&#34; 6) 7 8type orderID int 9 10func main() { 11 var x = context.TODO() 12 x = context.WithValue(x, orderID(1), &#34;1234&#34;) 13 x = context." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day16-data-structure_4_context/" /><meta property="article:section" content="go-to-top" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day16-data-structure_context/" /><meta property="article:section" content="go-to-top" />
 <meta property="article:published_time" content="2021-09-05T15:48:38+08:00" />
 <meta property="article:modified_time" content="2021-09-05T15:48:38+08:00" />
 
