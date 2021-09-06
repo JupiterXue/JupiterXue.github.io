@@ -7,26 +7,26 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Go 翻山越岭——内置数据结构（3） | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day15-data-structure_3/'>
+  <title> Go 翻山越岭——内置数据结构-Map | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day15-data-structure_map/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="Go 翻山越岭——内置数据结构（3）" />
+  <meta property="og:title" content="Go 翻山越岭——内置数据结构-Map" />
 <meta property="og:description" content="Map 有时能够返回一个值，有时候能够返回多个值，这是 Map 的特权语法。今天继续从底层角度来聊聊 Go 语言内置数据结构，Map。
 Map Map 中大量类似但又冗余的函数，原因之一便是没有泛型。
 1package main 2 3var m = make(map[int] int, 10) 4 5func main() { 6 v1 := m[1] 7 v2, ok := m[2] 8 println(v1, v2, ok) 9} 利用之前提到的工具 go tool objdump 能够获得反汇编后的函数：
  make → runtime.makemap 10 → hint m[1] → runtime.mapaccess1_fast64 m[2] → runtime.mapaccess2_fast64  以上这些过程都是编译器帮我完成的，编译器判断赋值语句，如左边有一个值就翻译为 runtime.mapaccess1_fast64， 需要注意以下三点：
  当 hint 大小大于 8 时，采用的是 makemap 当 hint 小于 8 时，采用的是 makemap_small map 分配栈上时，不一定会调用 makemap  为什么一个 Go 语言内置数据结构就有这么多情况，那如果 Go 的 20 来个内置数据结构都有这种判定，岂不是底层就有差不多 60 个不同判定结构？确实是这样的，map 中存在大量类似但又冗余的函数，但不至于把性能拉低很多。这种问题主要是原因之一是 Go 语言在 1." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day15-data-structure_3/" /><meta property="article:section" content="go-to-top" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day15-data-structure_map/" /><meta property="article:section" content="go-to-top" />
 <meta property="article:published_time" content="2021-09-02T23:23:12+08:00" />
 <meta property="article:modified_time" content="2021-09-02T23:23:12+08:00" />
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Go 翻山越岭——内置数据结构（3）"/>
+<meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Map"/>
 <meta name="twitter:description" content="Map 有时能够返回一个值，有时候能够返回多个值，这是 Map 的特权语法。今天继续从底层角度来聊聊 Go 语言内置数据结构，Map。
 Map Map 中大量类似但又冗余的函数，原因之一便是没有泛型。
 1package main 2 3var m = make(map[int] int, 10) 4 5func main() { 6 v1 := m[1] 7 v2, ok := m[2] 8 println(v1, v2, ok) 9} 利用之前提到的工具 go tool objdump 能够获得反汇编后的函数：

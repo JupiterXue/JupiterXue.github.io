@@ -1,5 +1,5 @@
 ---
-title: "Day14 Data Structure_2"
+title: "Go 翻山越岭——内置数据结构-Timer"
 date: 2021-08-30T23:13:54+08:00
 category: tech
 tags:
@@ -8,7 +8,7 @@ keywords:
     - 理论
 ---
 
-上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer 和 Map。
+上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。
 
 
 
