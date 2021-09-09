@@ -9,12 +9,15 @@
     <copyright>JupiterXue</copyright>
     <lastBuildDate>Tue, 07 Sep 2021 07:28:31 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day18 Go_and_sys</title>
+      <title>GO 翻山越岭——Go 常见系统调用</title>
       <link>https://jupiterxue.github.io/go-to-top/day18-go_and_sys/</link>
       <pubDate>Tue, 07 Sep 2021 07:28:31 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day18-go_and_sys/</guid>
-      <description></description>
+      <description>系统调用，是操作系统内核为应用提供的 API。今天继续来讲一个系统调用案例和 Go 中常见系统调用
+   arch syscall NR return arg0 arg1 arg2 arg3 arg4 arg5     213 epoll_create man/ cs/ 0xd5 int size - - - -    来源：https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86_64-64_bit
+这是 Linux 中的系统调用，编号是 213，我们可以从一下代码了解更多信息：
+1# define SYS_epoll_create 213 2 3TEXT runtime.epoll_create(SB), NOSPLIT, $0 4	MOVL	size+0(FP), DI 5	MOVL	$SYS_epoll_create, AX 6	SYSCALL 7	MOVL	AX, ret+8(FP) 8	RET 编号 213 按照调用规约会被存储在 rax 寄存器中，也就是这里的 AX 寄存器。epoll_create 只有一个阐述传递，也就是 int 类型的 size。SYSCALL 直接进入内核去了。</description>
     </item>
     
     <item>

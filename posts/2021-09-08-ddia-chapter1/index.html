@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> 读经典《DDIA》-第一章 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-09-08-ddia-chapter1/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="读经典《DDIA》-第一章" />
+<meta property="og:description" content="算是等了好久，终于有机会来读这本书《Designing Data Intensive Applications》，中文名《设计数据密集型应用》，我们一般简称《DDIA》或者猪书（因为书的封面是一头野猪，Hog Riderrrrr～！）。读完这本书第一章，我也想极力向推荐给计算机和互联网行业做后端和服务端的同学。阅读背景 最初了解这本书是在曹大（曹春晖）的第一堂课上。曹大说自己看了那么多书，只有这一本是最好的，也推荐给大家（当时听完就有点热血沸腾）。后来我还发现，draveness 大佬在它的《程序员可能必读书单推荐（一）》https://draveness.me/books-1/ 中最后一本也提到了此神书。再后来，又去豆瓣看了看，中英文都是 9.7 分：
+简单介绍一下，读《DDIA》能够 帮助我们建立一个分布式系统的全局概念，但还需要根据自己所在行业、所处业务和所面对的需求。前面一些章节和 rpc 有关系，中间一些和存储关系比较大，后面将大数据和流式计算。内容比较全，看完就知道分布式系统有哪些问题。
+一个人可以走得很快，而一群人能够走得很远。读这本书，其实我是参与了一个小组的 github 读书项目，如果你感兴趣也可以联系我，我们一起参与这次读书之旅。
+好，话不多说，开始卷！（以下为我简明扼要摘录的笔记，可以快速浏览）
+第一章笔记 为什么要设计 现今很多应用程序都是 数据密集型（data-intensive） 的，而非 计算密集型（compute-intensive） 的。
+CPU很少成为这类应用的瓶颈，更大的问题通常来自数据量、数据复杂性、以及数据的变更速度。
+数据密集型应用：
+- 存储数据
+- 缓存
+- 索引
+- 流处理
+- 批处理
+看上去平淡无奇是因为数据系统在抽象层面做得非常成功。工程师常常直接拿来用，而不是自己去做开发，因为数据库已经足够完美。
+然而现实中还有各种不同的需求：多种缓存，多级搜索。重要的是有必要先弄清楚最适合当前业务的工具和方法。当单个工具已经解决不了我们的问题时，组合使用也有些难度。因此本书在探索如何设计数据密集应用的方法，以实现可靠、可伸缩、可维护的数据系统。
+数据系统的思考 按我们的常识，为认为数据库、消息队列、缓存这些工具都是有差异的，但我们还是归类为 数据系统当中。虽然新出现了许多数据存储工具和数据处理工具，但类别之间的界限越来越模糊，比如：数据存储可以作为消息队列（Redis），消息队列带有类似数据库的持久保证（Apache Kafka）。
+当单个工具不足以满足所有数据处理和存储需求，就需要将总体工作拆分成一系列能够被单个工具高效完成，并且通过应用代码缝合起来。如缓存（Memcached）和全文搜索（ES）结合将主数据库剥离，由应用代码来让缓存或索引和主数据库保持同步。
+一个可能的组合使用多个组件的数据系统架构
+多个工具组合提供服务，服务的接口或应用程序编程接口 API 会向客户隐藏实现细节。
+设计 DIA 会遇到问题：系统故障，如何保证数据正确性和完整性？系统退化降级，如何给客户提供始终如一的良好性能。负载增加，如何扩容？什么样的 API 是好的？
+影响设计的因素：参与者技能和经验、历史遗留问题、系统路径依赖、交付时限、公司风险容忍度、监管约束。
+本书重点讨论：
+- 可靠性。在 adversity 中（包括：硬件、软件、人为 故障或错误）仍可以正常工作。
+- 可伸缩性。合理应对系统增长（数据量，流量，复杂性）
+- 可维护性。不同参与者，在不同生命周期都能高效地在系统上工作（适应新的应用场景）。
+可靠性 常见期望：
+- 符合用户期望的功能
+- 允许出错，还能正常使用软件" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-09-08-ddia-chapter1/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-09-08T23:25:30+08:00" />
+<meta property="article:modified_time" content="2021-09-08T23:25:30+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="读经典《DDIA》-第一章"/>
+<meta name="twitter:description" content="算是等了好久，终于有机会来读这本书《Designing Data Intensive Applications》，中文名《设计数据密集型应用》，我们一般简称《DDIA》或者猪书（因为书的封面是一头野猪，Hog Riderrrrr～！）。读完这本书第一章，我也想极力向推荐给计算机和互联网行业做后端和服务端的同学。阅读背景 最初了解这本书是在曹大（曹春晖）的第一堂课上。曹大说自己看了那么多书，只有这一本是最好的，也推荐给大家（当时听完就有点热血沸腾）。后来我还发现，draveness 大佬在它的《程序员可能必读书单推荐（一）》https://draveness.me/books-1/ 中最后一本也提到了此神书。再后来，又去豆瓣看了看，中英文都是 9.7 分：
+简单介绍一下，读《DDIA》能够 帮助我们建立一个分布式系统的全局概念，但还需要根据自己所在行业、所处业务和所面对的需求。前面一些章节和 rpc 有关系，中间一些和存储关系比较大，后面将大数据和流式计算。内容比较全，看完就知道分布式系统有哪些问题。
+一个人可以走得很快，而一群人能够走得很远。读这本书，其实我是参与了一个小组的 github 读书项目，如果你感兴趣也可以联系我，我们一起参与这次读书之旅。
+好，话不多说，开始卷！（以下为我简明扼要摘录的笔记，可以快速浏览）
+第一章笔记 为什么要设计 现今很多应用程序都是 数据密集型（data-intensive） 的，而非 计算密集型（compute-intensive） 的。
+CPU很少成为这类应用的瓶颈，更大的问题通常来自数据量、数据复杂性、以及数据的变更速度。
+数据密集型应用：
+- 存储数据
+- 缓存
+- 索引
+- 流处理
+- 批处理
+看上去平淡无奇是因为数据系统在抽象层面做得非常成功。工程师常常直接拿来用，而不是自己去做开发，因为数据库已经足够完美。
+然而现实中还有各种不同的需求：多种缓存，多级搜索。重要的是有必要先弄清楚最适合当前业务的工具和方法。当单个工具已经解决不了我们的问题时，组合使用也有些难度。因此本书在探索如何设计数据密集应用的方法，以实现可靠、可伸缩、可维护的数据系统。
+数据系统的思考 按我们的常识，为认为数据库、消息队列、缓存这些工具都是有差异的，但我们还是归类为 数据系统当中。虽然新出现了许多数据存储工具和数据处理工具，但类别之间的界限越来越模糊，比如：数据存储可以作为消息队列（Redis），消息队列带有类似数据库的持久保证（Apache Kafka）。
+当单个工具不足以满足所有数据处理和存储需求，就需要将总体工作拆分成一系列能够被单个工具高效完成，并且通过应用代码缝合起来。如缓存（Memcached）和全文搜索（ES）结合将主数据库剥离，由应用代码来让缓存或索引和主数据库保持同步。
+一个可能的组合使用多个组件的数据系统架构
+多个工具组合提供服务，服务的接口或应用程序编程接口 API 会向客户隐藏实现细节。
+设计 DIA 会遇到问题：系统故障，如何保证数据正确性和完整性？系统退化降级，如何给客户提供始终如一的良好性能。负载增加，如何扩容？什么样的 API 是好的？
+影响设计的因素：参与者技能和经验、历史遗留问题、系统路径依赖、交付时限、公司风险容忍度、监管约束。
+本书重点讨论：
+- 可靠性。在 adversity 中（包括：硬件、软件、人为 故障或错误）仍可以正常工作。
+- 可伸缩性。合理应对系统增长（数据量，流量，复杂性）
+- 可维护性。不同参与者，在不同生命周期都能高效地在系统上工作（适应新的应用场景）。
+可靠性 常见期望：
+- 符合用户期望的功能
+- 允许出错，还能正常使用软件"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" https://jupiterxue.github.io/go-to-top/day18-go_and_sys/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+
+  
+  <li>
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e7%bb%8f%e5%85%b8%e3%80%8aDDIA%e3%80%8b-%e7%ac%ac%e4%b8%80%e7%ab%a0&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-09-08-ddia-chapter1%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e7%bb%8f%e5%85%b8%e3%80%8aDDIA%e3%80%8b-%e7%ac%ac%e4%b8%80%e7%ab%a0&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-09-08-ddia-chapter1%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e7%bb%8f%e5%85%b8%e3%80%8aDDIA%e3%80%8b-%e7%ac%ac%e4%b8%80%e7%ab%a0&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-09-08-ddia-chapter1%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#为什么要设计"><strong>为什么要设计</strong></a></li>
+    <li><a href="#数据系统的思考"><strong>数据系统的思考</strong></a>
+      <ul>
+        <li><a href="#可靠性"><strong>可靠性</strong></a></li>
+        <li><a href="#可维护性"><strong>可维护性</strong></a></li>
+        <li><a href="#简单性"><strong>简单性</strong></a></li>
+        <li><a href="#可演化性拥抱变化"><strong>可演化性：拥抱变化</strong></a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        读经典《DDIA》-第一章
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2021-09-08 23:25:30 &#43;0800 &#43;0800" itemprop="datePublished">2021-09-08</time>
+          
+        </div>
+        
+        
+        <div class="article-read-time">
+          <i class="far fa-clock"></i>
+          
+          28 minute read
+        </div>
+        
+        
+        
+        <div class="article-tag">
+            <i class="fas fa-tag"></i>
+            
+            
+            <a class="tag-link" href="/tags/%E7%BB%8F%E5%85%B8%E4%B9%A6" rel="tag">经典书</a>
+            
+        </div>
+        
+      </div>
+    </header>
+
+  
+    <div class="content" itemprop="articleBody">
+
+      <p>算是等了好久，终于有机会来读这本书《Designing Data Intensive Applications》，中文名《设计数据密集型应用》，我们一般简称《DDIA》或者猪书（因为书的封面是一头野猪，Hog Riderrrrr～！）。读完这本书第一章，我也想极力向推荐给计算机和互联网行业做后端和服务端的同学。<img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109082341897.png" alt="QQ截图20210908232228"></p>
+<h1 id="阅读背景">阅读背景</h1>
+<p>最初了解这本书是在曹大（曹春晖）的第一堂课上。曹大说自己看了那么多书，只有这一本是最好的，也推荐给大家（当时听完就有点热血沸腾）。后来我还发现，draveness 大佬在它的《程序员可能必读书单推荐（一）》https://draveness.me/books-1/ 中最后一本也提到了此神书。再后来，又去豆瓣看了看，中英文都是 9.7 分：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109082335003.png" alt="image-20210908233546898"></p>
+<!-- raw HTML omitted -->
+<p>简单介绍一下，读《DDIA》能够 帮助我们建立一个分布式系统的全局概念，但还需要根据自己所在行业、所处业务和所面对的需求。前面一些章节和 rpc 有关系，中间一些和存储关系比较大，后面将大数据和流式计算。内容比较全，看完就知道分布式系统有哪些问题。</p>
+<p>一个人可以走得很快，而一群人能够走得很远。读这本书，其实我是参与了一个小组的 github 读书项目，<strong>如果你感兴趣也可以联系我，我们一起参与这次读书之旅</strong>。</p>
+<p>好，话不多说，开始卷！（以下为我简明扼要摘录的笔记，可以快速浏览）</p>
+<h1 id="第一章笔记">第一章笔记</h1>
+<h2 id="为什么要设计"><strong>为什么要设计</strong></h2>
+<p>现今很多应用程序都是 <strong>数据密集型（data-intensive）</strong> 的，而非 <strong>计算密集型（compute-intensive）</strong> 的。</p>
+<p><strong>CPU很少成为这类应用的瓶颈，更大的问题通常来自数据量、数据复杂性、以及数据的变更速度。</strong></p>
+<p>数据密集型应用：</p>
+<p>- 存储数据</p>
+<p>- 缓存</p>
+<p>- 索引</p>
+<p>- 流处理</p>
+<p>- 批处理</p>
+<p>看上去平淡无奇是因为数据系统在抽象层面做得非常成功。工程师常常直接拿来用，而不是自己去做开发，因为数据库已经足够完美。</p>
+<p>然而现实中还有各种不同的需求：多种缓存，多级搜索。重要的是有必要先弄清楚最适合当前业务的工具和方法。当单个工具已经解决不了我们的问题时，组合使用也有些难度。因此本书在探索如何设计数据密集应用的方法，以实现可靠、可伸缩、可维护的数据系统。</p>
+<h2 id="数据系统的思考"><strong>数据系统的思考</strong></h2>
+<p>按我们的常识，为认为数据库、消息队列、缓存这些工具都是有差异的，但我们还是归类为 数据系统当中。虽然新出现了许多数据存储工具和数据处理工具，但<strong>类别之间的界限越来越模糊</strong>，比如：数据存储可以作为消息队列（Redis），消息队列带有类似数据库的持久保证（Apache Kafka）。</p>
+<p>当单个工具不足以满足所有数据处理和存储需求，就需要将总体工作拆分成一系列能够被单个工具高效完成，并且通过应用代码缝合起来。如缓存（Memcached）和全文搜索（ES）结合将主数据库剥离，由应用代码来让缓存或索引和主数据库保持同步。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109082331434.png" alt="img"></p>
+<p>一个可能的组合使用多个组件的数据系统架构</p>
+<p>多个工具组合提供服务，服务的接口或应用程序编程接口 API 会向客户隐藏实现细节。</p>
+<p>设计 DIA 会遇到问题：系统故障，如何保证数据正确性和完整性？系统退化降级，如何给客户提供始终如一的良好性能。负载增加，如何扩容？什么样的 API 是好的？</p>
+<p>影响设计的因素：参与者技能和经验、历史遗留问题、系统路径依赖、交付时限、公司风险容忍度、监管约束。</p>
+<p>本书重点讨论：</p>
+<p>- 可靠性。在 adversity 中（包括：硬件、软件、人为 故障或错误）仍可以正常工作。</p>
+<p>- 可伸缩性。合理应对系统增长（数据量，流量，复杂性）</p>
+<p>- 可维护性。不同参与者，在不同生命周期都能高效地在系统上工作（适应新的应用场景）。</p>
+<h3 id="可靠性"><strong>可靠性</strong></h3>
+<p>常见期望：</p>
+<p>- 符合用户期望的功能</p>
+<p>- 允许出错，还能正常使用软件</p>
+<p>- 高负载下，性能不降太多</p>
+<p>- 防范未授权和滥用</p>
+<p>错误原因——故障 fault，能预料并应对的故障特征——容错 fautl-tolerant 或 人性 resilient</p>
+<p>&gt; 注意：失效是系统停止向用户提供服务，有区别。</p>
+<p>故障概率不可能降为 0，最好设计容错机制，防止因故障而失效。</p>
+<p><strong>反直觉</strong>，<strong>通过故意出发来触发故障率</strong>，是有意义的。如：没有警告随机杀死单个进程。</p>
+<p>许多高位漏洞就是由于糟糕的错误设计，通过提高故障自然发生，可以减少失效性。如  Netflix公司的<em>Chaos Monkey</em></p>
+<p><strong>硬件故障</strong></p>
+<p>常会想到的硬件故障：硬盘崩溃，内存出错，机房断点，拔错网线。</p>
+<p>第一反应，<strong>增加单个硬件冗余度</strong>。如：磁盘组件 RAID。服务器可能有双路电源和热插拔CPU，数据中心可能有电池和柴油发电机作为后备电源，某个组件挂掉时冗余组件可以立刻接管（岁不完全防止，但简单易懂）</p>
+<p>大量使用机器，会相应增加硬件故障。如：云平台实例不可用没有任何警告。因此，设计云平台优先考虑灵活性和弹性，而不是单机可靠性。</p>
+<p><strong>硬件冗余+软件容错</strong>。如：如果需要重启机器（例如应用操作系统安全补丁），单服务器系统就需要计划停机。而允许机器失效的系统则可以一次修复一个节点，无需整个系统停机。</p>
+<p><strong>软件错误</strong></p>
+<p>常认为硬件故障随机、相互独立。</p>
+<p>另一类错误是内部系统错误，难以预料，因为可能造成更多系统失效：</p>
+<p>- 错误输入，服务器崩溃。如：时间错误，Linux 内核挂掉。</p>
+<p>- 时空进程占用资源。包括 CPU时间、内存、磁盘空间或网络带宽。</p>
+<p>- 系统依赖服务变慢、未响应、返回错误响应</p>
+<p>- 级联故障。小组件故障引发另一个和多个组件故障</p>
+<p>这些 BUG 潜伏时间长，直到被触发。</p>
+<p>软件故障没有速效药，但有许多小办法。如：</p>
+<p>- 考虑系统假设和交互</p>
+<p>- 彻底测试</p>
+<p>- 进程隔离</p>
+<p>- 允许进程崩溃并重启</p>
+<p>- 测量、监控并分析生产环境中的系统行为</p>
+<p>- 系统自检（如消息队列中，进入与发出数量相等），并在出现差异 discrepancy 时报警</p>
+<p><strong>人为错误</strong></p>
+<p>运维配置错误是服务中断的首要原因，而硬件故障仅占 10%-25%。</p>
+<p>尽管人类不可靠，但最好的系统会采用一下组合：</p>
+<p>- 最小化犯错设计系统。</p>
+<p>- 将容易犯错的地方解耦 decouple。提供功能齐全的生产环境沙箱 sandbox</p>
+<p>- 在各个层次进行彻底测试。包括：单元测试、全系统集成测试和手动测试。自动化测试适合边缘场景 cornet case。</p>
+<p>- 允许从人为错误中简单快速回复，最大限度减少失效。如：回滚配置变更，分批发布新代码，提供数据重算工具。</p>
+<p>- 配置详细和明确的监控。如：性能指标和错误率。</p>
+<p>- 管理实践和培训</p>
+<p><strong>可靠性的重要</strong></p>
+<p>商务应用中错误导致生产力损失（数据报告不完整有法律风险），电商网站中断导致收入和声誉损失。</p>
+<p>某些情况，会选择牺牲可靠性来降低开发成本，但要意识到在偷工减料（为后期修修补补甚至大换血做好心理准备）。</p>
+<p><strong>可伸缩性的重要</strong></p>
+<p>负载增加是服务降级 degradation 的常见原因。如：系统负载已经从一万个并发用户增长到十万个并发用户，或者从一百万增长到一千万。也许现在处理的数据量级要比过去大得多。</p>
+<p>负载又可以称为 <strong>负载参数（load parameters）</strong> 。最佳参数选择取决于系统架构，如：每秒向Web服务器发出的请求、数据库中的读写比率、聊天室中同时活跃的用户数量、缓存命中率等等。除此之外，也许平均情况也很重要，也许瓶颈只是少数极端场景。</p>
+<p>一个应用场景</p>
+<p>\1. 发布推文。用户可以向其粉丝发布新消息（平均 4.6k请求/秒，峰值超过 12k请求/秒）。</p>
+<p>\2. 主页时间线。用户可以查阅他们关注的人发布的推文（300k请求/秒）。</p>
+<p>伸缩性挑战并不是主要来自微博量，而是来自<strong>扇出（fan-out）</strong>——每个用户关注了很多人，也被很多人关注。</p>
+<p>两种解决方案（具体不展开，这里图文代码描述非常丰富）</p>
+<p>\1. 发布微博时，将新微博插入全局微博集合。当用户请求自己的主页时间线时，首先找他关注的所有人，查询这些别关注用户发布的微博并按时间顺序合并。</p>
+<p>\2. 为每个用户的主业时间线维护一个缓存，就像每个用户的推文收件箱。当用户发布微博，查找所有关注该用户的人，将新的微博插入到每个主页时间线缓存中。</p>
+<p><strong>如何描述性能</strong></p>
+<p>两个角度：</p>
+<p>- 增加负载参数并保持系统资源（CPU、内存、网络带宽）不变时，系统性能将受到什么影响？</p>
+<p>- 增加负载参数并希望保持性能不变，需要增加多少系统资源？</p>
+<p>像 Hadoop 这种批处理系统，很关心吞吐量（throughput），即美妙可以处理的记录数量，活在特定规模数据集上运行作业的总时间。（理想情况下，批处理时间 = 数据集大小 ÷ 吞吐量）</p>
+<p>像在线系统，最关心服务的响应时间（response time），即客户端发送请求到接受响应之间的时间。</p>
+<p>&gt; 延迟（latency）不同于响应时间（response time）。后者不仅包括实际服务时间，还包括网络延迟和排队延迟。而延迟是某个请求等待处理的持续时长，期间处于休眠等待服务。</p>
+<p>发送重复同样请求，每个响应时间有不同。将<strong>响应时间作为可测量的数值分布，而不是一个数值</strong>。</p>
+<p>平均响应时间，通常用算术平均值计算，但不能告诉维护者有多少用户经历了延迟。而<strong>典型（typical）响应时间</strong>是更好的指标。即，使用百分位点（percentiles）会更好。将响应时间按最快到最慢排序，中位数（median）在中间。这个能够知道典型场景下用户需要等待多长时间——一般用户请求的响应时间少于响应时间的中位数，另一半服务时间比中位数长。</p>
+<p>响应时间的高百分位点非常重要，它直接影响用户的服务体验。为了弄清异常多糟糕，可以看更高的百分位点，如95、99、99.9百分位点。</p>
+<p>&gt; 例如亚马逊在描述内部服务的响应时间要求时以99.9百分位点为准，即使它只影响一千个请求中的一个。这是因为请求响应最慢的客户往往也是数据最多的客户，也可以说是最有价值的客户 —— 因为他们掏钱了</p>
+<p>但是，优化 99.99 百分位点代价也是非常昂贵，即便亚马逊也难以承担这种成本。</p>
+<p>百分位点常用于服务级别目标（SLO，service level objectives）和服务级别协议（SLA，service level agreements），即定义服务预期性能和可用性的合同（翻译的什么玩意&hellip;）。</p>
+<p>排队延迟通常占告白氛围点响应时间很大一部分，又称为头部阻塞效应。</p>
+<p><strong>实践中百分位点</strong></p>
+<p>即便强调了很多次高百分位点，在并行调用的时候，最终用户请求还是需要等待最慢的并行调用完成。如果想讲响应时间百分点添加到服务监视仪表盘，还需要持续有效计算。一个简单的实现是在时间窗口中保存所有请求的响应时间列表，并每分钟对列表进行排序。</p>
+<p>&gt; 一些算法能够以最小的CPU和内存成本（如前向衰减 ，t-digest 或HdrHistogram ）来计算百分位数的近似值</p>
+<p><strong>应对负载的方法</strong></p>
+<p>开始正式讨论伸缩性：当负载参数增加时，如何保持良好的性能？</p>
+<p>适应小级别负载的架构不太可能应付 10 于此的负载。</p>
+<p>人们常在纵向/垂直伸缩（scaling up，更强的机器）和横向/水平伸缩（scaling out，负载分配多台小机器）两个观点中对立。垮多台机器分配负载叫做无共享架构。单机器运行简单，但高端机器很贵。所以非常密集的负载常需要横向伸缩。</p>
+<p>优秀架构会将两种方法结合，更简单也更便宜。</p>
+<p>有些系统具有弹性，可以检测到负载增加时自动增加计算资源，而其他系统是手动伸缩的。如果负载难预测，弹性系统很有用。实际上手动伸缩系统更简单，意外操作更少。</p>
+<p>跨多态机器部署无状态服务很简单，但将状态系统从单节点变为分布式就会引入很多复杂度。因此，尝试来说，应该把数据库放在单个节点上（纵向伸缩），知道伸缩成本或可用性需求来了不得不改为分布式。</p>
+<p>&gt; 可预见，未来分布式系统将成为默认配置。不仅可伸缩性好，易用性和可维护性也好。</p>
+<p>没有万金油可伸缩架构。实际的问题更像是：读取量、写入量、要存储的数据量、数据复杂度、响应时间要求、访问模式等等问题大杂烩。</p>
+<p>良好适配应用的可伸缩架构，是围绕假设（assumption）建立的：哪些操作是常见的？哪些操作是汉奸的？这就是之前提到的负载参数。假设错，工程投入白费，或者更糟糕。尤其早期创业公司和非正式产品中，产品需要快速迭代比克伸缩的假象负载要重要得多。</p>
+<h3 id="可维护性"><strong>可维护性</strong></h3>
+<p>软件大部分开销不是在最初开发阶段，而在持续维护阶段：漏洞修复、保持系统正常运行、调查失效、适配新的平台、为新的场景进行修改、偿还技术债、添加新的功能。</p>
+<p>许多程序员不喜欢遗留（legacy）系统。各有各的不爽。</p>
+<p>但有一种方式来改变这个现状，一来就做好：在设计之初就尽可能考虑减少维护期间的痛苦，从而避免自己的软件系统编程遗留系统。因此有三个设计原则：</p>
+<p>- 可操作性。便于运维团队平稳运行。</p>
+<p>- 简单性。消除尽可能多的复杂度，新工程师也能轻松理解（这和 API 简单性不一样）。</p>
+<p>- 可演化性/可伸缩性/可修改性/可塑性。工程师未来能够轻松对系统更改，需求变化能够为新用用做适配。</p>
+<p>同样的，没有简单解决方案。</p>
+<p><strong>可操作性：人生苦短，疼爱运维</strong></p>
+<p>有人说“好的运维能绕开垃圾软件的限制，而好的软件遇到垃圾运维也不能用”。尽管运维某些面可以，并且能够做到自动化，但最初建立正确运作的自动化机制还是取决于人。</p>
+<p>一个优秀运维团队的典型职责如下：</p>
+<p>* 监控系统的运行状况，并在服务状态不佳时快速恢复服务</p>
+<p>* 跟踪问题的原因，例如系统故障或性能下降</p>
+<p>* 及时更新软件和平台，比如安全补丁</p>
+<p>* 了解系统间的相互作用，以便在异常变更造成损失前进行规避。</p>
+<p>* 预测未来的问题，并在问题出现之前加以解决（例如，容量规划）</p>
+<p>* 建立部署，配置、管理方面的良好实践，编写相应工具</p>
+<p>* 执行复杂的维护任务，例如将应用程序从一个平台迁移到另一个平台</p>
+<p>* 当配置变更时，维持系统的安全性</p>
+<p>* 定义工作流程，使运维操作可预测，并保持生产环境稳定。</p>
+<p>* 铁打的营盘流水的兵，维持组织对系统的了解。</p>
+<p>良好可操作性，让运维能够专注于更高价值的事。一个数据系统可以做这些事：</p>
+<p>* 好的监控，提供对系统内部状态和运行时行为的<strong>可见性（visibility）</strong></p>
+<p>* 自动化提供良好支持，将系统与标准化工具相集成</p>
+<p>* 避免依赖单台机器（在整个系统继续不间断运行的情况下允许机器停机维护）</p>
+<p>* 提供良好的文档和易于理解的操作模型（“如果做X，会发生Y”）</p>
+<p>* 提供良好的默认行为，但需要时也允许管理员自由覆盖默认值</p>
+<p>* 有条件时进行自我修复，但需要时也允许管理员手动控制系统状态</p>
+<p>* 行为可预测，最大限度减少意外</p>
+<h3 id="简单性"><strong>简单性</strong></h3>
+<p>小项目可以简单让人喜欢，代码有表现力。但项目大了后就非常复杂、难理解、增加维护成本。这种情况别叫做烂泥潭。</p>
+<p>复杂了，就有各种问题：状态空间激增、模块间紧密耦合、纠结的依赖关系、不一致的命名和术语、解决性能问题的Hack、需要绕开的特例等等。</p>
+<p>复杂了，时间和预算都会超支。</p>
+<p>简化系统不一定意味减少功能，也可以消除额外复杂度。</p>
+<p>&gt;  <strong>额外复杂度</strong> 定义为：由具体实现中涌现，而非（从用户视角看，系统所解决的）问题本身固有的复杂度。</p>
+<p>消除额外复杂度最好的工具之一是抽象（abstraction）。好的抽象可以将大量实现细节隐藏，仅保留简单易懂的外观。好的抽象也可以用用各类不同应用。相比重复造轮子，抽象更有效率，更有助于开发高质量软件。</p>
+<p>&gt; 如高级编程语言是一种抽象，隐藏了机器码、CPU寄存器和系统调用。 SQL也是一种抽象，隐藏了复杂的磁盘/内存数据结构、来自其他客户端的并发请求、崩溃后的不一致性。</p>
+<h3 id="可演化性拥抱变化"><strong>可演化性：拥抱变化</strong></h3>
+<p>系统需求永远在变，但处于常态变化。</p>
+<p>&gt; 例如：新的事实、出现意想不到的应用场景、业务优先级发生变化、用户要求新功能、新平台取代旧平台、法律或监管要求发生变化、系统增长迫使架构变化等。</p>
+<p>敏捷（agile）工作模式为适应新的变化提供了框架。还有些很有用的工具：如<strong>测试驱动开发（TDD, test-driven development）</strong> 和 <strong>重构（refactoring）</strong> 。</p>
+<p>敏捷技术大部分讨论都集中在相当小的规模（一个应用几个代码文件中）。本书将探索更大操作系统层面上提高敏捷性的方法，可有几个不同应用或服务组成。</p>
+<p>&gt; 例如，为了将装配主页时间线将方法从方法1变为方法2，如何“重构”微博的架构 ？</p>
+
+    </div>
+  </article>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">主页</a></li>
+         
+          <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+          <li><a href="/posts">杂谈</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+         
+          <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#为什么要设计"><strong>为什么要设计</strong></a></li>
+    <li><a href="#数据系统的思考"><strong>数据系统的思考</strong></a>
+      <ul>
+        <li><a href="#可靠性"><strong>可靠性</strong></a></li>
+        <li><a href="#可维护性"><strong>可维护性</strong></a></li>
+        <li><a href="#简单性"><strong>简单性</strong></a></li>
+        <li><a href="#可演化性拥抱变化"><strong>可演化性：拥抱变化</strong></a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+
+  
+  <li>
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e7%bb%8f%e5%85%b8%e3%80%8aDDIA%e3%80%8b-%e7%ac%ac%e4%b8%80%e7%ab%a0&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-09-08-ddia-chapter1%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e7%bb%8f%e5%85%b8%e3%80%8aDDIA%e3%80%8b-%e7%ac%ac%e4%b8%80%e7%ab%a0&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-09-08-ddia-chapter1%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e7%bb%8f%e5%85%b8%e3%80%8aDDIA%e3%80%8b-%e7%ac%ac%e4%b8%80%e7%ab%a0&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-09-08-ddia-chapter1%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+
+
+
+</html>

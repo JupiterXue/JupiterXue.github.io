@@ -2,19 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://jupiterxue.github.io/go-to-top/day18-go_and_sys/</loc>
-    <lastmod>2021-09-07T07:28:31+08:00</lastmod>
+    <loc>https://jupiterxue.github.io/posts/</loc>
+    <lastmod>2021-09-08T23:25:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/</loc>
+    <lastmod>2021-09-08T23:25:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/</loc>
+    <lastmod>2021-09-08T23:25:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/%E7%BB%8F%E5%85%B8%E4%B9%A6/</loc>
+    <lastmod>2021-09-08T23:25:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-09-08-ddia-chapter1/</loc>
+    <lastmod>2021-09-08T23:25:30+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/tags/go/</loc>
     <lastmod>2021-09-07T07:28:31+08:00</lastmod>
   </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day18-go_and_sys/</loc>
+    <lastmod>2021-09-07T07:28:31+08:00</lastmod>
+  </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/</loc>
-    <lastmod>2021-09-07T07:28:31+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/tags/</loc>
-    <lastmod>2021-09-07T07:28:31+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/</loc>
     <lastmod>2021-09-07T07:28:31+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day17-lang_and_sys/</loc>
@@ -22,9 +31,6 @@
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day16-data-structure_context/</loc>
     <lastmod>2021-09-05T15:48:38+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/posts/</loc>
-    <lastmod>2021-09-03T23:00:50+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-09-03-anti-jp-victory/</loc>
     <lastmod>2021-09-03T23:00:50+08:00</lastmod>
