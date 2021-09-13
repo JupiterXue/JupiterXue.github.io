@@ -7,7 +7,34 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Tue, 07 Sep 2021 07:28:31 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Sep 2021 10:01:17 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day20 Memory_management</title>
+      <link>https://jupiterxue.github.io/go-to-top/day20-memory_management/</link>
+      <pubDate>Sun, 12 Sep 2021 10:01:17 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day20-memory_management/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>2021 09 12 Ddia Chapter3</title>
+      <link>https://jupiterxue.github.io/posts/2021-09-12-ddia-chapter3/</link>
+      <pubDate>Sun, 12 Sep 2021 00:07:08 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-09-12-ddia-chapter3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Day19 Tools_and_sys</title>
+      <link>https://jupiterxue.github.io/go-to-top/day19-tools_and_sys/</link>
+      <pubDate>Thu, 09 Sep 2021 22:43:41 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day19-tools_and_sys/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>GO 翻山越岭——Go 常见系统调用</title>
       <link>https://jupiterxue.github.io/go-to-top/day18-go_and_sys/</link>

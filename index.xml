@@ -7,7 +7,71 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Wed, 08 Sep 2021 23:25:30 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Sep 2021 10:01:17 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day20 Memory_management</title>
+      <link>https://jupiterxue.github.io/go-to-top/day20-memory_management/</link>
+      <pubDate>Sun, 12 Sep 2021 10:01:17 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day20-memory_management/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>2021 09 12 Ddia Chapter3</title>
+      <link>https://jupiterxue.github.io/posts/2021-09-12-ddia-chapter3/</link>
+      <pubDate>Sun, 12 Sep 2021 00:07:08 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-09-12-ddia-chapter3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>读经典《DDIA》-第二章</title>
+      <link>https://jupiterxue.github.io/posts/2021-09-11-ddia-chapter2/</link>
+      <pubDate>Sat, 11 Sep 2021 23:02:05 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-09-11-ddia-chapter2/</guid>
+      <description>已经看完第二章《DDIA》，说下我是怎么抄书的，以及我有什么收获。
+0.什么？抄书？没错，我是边抄边写笔记。因为我就和你一样，看不进书（当然你比我更自律点）。开玩笑啦
+1.当你不想看书的时候，就抄书；当你抄书抄到不想抄了，就想看了。虽然这句话被 S 老师作为段子来传颂，但我看到了有人抄过化学，有人抄过高数。我没有这种经历，也想亲自去实践一下到底有怎样的魔力。其次，我认为好的书是浅显易懂，深入浅出的，值得揣摩。
+2.求其上者得其中，求其中者得其下，求其下着无所得。刚开始抄书是一件有点兴奋的事，因为抄这个动作是比较轻松的，因为理想中这是不怎么动脑子的。实际上由于你的专注，你会不由自主地关注作者在说些什么（虽然有时也会走神不知道作者在说什么）。并且由于抄书，你会开始对作者某个词语进行或多或少的思考。而抄书的困难也正是源于此，认真看和思绪漫游会导致你的阅读速度极大地降低，尤其在你发现抄了一两个小时，连一半都没有的时候，心情是有点绝望的，好在，你还可以明天抄嘛：） giao！
+3.实事求是，实地考察。抄书中，你会发现作者写的话有多少冗余、多少用词不当。尤其我看的这本书原版是英文，翻译过来连句法还是英语的语法，根本不符合中文逻辑。所以我会将这句话进行汉译汉，转化为我自己能够理解的。大家都认为看技术不要看中文，因为中文和蹩脚，是的。但我再补充一句，你可以自己把蹩脚化为流畅。
+4.简明扼要，提高速度。一直这么慢的抄写肯定不行，我在抄的过程中也逐步掌握了一些技巧：着重摘录抽象句式和实用句式，代码复制（看代码其实是最直接和方便的），详细参数说明忽略，图能动就不抄，不能动就用文字描述，不能用文字就截图、先摘录一二级标题，然后一个个攻坚（会有点成就感）。
+5.暴力破解，巨无事细。抄书意味着会对每个地方都看一遍，找出是否有价值的地方。所以会对每个文字做一次简单的“有什么有用，是否摘要”的编码动作，这不同于看书。看书的时候，我很有可能是在想“这个不重要，过”。所以抄一遍下来，老师如果问哪一页哪个知识点，虽然你答不上来在哪里，但你知道，我确实看过，而不是看，过了。
+6.建立根据地，逐步发展。即便中文的技术书读起来不是很顺畅，但大体意思作者是能够把握。最重要的是，当我看完了中文，我会对原书作者讲了什么内容有个大概的把握。所以看起英文来就更加流畅。
+最后，这篇文章不是给看中文技术书洗白，只是想表达我在参与过程中的收获和感受。按照成熟的技术方法来说，看书、看文档还是以官方为准，以原版语言为准。地道的语言和没有信息损失的一手材料，才是好的学习资料。毕竟，高级食材，我们都吃原材料。
+和小伙伴讨论章节内容，一个意外收获：
+  我说：几种 Datalog 方法都没有听过，没有见过。好像是在说图结构有哪些处理方式，怎么表示更简洁、更高效
+Helios 回复：主要还是场景不一样。
+场景说得好，看完就局限在代码层面，一下又跳了出来。
+  第二章笔记 第二章
+数据模型在软件开发中最重要。不仅影响软件编写方式，还影响解题思路。
+多数应用用使用层层叠加的数据模型构建，关键问题：如何用低一层数据模型表示。例如：
+\1. 用对象或数据结构以及 API 来建模现实世界。
+\2. 用数据模式表示存储结构。如 JSON、XML、数据库表、图，
+\3. 用内存、磁盘或网络字节表示 JSON/XML/关系/图数据，进而来查询、搜索、操作。
+\4. 在更低层次，用电流、光脉冲、磁场或其他东西表示字节。
+复杂应用程序有更多中间层，如 API 的 API。但思想仍一样：提供明确数据模型来因此更低层次复杂性。这个抽象使得不同人员能够参与协作。
+选择一个适合数据模型非常重要。因为种类很多，易用但不易支持，可操作但表现差，数据转化有的自然有的麻烦。
+关系模型与文档模型
+最著名数据模型——SQL。1970年 Edgar Codd 提出关系模型：数据为关系，关系是元素的无序集合。
+关系数据库起源于商业数据处理，今天来看显得很平常：典型事物处理。
+&amp;gt; 如：将销售或银行交易，航空公司预订，库存管理信息记录在库）和批处理（客户发票，工资单，报告）
+并且当时数据库迫使开发者必须考虑数据库内部的数据表示形式。关系模型解决的是在实现细节隐藏在更简洁的接口之后。
+网络模型和分词模型在 70、80 年代的主要选择，但关系模型随后占据主导。对象数据库在 90 年代由盛而衰。XML 数据出现于 21世纪初。
+2010 年，NoSQL 开始萌芽，虽名字没有涉及任何技术，最初只是 Twitter 标签，2009 年非关系数据库开源会上这个术语的出现，迅速得到了传播。NoSQL 被重新解释为不仅是 SQL（Not Only SQL），NoSQL 流行的几个因素：</description>
+    </item>
+    
+    <item>
+      <title>Day19 Tools_and_sys</title>
+      <link>https://jupiterxue.github.io/go-to-top/day19-tools_and_sys/</link>
+      <pubDate>Thu, 09 Sep 2021 22:43:41 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day19-tools_and_sys/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>读经典《DDIA》-第一章</title>
       <link>https://jupiterxue.github.io/posts/2021-09-08-ddia-chapter1/</link>
