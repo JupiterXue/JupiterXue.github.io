@@ -9,21 +9,40 @@
     <copyright>JupiterXue</copyright>
     <lastBuildDate>Sun, 12 Sep 2021 10:01:17 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day20 Memory_management</title>
+      <title>Go 翻山越岭——内存管理</title>
       <link>https://jupiterxue.github.io/go-to-top/day20-memory_management/</link>
       <pubDate>Sun, 12 Sep 2021 10:01:17 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day20-memory_management/</guid>
-      <description></description>
+      <description>发生内存泄露时，要知道内存如何进行分配，垃圾回收要找出哪些对象有用，哪些对象无用。尤其当系统到达高并发瓶颈时，更需要垃圾回收这一角色做好风险把控，否则就是大型灾难现场。今天就来聊聊内存管理与垃圾回收。
+背景介绍 垃圾回收 Garbage Collection ，我们一般称为 GC。在现实世界中，说到垃圾，指的就是那些不读的书、不穿的衣服等。在计算机中，GC 把程序不用的内存空间视为垃圾。但究其本质，GC 本身也是一个程序，如果满足两项功能的程序，我们就可以叫它 GC：
+ 找到内存空间中的垃圾 回收空间，让程序员能够再次利用这部分空间。  在没有 GC 的年代，像 C 语言程序员必须自己手动去分配内存，必须确保申请多少大小的内存空间，在程序执行完释放不再需要的空间。因为在当时计算机的内存资源是稀缺和昂贵的，现在我们买一个 G 内存条的价格相当于当时买 1 KB 的价格，所以程序员写代码时操作都是小心谨慎的。
+人为操作，难免有疏忽的地方。如果忘记释放内存空间，该内存空间就会发生泄露。意味着这块空间将会继续维持被使用的状态，无法被使用。一部分内存泄露放任不管，直到所有内存被占满了，整个系统也就崩溃了。
+另外，在释放内存空间时，如果忘记初始化用于释放内存的指针，这个指针就会一直指向释放完成的内存空间。更有甚者，释放的空间错误，导致下次程序使用这个空间时发生故障。这些内存上的 bug 都是难以确定真实原因的，因为与内存分配时疏忽造成的 bug 和真实场景下发生的位置（或时间）是不一致的。
+为了略去以上种种的麻烦与困难，聪明的人们研发了 GC，即把内存管理的工作交给计算机，程序员就不用想着什么时候要释放内存，不用再担心忘记释放内存所导致的 bug，从而大大减轻负担，将更多精力和注意力放在业务开发上。
+在学习难度上，如果说内存分配难度在 2 ，那么垃圾回收的难度就在 4，相比之下难度翻倍。并且学习垃圾回收必须掌握扎实的理论基础，否则难以读懂代码，不知道在干什么。有三本关于垃圾回收的书，可以去读一读：《垃圾回收的算法与实现》、《垃圾回收算法手册-自动内存管理的艺术》、《深入 Java 虚拟机》。
+ 实际上，Go 官方的 runtime 作者中能够去维护 GC 代码的人也很少。
+据说，GC 是因为 Java 的发布而一举成名。
+ 基础概念 我们在学习内存分配的和 GC 的时候需要经常去问自己一些问题，顺着问题的思路去找代码会方便些。如果直接埋头去看 Go 语言内存相关的代码肯定会很蒙蔽的，毕竟内部数据结构真的很多。
+ 内存分配：
+ 内存从哪里来？ 内存要到哪里去？  GC 中标记流程：
+ 标记对象从哪里来？ 标记对象到哪里去？  GC 中清扫：</description>
     </item>
     
     <item>
-      <title>Day19 Tools_and_sys</title>
+      <title>GO 翻山越岭——系统调用调试工具</title>
       <link>https://jupiterxue.github.io/go-to-top/day19-tools_and_sys/</link>
       <pubDate>Thu, 09 Sep 2021 22:43:41 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day19-tools_and_sys/</guid>
-      <description></description>
+      <description>了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
+观察系统调用工具 在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss
+案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：
+使用 strace 指令 + 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
+案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：
+我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 + -f 参数 + nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
+注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn&amp;rsquo;t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/
+案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。</description>
     </item>
     
     <item>
