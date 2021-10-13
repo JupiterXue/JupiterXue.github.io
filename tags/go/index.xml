@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Sun, 12 Sep 2021 10:01:17 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 18 Sep 2021 22:20:31 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2021 09 19 Ddia Chapter4</title>
+      <link>https://jupiterxue.github.io/posts/2021-09-19-ddia-chapter4/</link>
+      <pubDate>Sat, 18 Sep 2021 22:20:31 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-09-19-ddia-chapter4/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Day21 Garbage_collection</title>
+      <link>https://jupiterxue.github.io/go-to-top/day21-garbage_collection/</link>
+      <pubDate>Sat, 18 Sep 2021 22:19:25 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day21-garbage_collection/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Go 翻山越岭——内存管理</title>
       <link>https://jupiterxue.github.io/go-to-top/day20-memory_management/</link>
