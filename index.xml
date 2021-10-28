@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Wed, 13 Oct 2021 23:04:46 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 25 Oct 2021 23:20:11 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2021 10 25 Escape From Escape Analysis</title>
+      <link>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</link>
+      <pubDate>Mon, 25 Oct 2021 23:20:11 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Leetcode 刷题初探</title>
       <link>https://jupiterxue.github.io/posts/2021-10-13-leetcode-thinking/</link>
