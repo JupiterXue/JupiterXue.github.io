@@ -7,20 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Wed, 03 Nov 2021 07:23:56 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>理论</title>
-      <link>https://jupiterxue.github.io/tags/%E7%90%86%E8%AE%BA/</link>
-      <pubDate>Wed, 03 Nov 2021 07:23:56 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/tags/%E7%90%86%E8%AE%BA/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Fri, 05 Nov 2021 16:55:34 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go</title>
       <link>https://jupiterxue.github.io/tags/go/</link>
-      <pubDate>Wed, 03 Nov 2021 07:20:48 +0800</pubDate>
+      <pubDate>Fri, 05 Nov 2021 16:55:34 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/tags/go/</guid>
       <description></description>
@@ -29,9 +20,18 @@
     <item>
       <title>思想</title>
       <link>https://jupiterxue.github.io/tags/%E6%80%9D%E6%83%B3/</link>
-      <pubDate>Mon, 01 Nov 2021 23:04:34 +0800</pubDate>
+      <pubDate>Fri, 05 Nov 2021 15:12:11 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/tags/%E6%80%9D%E6%83%B3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>理论</title>
+      <link>https://jupiterxue.github.io/tags/%E7%90%86%E8%AE%BA/</link>
+      <pubDate>Wed, 03 Nov 2021 07:23:56 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/tags/%E7%90%86%E8%AE%BA/</guid>
       <description></description>
     </item>
     
