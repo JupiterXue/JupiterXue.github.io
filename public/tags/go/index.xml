@@ -7,14 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Fri, 05 Nov 2021 16:55:34 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Nov 2021 16:55:34 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day23 Go_memory_management_2</title>
+      <title>Go 翻山越岭——Go 内存管理（2）</title>
       <link>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</link>
-      <pubDate>Fri, 05 Nov 2021 16:55:34 +0800</pubDate>
+      <pubDate>Sat, 06 Nov 2021 16:55:34 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</guid>
-      <description></description>
+      <description>Go 语言在内存管理中申请使用稀疏堆时，使用系统调用 mmap ，因此可以分配出不连续的地址（而不是通过系统调用 brk 来调整虚拟空间里堆的 program break 来分配连续内存地址）。在使用稀疏堆时，整体的堆内存怎样增长的呢？
+较大的内存块 arenas 其实是个大的指针数组，每个指针就是 mheap arena 结构，它会指向具体的 64 MB 的内存，在当前的 mheap 结构中还会维护最后一个起始位置和结束地址。一旦分配内存的时候真实结束地址超过了 mheap 结束地址时，说明还需要从操作系统要更多虚拟内存，这时还是执行 mmap 再分配一个 64 MB 的地址空间，并且维护好当前的数据结构，把原来的 n 变为 n+1 相当于增加了一个元素。
+在 Go 语言中除了从操作系统申请内存的方式以外，在分配时还要区分内存大小，有三种分配大小分类：
+ Tiny：size &amp;lt; 16 bytes &amp;amp;&amp;amp; has no pointer(noscan) Small: has pointer(scan) || (size &amp;gt;= 16 bytes &amp;amp;&amp;amp; size &amp;lt;= 32KB) Large: size &amp;gt; 32KB  并且，内存分配器在 Go 语言中为了做一些优化，维护了一种多级结构：
+ mcache：与 P 绑定，本地内存分配操作，不需要加锁。 mcentral：中心分配缓存，分配时需要上锁，不同 spanClass 使用不同的锁。 mheap：全局唯一，从 OS 申请内存，并修改器内存定义结构时，需要加锁，是个全局锁  在距离应用代码最近的 P 的位置，每个 P 都绑定了 mcache 结构，这个结构会有大小相应的缓存。本地分配内存时会优先从 mcache 中找，如果找不到就要从全局的缓存中去找，如果还是没有相应的内存块可以用的话，就需要去全局唯一的 mheap 请求，从操作系统重新划分一部分内存出来。不过 mheap 还有 area 结构，如果 area 还没有用完的话还是会从 area 里面去切分，如果用完了就会去操作系统中去申请。</description>
     </item>
     
     <item>
