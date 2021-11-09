@@ -2,23 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/</loc>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
+  </url><url>
     <loc>https://jupiterxue.github.io/tags/go/</loc>
-    <lastmod>2021-11-06T16:55:34+08:00</lastmod>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/</loc>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/</loc>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/</loc>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</loc>
     <lastmod>2021-11-06T16:55:34+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/</loc>
     <lastmod>2021-11-06T16:55:34+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/tags/</loc>
-    <lastmod>2021-11-06T16:55:34+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/</loc>
-    <lastmod>2021-11-06T16:55:34+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/posts/</loc>
-    <lastmod>2021-11-05T15:12:11+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-11-05-learn_some_marxist_theory/</loc>
     <lastmod>2021-11-05T15:12:11+08:00</lastmod>
