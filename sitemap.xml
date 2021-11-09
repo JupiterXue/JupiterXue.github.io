@@ -2,19 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</loc>
-    <lastmod>2021-10-25T23:20:11+08:00</lastmod>
+    <loc>https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/tags/go/</loc>
-    <lastmod>2021-10-25T23:20:11+08:00</lastmod>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/posts/</loc>
-    <lastmod>2021-10-25T23:20:11+08:00</lastmod>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/tags/</loc>
-    <lastmod>2021-10-25T23:20:11+08:00</lastmod>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/</loc>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/</loc>
+    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</loc>
+    <lastmod>2021-11-06T16:55:34+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/</loc>
+    <lastmod>2021-11-06T16:55:34+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-05-learn_some_marxist_theory/</loc>
+    <lastmod>2021-11-05T15:12:11+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/%E6%80%9D%E6%83%B3/</loc>
+    <lastmod>2021-11-05T15:12:11+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-03-why_cant_eat_burned_meat/</loc>
+    <lastmod>2021-11-03T07:23:56+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/%E7%90%86%E8%AE%BA/</loc>
+    <lastmod>2021-11-03T07:23:56+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day22-go_memory_management/</loc>
+    <lastmod>2021-11-03T07:20:48+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day21-virtual_memory_management/</loc>
+    <lastmod>2021-11-02T22:19:25+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-01-five_up_is_normal/</loc>
+    <lastmod>2021-11-01T23:04:34+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</loc>
     <lastmod>2021-10-25T23:20:11+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/tags/leetcode/</loc>
@@ -25,12 +61,6 @@
   </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-09-19-ddia-chapter4/</loc>
     <lastmod>2021-09-18T22:20:31+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/go-to-top/day21-garbage_collection/</loc>
-    <lastmod>2021-09-18T22:19:25+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/go-to-top/</loc>
-    <lastmod>2021-09-18T22:19:25+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day20-memory_management/</loc>
     <lastmod>2021-09-12T10:01:17+08:00</lastmod>
@@ -84,9 +114,6 @@
     <lastmod>2021-08-29T18:24:02+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-08-29-minimalism/</loc>
-    <lastmod>2021-08-29T18:21:22+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/tags/%E6%80%9D%E6%83%B3/</loc>
     <lastmod>2021-08-29T18:21:22+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day13-data-structure_channel/</loc>

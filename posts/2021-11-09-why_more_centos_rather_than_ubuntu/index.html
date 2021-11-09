@@ -7,23 +7,31 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> 2021 10 25 Escape From Escape Analysis | 木夜星空的个人博客</title>
-  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/'>
+  <title> 为什么公司更多用 CentOS 而不是 Ubuntu | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="2021 10 25 Escape From Escape Analysis" />
-<meta property="og:description" content="" />
+  <meta property="og:title" content="为什么公司更多用 CentOS 而不是 Ubuntu" />
+<meta property="og:description" content="想做个类似鹤老师经济学一样的专栏，利用到经济学的工具，对自己的领域进行一些思辨。
+有的人说：这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。 有的人说：本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。 还有人说：历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。
+摘自网友 namelosw 的一个梗：
+ 服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐 编程语言（以前）：要说还是 C&#43;&#43; 牛皮，Java 就图一乐 编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐 建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐 引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐 引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐 桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意
+ " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2021-10-25T23:20:11+08:00" />
-<meta property="article:modified_time" content="2021-10-25T23:20:11+08:00" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-09T10:08:30+08:00" />
+<meta property="article:modified_time" content="2021-11-09T10:08:30+08:00" />
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="2021 10 25 Escape From Escape Analysis"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:title" content="为什么公司更多用 CentOS 而不是 Ubuntu"/>
+<meta name="twitter:description" content="想做个类似鹤老师经济学一样的专栏，利用到经济学的工具，对自己的领域进行一些思辨。
+有的人说：这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。 有的人说：本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。 还有人说：历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。
+摘自网友 namelosw 的一个梗：
+ 服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐 编程语言（以前）：要说还是 C&#43;&#43; 牛皮，Java 就图一乐 编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐 建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐 引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐 引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐 桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意
+ "/>
 
   
   
@@ -90,14 +98,14 @@
       <ul>
         
         <li>
-          <a class="icon" href=" https://jupiterxue.github.io/posts/2021-10-13-leetcode-thinking/" aria-label="Previous">
+          <a class="icon" href=" https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/" aria-label="Previous">
             <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
           </a>
         </li>
         
         
         <li>
-          <a class="icon" href="https://jupiterxue.github.io/posts/2021-11-01-five_up_is_normal/" aria-label="Next">
+          <a class="icon" href="https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/" aria-label="Next">
             <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
           </a>
         </li>
@@ -130,21 +138,21 @@
 
   
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%ac%e5%8f%b8%e6%9b%b4%e5%a4%9a%e7%94%a8%20CentOS%20%e8%80%8c%e4%b8%8d%e6%98%af%20Ubuntu&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-09-why_more_centos_rather_than_ubuntu%2f" aria-label="Github">
         <i class="fab fa-github " aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%ac%e5%8f%b8%e6%9b%b4%e5%a4%9a%e7%94%a8%20CentOS%20%e8%80%8c%e4%b8%8d%e6%98%af%20Ubuntu&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-09-why_more_centos_rather_than_ubuntu%2f" aria-label="QQ">
       <i class="fab fa-qq " aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%ac%e5%8f%b8%e6%9b%b4%e5%a4%9a%e7%94%a8%20CentOS%20%e8%80%8c%e4%b8%8d%e6%98%af%20Ubuntu&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-09-why_more_centos_rather_than_ubuntu%2f" aria-label="微信">
       <i class="fab fa-weixin " aria-hidden="true"></i>
     </a>
   </li>
@@ -228,13 +236,13 @@
   <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
     <header>
       <h1 class="posttitle" itemprop="name headline">
-        2021 10 25 Escape From Escape Analysis
+        为什么公司更多用 CentOS 而不是 Ubuntu
       </h1>
       <div class="meta">
         
         <div class="postdate">
           
-          <time datetime="2021-10-25 23:20:11 &#43;0800 &#43;0800" itemprop="datePublished">2021-10-25</time>
+          <time datetime="2021-11-09 10:08:30 &#43;0800 &#43;0800" itemprop="datePublished">2021-11-09</time>
           
         </div>
         
@@ -242,7 +250,7 @@
         <div class="article-read-time">
           <i class="far fa-clock"></i>
           
-          0 minute read
+          2 minute read
         </div>
         
         
@@ -251,7 +259,7 @@
             <i class="fas fa-tag"></i>
             
             
-            <a class="tag-link" href="/tags/go" rel="tag">Go</a>
+            <a class="tag-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA" rel="tag">计算机</a>
             
         </div>
         
@@ -261,7 +269,23 @@
   
     <div class="content" itemprop="articleBody">
 
-      
+      <p>想做个类似鹤老师经济学一样的专栏，利用到经济学的工具，对自己的领域进行一些思辨。</p>
+<p>有的人说：这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。
+有的人说：本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。
+还有人说：历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。</p>
+<p>摘自网友 namelosw 的一个梗：</p>
+<blockquote>
+<p>服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐
+编程语言（以前）：要说还是 C++ 牛皮，Java 就图一乐
+编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐
+建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐
+引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐
+引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐
+桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意
+桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意
+桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意</p>
+</blockquote>
+
     </div>
   </article>
   
@@ -327,21 +351,21 @@
 
   
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%ac%e5%8f%b8%e6%9b%b4%e5%a4%9a%e7%94%a8%20CentOS%20%e8%80%8c%e4%b8%8d%e6%98%af%20Ubuntu&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-09-why_more_centos_rather_than_ubuntu%2f" aria-label="Github">
         <i class="fab fa-github fa-lg" aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%ac%e5%8f%b8%e6%9b%b4%e5%a4%9a%e7%94%a8%20CentOS%20%e8%80%8c%e4%b8%8d%e6%98%af%20Ubuntu&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-09-why_more_centos_rather_than_ubuntu%2f" aria-label="QQ">
       <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%ac%e5%8f%b8%e6%9b%b4%e5%a4%9a%e7%94%a8%20CentOS%20%e8%80%8c%e4%b8%8d%e6%98%af%20Ubuntu&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-09-why_more_centos_rather_than_ubuntu%2f" aria-label="微信">
       <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
     </a>
   </li>

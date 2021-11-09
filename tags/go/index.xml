@@ -7,7 +7,59 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Mon, 25 Oct 2021 23:20:11 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 Nov 2021 10:16:37 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2021 11 11 Programming_typewriting_and_speed</title>
+      <link>https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/</link>
+      <pubDate>Tue, 09 Nov 2021 10:16:37 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——Go 内存管理（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</link>
+      <pubDate>Sat, 06 Nov 2021 16:55:34 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</guid>
+      <description>Go 语言在内存管理中申请使用稀疏堆时，使用系统调用 mmap ，因此可以分配出不连续的地址（而不是通过系统调用 brk 来调整虚拟空间里堆的 program break 来分配连续内存地址）。在使用稀疏堆时，整体的堆内存怎样增长的呢？
+较大的内存块 arenas 其实是个大的指针数组，每个指针就是 mheap arena 结构，它会指向具体的 64 MB 的内存，在当前的 mheap 结构中还会维护最后一个起始位置和结束地址。一旦分配内存的时候真实结束地址超过了 mheap 结束地址时，说明还需要从操作系统要更多虚拟内存，这时还是执行 mmap 再分配一个 64 MB 的地址空间，并且维护好当前的数据结构，把原来的 n 变为 n+1 相当于增加了一个元素。
+在 Go 语言中除了从操作系统申请内存的方式以外，在分配时还要区分内存大小，有三种分配大小分类：
+ Tiny：size &amp;lt; 16 bytes &amp;amp;&amp;amp; has no pointer(noscan) Small: has pointer(scan) || (size &amp;gt;= 16 bytes &amp;amp;&amp;amp; size &amp;lt;= 32KB) Large: size &amp;gt; 32KB  并且，内存分配器在 Go 语言中为了做一些优化，维护了一种多级结构：
+ mcache：与 P 绑定，本地内存分配操作，不需要加锁。 mcentral：中心分配缓存，分配时需要上锁，不同 spanClass 使用不同的锁。 mheap：全局唯一，从 OS 申请内存，并修改器内存定义结构时，需要加锁，是个全局锁  在距离应用代码最近的 P 的位置，每个 P 都绑定了 mcache 结构，这个结构会有大小相应的缓存。本地分配内存时会优先从 mcache 中找，如果找不到就要从全局的缓存中去找，如果还是没有相应的内存块可以用的话，就需要去全局唯一的 mheap 请求，从操作系统重新划分一部分内存出来。不过 mheap 还有 area 结构，如果 area 还没有用完的话还是会从 area 里面去切分，如果用完了就会去操作系统中去申请。</description>
+    </item>
+    
+    <item>
+      <title>Day22 Go_memory_management</title>
+      <link>https://jupiterxue.github.io/go-to-top/day22-go_memory_management/</link>
+      <pubDate>Wed, 03 Nov 2021 07:20:48 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day22-go_memory_management/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——进程与虚拟内存的分布</title>
+      <link>https://jupiterxue.github.io/go-to-top/day21-virtual_memory_management/</link>
+      <pubDate>Tue, 02 Nov 2021 22:19:25 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day21-virtual_memory_management/</guid>
+      <description>没想到继续更文已经是一个月半以后了。立个小小的 flag，到年底把 Go 基础与浅层的内核过一遍。保持两天一更的节奏。还是继续接着上期说的内存管理。了解了内存管理抽象的基础概念之后，来看一下一些具体的实现。
+虚拟内存的分布 首先来看一下虚拟内存是如何布局的，这部分其实算是操作系统的内容。在《The Linux Programming Interface》这本书中提到了一张图，描述了 32 位操作系统大致的虚拟地址空间的分布是怎样的：
+因为是 32 位操作系统，所以总的地址空间是 4 GB。可以看到上方是高地址，下方是低地址，所以可以看到以下几个特征：
+ 栈 Stack 是从高地址向低地址增长的。 堆 Heap 是从低地址向高地址增长的。 调整堆顶一般来说是调整的 Program break。  然后再来看看我们常用的 64 位系统中进程虚拟内存的分布是怎样的，摘自网络：
+这张图可能不是很准确，感兴趣可以去官方文档，描述更加详细：https://www.kernel.org/doc/html/latest/x86/x86_64/mm.html 。
+可以看到 64 位操作系统可使用的虚拟内存空间是增加的，并且基本上都是以 TB 为单位。但通过对比功能可以发现，其实 64 位内存的整体布局和 32 位的内存布局大差不差。
+前面说到的都是单线程的情况，而在 Go 中我们会经常用到多线程，那么多线程的情况下，进程虚拟内存又是怎么分布的呢？一图就懂：
+相比单进程，可以看到栈的变化最大。主线程的栈还是从上往下增长，但是其他的线程会分布在中间，并且中间会穿插动态链接库 Shared libraries、共享内存 shared memory。
+而堆空间没有什么变化，但也意味着它对其他线程来说都是公用的。所以线程要访问堆上的东西都一般是需要加锁的。
+OK，了解了虚拟内存地址分布情况，那么是谁来对内存进行分配呢？没错，有请下一位主角登场。
+内存分配器 内存分配器 Allocator，理论上分为两种：
+ 线性分配器 Bump / Sequential Allocator 空闲链表分配器 Free List Allocator  线性分配器在分配内存时都是从虚拟内存中扒一点出来，下次还要分配又继续扒，继续扒 &amp;hellip; 如果中间有内存释放掉了 free，这些线性分配器也不会对这些被释放掉的内存进行复用。而如果我们现在的需求就是要对空间进行复用的话，就需要额外的链表来维护被释放掉的块，这也叫做空闲链表分配器。
+一般线性分配器由于自身的局限，应到的地方少，所以我们继续深入研究一下空闲链表分配器。我们在看一些网文或博客的时候经常会看到，实现它的算法会有很多中类型，不过大致也就以下四种：</description>
+    </item>
+    
     <item>
       <title>2021 10 25 Escape From Escape Analysis</title>
       <link>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</link>
@@ -23,15 +75,6 @@
       <pubDate>Sat, 18 Sep 2021 22:20:31 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/posts/2021-09-19-ddia-chapter4/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Day21 Garbage_collection</title>
-      <link>https://jupiterxue.github.io/go-to-top/day21-garbage_collection/</link>
-      <pubDate>Sat, 18 Sep 2021 22:19:25 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/go-to-top/day21-garbage_collection/</guid>
       <description></description>
     </item>
     
