@@ -2,19 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/go/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/</loc>
+    <lastmod>2021-11-09T10:16:37+08:00</lastmod>
+  </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/</loc>
     <lastmod>2021-11-09T10:08:30+08:00</lastmod>
   </url><url>
-    <loc>https://jupiterxue.github.io/tags/go/</loc>
-    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/posts/</loc>
-    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/tags/</loc>
-    <lastmod>2021-11-09T10:08:30+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/</loc>
+    <loc>https://jupiterxue.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/</loc>
     <lastmod>2021-11-09T10:08:30+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day23-go_memory_management_2/</loc>
