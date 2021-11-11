@@ -7,7 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Tue, 09 Nov 2021 10:16:37 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 10 Nov 2021 15:18:35 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go 翻山越岭——垃圾回收基础</title>
+      <link>https://jupiterxue.github.io/go-to-top/day24-garbage_collection_base/</link>
+      <pubDate>Wed, 10 Nov 2021 15:18:35 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day24-garbage_collection_base/</guid>
+      <description>之前说的内存回收可以用这张全局图来解释，总共 6 个 level 的分配结构，把这几个链路都梳理弄清楚就能有个清晰理解。
+垃圾回收的理解更为难，需要一些算法基础，否则在看这部分知识的时候很可能完全看不懂。
+在理解垃圾回收之前，首先需要先对垃圾做一个分类，程序当中有两类的垃圾，语义垃圾和语法垃圾。
+语义垃圾(semantic garbage)，有时也称为内存泄露，是指从语法上可触达的对象（包括可通过局部、全局变量引用得到的对象），但从语义上来讲他们都是垃圾，垃圾回收器对它们无能为力。
+语法垃圾(syntactic garbage)是指从语法上无法触达的对象，这些才是垃圾收集器收集的主要目标。比如有些内存无论用怎样的代码去操作都是无法接触到的。
+这里有几个例子有助于理解：</description>
+    </item>
+    
     <item>
       <title>2021 11 11 Programming_typewriting_and_speed</title>
       <link>https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/</link>
