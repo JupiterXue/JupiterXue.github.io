@@ -47,4 +47,4 @@ date: 2021-07-24 17:51:42
 
 欢迎更多交流
 
-Github 👨‍👦‍👦地址: [Jupiter](https://github.com/JupiterXue) ，邮件📧：<xfavor2top@gmail.com>
+Github 👨‍👦‍👦地址: [Jupiter](https://github.com/JupiterXue) ，邮件📧：<JupiterXue97@gmail.com>
