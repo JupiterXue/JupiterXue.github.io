@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>工具 on 木夜星空的个人博客</title>
+    <link>https://jupiterxue.github.io/tags/%E5%B7%A5%E5%85%B7/</link>
+    <description>Recent content in 工具 on 木夜星空的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>JupiterXue</copyright>
+    <lastBuildDate>Thu, 18 Nov 2021 10:16:09 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>沉浸式写作体验——Typora 插图</title>
+      <link>https://jupiterxue.github.io/posts/2021-11-18_typora_illustration/</link>
+      <pubDate>Thu, 18 Nov 2021 10:16:09 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-11-18_typora_illustration/</guid>
+      <description>最近一位也在写公众号的小伙伴问到公众号有没有什么便捷的方式插入图片，以及是更好的沉浸式写作体验，边输入边搞定排版。这个问题其实之前也有两个小伙伴问过我，我也只是丢给她们怎样使用的链接就“放心”了。没想到后来还会有其他小伙伴也可能用到，既然这个分享的动作也是重复的，那么我就来优化一下，动手写一篇手把手的教学。
+虽然本文只是在说如何配置和使用 Markdown 编辑器 Typora，但经过下面略微复杂的操作后，可以做到一劳永逸。刚开始的时候有点麻烦，后来每次在 Typora 中写完文章后就能全选然后 Ctrl C 和 Ctrl V 复制粘贴到公众号，填上标题作者、选上配图打开原创，几秒就能发文章了。
+Typora 的安装与使用 安装 首先来介绍一下 Typora，打开官网，可以看到非常简洁的界面，找到右上角的下载，根据你的电脑系统平台选择相应的安装包。
+使用 安装好之后，打开 Typora 可以看到一个非常清爽、没有任何干扰的写作界面。
+什么是 Markdown，图中也给出了一定的解释。其实 Markdown 也是专门给程序员而设计的语法，通过类似代码的方式来实现文字、排版的不同样式。并且 Typora 采用所见即所得(what you can see is what you can get) 的方式，写入的 Markdown 语法会被直接解析成相应的格式。如果你想看源代码，使用快捷键 Ctrl /，同样的，再次按下 Ctrl /，就能回到原样了。
+公众号插图的解决方案 公众号可以直接插图片有三种方式，一中是 QQ 或微信截图，一种是网络图（本地如果上传到了云端就可以直接粘贴过去），还有一种是本地拖入图。它们分别有以下的局限：
+  截图能够直接粘贴，但图片大小和位置不能做改动（我是没找到）
+  本地拖入的方式虽然还勉强方便，但同样不能修改大小和位置。
+  而网络上的图或者从本地上传到微信的图，大小固定，更是不能修改大小。
+  有些图我们想修改大小、加上边框、直接粘贴，有没有什么好的办法呢？有的——Typora+Github + PicGo + jsDelivr。通过 PicGo 创建稳定图床 URL 链接，存放在免费的云端仓库 Github，再通过 jsDelivr 来加速访问 Github，最终在 Typora 实现每插入一张图就自动上传到云端、生成可直接复制粘贴的云端图。</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -7,7 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Thu, 29 Jul 2021 09:56:39 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 Nov 2021 10:16:37 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我的编程之路——关于Python 学习的回忆</title>
+      <link>https://jupiterxue.github.io/posts/2021-11-11-my_programming_road/</link>
+      <pubDate>Tue, 09 Nov 2021 10:16:37 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-11-11-my_programming_road/</guid>
+      <description>本来今天想写点关于“编程、打字速度、刷入法”的一个讨论，因为一个朋友建议，希望我能写写关于编程的学习经历。不如就在今天吧。谈一谈我是如何学习 Python的。
+要说我现在写 Python 的水平，可能还只是停留在使用框架和包上，距离真正的 Python 大神还差一段距离。不过像爬虫 Scrapy、requests，后端 FastAPI，数据分析 Pandas、Numpy，还是能够信手拈来。从 Python3.4 到 Python3.8 每个版本更新有怎样的迭代都有个了解，一些魔术方法、奇淫技巧用得较少偶尔能够抖个机灵。因此我现在大多数时间还是在用 Python 做一些 CRUD 增删改查的工作、衔接多种数据库做数据处理以及其他大数据组件的调用插件。至于 Python 算法的能力，那又是另一个无关编程语言，而是算法与数据结构的能力了，到目前为止仅刷过了 283 道题，还需继续努力。
+所以我所说的可能对你没有什么帮助，如果你感兴趣，可以接着往下看。
+初次接触编程—还是那个 C 语言 在大学以前我其实还不知道有编程这回事。直到上了第一门编程课，遇见了那本到今天也想骂又念念不忘的红皮书《C 程序设计-谭浩强著》。
+当时学编程的最直接感受就是当时老师说的一句话：暂时不用管这个 #include 、main 是什么意思，我们 C 程序都需要这样的格式才能够执行代码。
+1#include &amp;lt;stdio.h&amp;gt;2 3main() { 4 printf(&amp;#34;hello world\n&amp;#34;) 5} 不求甚解，大概是当时止步于编程大门前一个绊脚石。
+结识好伙伴 Java 大二的时候，我有个室友，从大一开始就和我是同一专业、同一个班，后来我和他一起转专业，从物联网转到软件工程，我们俩也神奇地分到同一班、同一个寝室。我们都对实验室感兴趣，于是去找到了当时做 Web 方向的实验室。室友他其实从高中就开始学习编程，自己在没有任何外力的情况下啃了一大部分《Java 编程思想》，因此在大学期间已经具备了 Java 编程的基础，不仅在 C 语言中考得高分，在实验室中也收到了指导老师的看重。
+某一天，因为实验室有众多不同领域的老师，开始分方向进行小组学习。一个是有大好前景的 Java Web，一个是 Python 视觉处理。室友虽然一直在向我传达选什么方向都可以，但还是透露出他希望我选择 Java 方向，因为实验室主导老师擅长这个，室友他也熟悉。也正是因为于此，我不甘一直在他的带领下，我希望能够和他，站在一起。所以还是选择了些许陌生、迷茫的 Python。（即便当时大一下的暑假我自己看完了大部分《Java 从入门到精通》，还是坚定地做出了选择）后来，我们俩回顾当初这段经历，依然觉得我可能选错了，但我，还是不后悔。也不得不说，当时通过对比学习了两门编程语言基础语法，也为我快速学习 Python 奠定了良好基础。基础语法如隔层纱，只要花时间去阅读、去尝试就能了解与理解。
+结识新朋友 Python 其实当时也抱着很高的热情想学 Python，第一本看的 Python 书便是《Python 编程入门》。得益于有点 C 和 JAVA 基础，这本书我拿到的第一周就把基础都看完了，只有三个实践项目因为都不是很感兴趣就没看下去了：一个是打飞机游戏、一个是 Django 后台，还有一个是 GUI 可视化。后来也有没有接触过 Python 的同学，希望我能推荐一本入门的书，我也毫不犹豫地推荐了它。对了，现在这本书已经有第二版了，相信也不会差。</description>
+    </item>
+    
     <item>
       <title>Grafana 条形图实践</title>
       <link>https://jupiterxue.github.io/posts/2021-07-29-grafana-bar-chart/</link>

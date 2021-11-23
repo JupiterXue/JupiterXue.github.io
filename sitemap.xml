@@ -2,25 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-23-how_to_training_logic/</loc>
+    <lastmod>2021-11-23T22:59:35+08:00</lastmod>
+  </url><url>
     <loc>https://jupiterxue.github.io/tags/go/</loc>
-    <lastmod>2021-11-10T15:18:35+08:00</lastmod>
+    <lastmod>2021-11-23T22:59:35+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/</loc>
+    <lastmod>2021-11-23T22:59:35+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/</loc>
+    <lastmod>2021-11-23T22:59:35+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/</loc>
+    <lastmod>2021-11-23T22:59:35+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day29-morden_write_barrier/</loc>
+    <lastmod>2021-11-22T11:49:45+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/</loc>
+    <lastmod>2021-11-22T11:49:45+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day28-mark-lost-solutions/</loc>
+    <lastmod>2021-11-19T21:31:07+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/tags/%E5%B7%A5%E5%85%B7/</loc>
+    <lastmod>2021-11-18T10:16:09+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-18_typora_illustration/</loc>
+    <lastmod>2021-11-18T10:16:09+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day27-three_color_mark/</loc>
+    <lastmod>2021-11-17T15:16:20+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/posts/2021-11-16-programming_typewriting_and_speed/</loc>
+    <lastmod>2021-11-16T10:52:05+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day26-go_garbage_collection_mark/</loc>
+    <lastmod>2021-11-15T09:07:46+08:00</lastmod>
+  </url><url>
+    <loc>https://jupiterxue.github.io/go-to-top/day25-go_garbage_collection/</loc>
+    <lastmod>2021-11-11T23:26:35+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/go-to-top/day24-garbage_collection_base/</loc>
     <lastmod>2021-11-10T15:18:35+08:00</lastmod>
   </url><url>
-    <loc>https://jupiterxue.github.io/go-to-top/</loc>
-    <lastmod>2021-11-10T15:18:35+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/tags/</loc>
-    <lastmod>2021-11-10T15:18:35+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/</loc>
-    <lastmod>2021-11-10T15:18:35+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/posts/2021-11-11-programming_typewriting_and_speed/</loc>
+    <loc>https://jupiterxue.github.io/tags/python/</loc>
     <lastmod>2021-11-09T10:16:37+08:00</lastmod>
   </url><url>
-    <loc>https://jupiterxue.github.io/posts/</loc>
+    <loc>https://jupiterxue.github.io/posts/2021-11-11-my_programming_road/</loc>
     <lastmod>2021-11-09T10:16:37+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/</loc>
@@ -201,9 +231,6 @@
     <lastmod>2021-07-29T09:56:39+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/tags/promethues/</loc>
-    <lastmod>2021-07-29T09:56:39+08:00</lastmod>
-  </url><url>
-    <loc>https://jupiterxue.github.io/tags/python/</loc>
     <lastmod>2021-07-29T09:56:39+08:00</lastmod>
   </url><url>
     <loc>https://jupiterxue.github.io/posts/2021-07-28-python-replay/</loc>
