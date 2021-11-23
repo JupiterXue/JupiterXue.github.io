@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> 我的编程之路——关于Python 学习的回忆 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-11-11-my_programming_road/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="我的编程之路——关于Python 学习的回忆" />
+<meta property="og:description" content="本来今天想写点关于“编程、打字速度、刷入法”的一个讨论，因为一个朋友建议，希望我能写写关于编程的学习经历。不如就在今天吧。谈一谈我是如何学习 Python的。
+要说我现在写 Python 的水平，可能还只是停留在使用框架和包上，距离真正的 Python 大神还差一段距离。不过像爬虫 Scrapy、requests，后端 FastAPI，数据分析 Pandas、Numpy，还是能够信手拈来。从 Python3.4 到 Python3.8 每个版本更新有怎样的迭代都有个了解，一些魔术方法、奇淫技巧用得较少偶尔能够抖个机灵。因此我现在大多数时间还是在用 Python 做一些 CRUD 增删改查的工作、衔接多种数据库做数据处理以及其他大数据组件的调用插件。至于 Python 算法的能力，那又是另一个无关编程语言，而是算法与数据结构的能力了，到目前为止仅刷过了 283 道题，还需继续努力。
+所以我所说的可能对你没有什么帮助，如果你感兴趣，可以接着往下看。
+初次接触编程—还是那个 C 语言 在大学以前我其实还不知道有编程这回事。直到上了第一门编程课，遇见了那本到今天也想骂又念念不忘的红皮书《C 程序设计-谭浩强著》。
+当时学编程的最直接感受就是当时老师说的一句话：暂时不用管这个 #include 、main 是什么意思，我们 C 程序都需要这样的格式才能够执行代码。
+1#include &lt;stdio.h&gt;2 3main() { 4 printf(&#34;hello world\n&#34;) 5} 不求甚解，大概是当时止步于编程大门前一个绊脚石。
+结识好伙伴 Java 大二的时候，我有个室友，从大一开始就和我是同一专业、同一个班，后来我和他一起转专业，从物联网转到软件工程，我们俩也神奇地分到同一班、同一个寝室。我们都对实验室感兴趣，于是去找到了当时做 Web 方向的实验室。室友他其实从高中就开始学习编程，自己在没有任何外力的情况下啃了一大部分《Java 编程思想》，因此在大学期间已经具备了 Java 编程的基础，不仅在 C 语言中考得高分，在实验室中也收到了指导老师的看重。
+某一天，因为实验室有众多不同领域的老师，开始分方向进行小组学习。一个是有大好前景的 Java Web，一个是 Python 视觉处理。室友虽然一直在向我传达选什么方向都可以，但还是透露出他希望我选择 Java 方向，因为实验室主导老师擅长这个，室友他也熟悉。也正是因为于此，我不甘一直在他的带领下，我希望能够和他，站在一起。所以还是选择了些许陌生、迷茫的 Python。（即便当时大一下的暑假我自己看完了大部分《Java 从入门到精通》，还是坚定地做出了选择）后来，我们俩回顾当初这段经历，依然觉得我可能选错了，但我，还是不后悔。也不得不说，当时通过对比学习了两门编程语言基础语法，也为我快速学习 Python 奠定了良好基础。基础语法如隔层纱，只要花时间去阅读、去尝试就能了解与理解。
+结识新朋友 Python 其实当时也抱着很高的热情想学 Python，第一本看的 Python 书便是《Python 编程入门》。得益于有点 C 和 JAVA 基础，这本书我拿到的第一周就把基础都看完了，只有三个实践项目因为都不是很感兴趣就没看下去了：一个是打飞机游戏、一个是 Django 后台，还有一个是 GUI 可视化。后来也有没有接触过 Python 的同学，希望我能推荐一本入门的书，我也毫不犹豫地推荐了它。对了，现在这本书已经有第二版了，相信也不会差。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-11-11-my_programming_road/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-09T10:16:37+08:00" />
+<meta property="article:modified_time" content="2021-11-09T10:16:37+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="我的编程之路——关于Python 学习的回忆"/>
+<meta name="twitter:description" content="本来今天想写点关于“编程、打字速度、刷入法”的一个讨论，因为一个朋友建议，希望我能写写关于编程的学习经历。不如就在今天吧。谈一谈我是如何学习 Python的。
+要说我现在写 Python 的水平，可能还只是停留在使用框架和包上，距离真正的 Python 大神还差一段距离。不过像爬虫 Scrapy、requests，后端 FastAPI，数据分析 Pandas、Numpy，还是能够信手拈来。从 Python3.4 到 Python3.8 每个版本更新有怎样的迭代都有个了解，一些魔术方法、奇淫技巧用得较少偶尔能够抖个机灵。因此我现在大多数时间还是在用 Python 做一些 CRUD 增删改查的工作、衔接多种数据库做数据处理以及其他大数据组件的调用插件。至于 Python 算法的能力，那又是另一个无关编程语言，而是算法与数据结构的能力了，到目前为止仅刷过了 283 道题，还需继续努力。
+所以我所说的可能对你没有什么帮助，如果你感兴趣，可以接着往下看。
+初次接触编程—还是那个 C 语言 在大学以前我其实还不知道有编程这回事。直到上了第一门编程课，遇见了那本到今天也想骂又念念不忘的红皮书《C 程序设计-谭浩强著》。
+当时学编程的最直接感受就是当时老师说的一句话：暂时不用管这个 #include 、main 是什么意思，我们 C 程序都需要这样的格式才能够执行代码。
+1#include &lt;stdio.h&gt;2 3main() { 4 printf(&#34;hello world\n&#34;) 5} 不求甚解，大概是当时止步于编程大门前一个绊脚石。
+结识好伙伴 Java 大二的时候，我有个室友，从大一开始就和我是同一专业、同一个班，后来我和他一起转专业，从物联网转到软件工程，我们俩也神奇地分到同一班、同一个寝室。我们都对实验室感兴趣，于是去找到了当时做 Web 方向的实验室。室友他其实从高中就开始学习编程，自己在没有任何外力的情况下啃了一大部分《Java 编程思想》，因此在大学期间已经具备了 Java 编程的基础，不仅在 C 语言中考得高分，在实验室中也收到了指导老师的看重。
+某一天，因为实验室有众多不同领域的老师，开始分方向进行小组学习。一个是有大好前景的 Java Web，一个是 Python 视觉处理。室友虽然一直在向我传达选什么方向都可以，但还是透露出他希望我选择 Java 方向，因为实验室主导老师擅长这个，室友他也熟悉。也正是因为于此，我不甘一直在他的带领下，我希望能够和他，站在一起。所以还是选择了些许陌生、迷茫的 Python。（即便当时大一下的暑假我自己看完了大部分《Java 从入门到精通》，还是坚定地做出了选择）后来，我们俩回顾当初这段经历，依然觉得我可能选错了，但我，还是不后悔。也不得不说，当时通过对比学习了两门编程语言基础语法，也为我快速学习 Python 奠定了良好基础。基础语法如隔层纱，只要花时间去阅读、去尝试就能了解与理解。
+结识新朋友 Python 其实当时也抱着很高的热情想学 Python，第一本看的 Python 书便是《Python 编程入门》。得益于有点 C 和 JAVA 基础，这本书我拿到的第一周就把基础都看完了，只有三个实践项目因为都不是很感兴趣就没看下去了：一个是打飞机游戏、一个是 Django 后台，还有一个是 GUI 可视化。后来也有没有接触过 Python 的同学，希望我能推荐一本入门的书，我也毫不犹豫地推荐了它。对了，现在这本书已经有第二版了，相信也不会差。"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="https://jupiterxue.github.io/go-to-top/day24-garbage_collection_base/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+
+  
+  <li>
+    <a class="icon" href="mailto:?subject=%e6%88%91%e7%9a%84%e7%bc%96%e7%a8%8b%e4%b9%8b%e8%b7%af%e2%80%94%e2%80%94%e5%85%b3%e4%ba%8ePython%20%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%9b%9e%e5%bf%86&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-11-my_programming_road%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e6%88%91%e7%9a%84%e7%bc%96%e7%a8%8b%e4%b9%8b%e8%b7%af%e2%80%94%e2%80%94%e5%85%b3%e4%ba%8ePython%20%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%9b%9e%e5%bf%86&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-11-my_programming_road%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e6%88%91%e7%9a%84%e7%bc%96%e7%a8%8b%e4%b9%8b%e8%b7%af%e2%80%94%e2%80%94%e5%85%b3%e4%ba%8ePython%20%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%9b%9e%e5%bf%86&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-11-my_programming_road%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents"></nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        我的编程之路——关于Python 学习的回忆
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2021-11-09 10:16:37 &#43;0800 CST" itemprop="datePublished">2021-11-09</time>
+          
+        </div>
+        
+        
+        <div class="article-read-time">
+          <i class="far fa-clock"></i>
+          
+          11 minute read
+        </div>
+        
+        
+        
+        <div class="article-tag">
+            <i class="fas fa-tag"></i>
+            
+            
+            <a class="tag-link" href="/tags/python" rel="tag">Python</a>
+            
+        </div>
+        
+      </div>
+    </header>
+
+  
+    <div class="content" itemprop="articleBody">
+
+      <p>本来今天想写点关于“编程、打字速度、刷入法”的一个讨论，因为一个朋友建议，希望我能写写关于编程的学习经历。不如就在今天吧。谈一谈我是如何学习 Python的。</p>
+<p>要说我现在写 Python 的水平，可能还只是停留在使用框架和包上，距离真正的 Python 大神还差一段距离。不过像爬虫 Scrapy、requests，后端 FastAPI，数据分析 Pandas、Numpy，还是能够信手拈来。从 Python3.4 到 Python3.8 每个版本更新有怎样的迭代都有个了解，一些魔术方法、奇淫技巧用得较少偶尔能够抖个机灵。因此我现在大多数时间还是在用 Python 做一些 CRUD 增删改查的工作、衔接多种数据库做数据处理以及其他大数据组件的调用插件。至于 Python 算法的能力，那又是另一个无关编程语言，而是算法与数据结构的能力了，到目前为止仅刷过了 283 道题，还需继续努力。</p>
+<p>所以我所说的可能对你没有什么帮助，如果你感兴趣，可以接着往下看。</p>
+<h1 id="初次接触编程还是那个-c-语言">初次接触编程—还是那个 C 语言</h1>
+<p>在大学以前我其实还不知道有编程这回事。直到上了第一门编程课，遇见了那本到今天也想骂又念念不忘的红皮书《C 程序设计-谭浩强著》。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111112005136.jpeg" alt="C程序设计(第四版)"></p>
+<p>当时学编程的最直接感受就是当时老师说的一句话：暂时不用管这个 #include 、main 是什么意思，我们 C 程序都需要这样的格式才能够执行代码。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span style="color:#75715e"></span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>main() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>    printf(<span style="color:#e6db74">&#34;hello world</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>}
+</code></pre></div><p><strong>不求甚解</strong>，大概是当时止步于编程大门前一个绊脚石。</p>
+<h1 id="结识好伙伴-java">结识好伙伴 Java</h1>
+<p>大二的时候，我有个室友，从大一开始就和我是同一专业、同一个班，后来我和他一起转专业，从物联网转到软件工程，我们俩也神奇地分到同一班、同一个寝室。我们都对实验室感兴趣，于是去找到了当时做 Web 方向的实验室。室友他其实从高中就开始学习编程，自己在没有任何外力的情况下啃了一大部分《Java 编程思想》，因此在大学期间已经具备了 Java 编程的基础，不仅在 C 语言中考得高分，在实验室中也收到了指导老师的看重。</p>
+<p>某一天，因为实验室有众多不同领域的老师，开始分方向进行小组学习。一个是有大好前景的 Java Web，一个是 Python 视觉处理。室友虽然一直在向我传达选什么方向都可以，但还是透露出他希望我选择 Java 方向，因为实验室主导老师擅长这个，室友他也熟悉。也正是因为于此，我不甘一直在他的带领下，我希望能够和他，站在一起。所以还是选择了些许陌生、迷茫的 Python。（即便当时大一下的暑假我自己看完了大部分《Java 从入门到精通》，还是坚定地做出了选择）后来，我们俩回顾当初这段经历，依然觉得我可能选错了，但我，还是不后悔。也不得不说，当时通过对比学习了两门编程语言基础语法，也为我快速学习 Python 奠定了良好基础。<strong>基础语法如隔层纱，只要花时间去阅读、去尝试就能了解与理解</strong>。</p>
+<h1 id="结识新朋友-python">结识新朋友 Python</h1>
+<p>其实当时也抱着很高的热情想学 Python，第一本看的 Python 书便是《Python 编程入门》。得益于有点 C 和 JAVA 基础，这本书我拿到的第一周就把基础都看完了，只有三个实践项目因为都不是很感兴趣就没看下去了：一个是打飞机游戏、一个是 Django 后台，还有一个是 GUI 可视化。后来也有没有接触过 Python 的同学，希望我能推荐一本入门的书，我也毫不犹豫地推荐了它。对了，现在这本书已经有第二版了，相信也不会差。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111112003211.jpeg" alt="Python编程"></p>
+<p>再就是，大二那年每当我一有时间就会去刷一个慕课网的视频，因为每看完一节都会有经验值。很有一种打怪升级的感觉。最重要的是可以选择自己感兴趣的模块先学起来，再把一些不是很感兴趣的“怪”也打倒吃掉经验。那时候，基本上慕课网上所有 Python 的视频我都看完了,大概 30-40 个的样子，现在有 100 多个，更为丰富了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111112235332.png" alt="logo2020"></p>
+<p>现在想起了，这个过程也是很重要的。学习技术不单单学习其语法，<strong>关键是调动好奇心和激发求知欲</strong>，让我对各种 Python 所能实现的“魔法”非常感兴趣，比如：正则表达式、遇见数据采集，实现线性回归、文件处理、必学模块 collections 等等。每次点开新的视频真的像是打开了新的世界，原来 Python</p>
+<p>还能这么玩儿。</p>
+<h1 id="拥抱-python-踏进编程大门">拥抱 Python 踏进编程大门</h1>
+<p>虽然在慕课网学习了很多“花里胡哨”的视频，但其实我自己也能感觉得到，我还是不会编程，不会脱离视频、脱离教程自己去写代码，对比那位室友，还是差的太远。山人自有妙计，既然学习的都是零零散散的，不如报个编程学习班吧。不管是当时还是现在，可能有人嘲笑我说，一个软件工程专业的人，还需要报外面的培训班。我当时其实想得很清楚：一般报班的都是大四临时抱佛脚或者转行的人，而我作为大二的学生连临时抱佛脚的同学都赶不上，倒不如在大二期间借助培训班，扎实编程基础。</p>
+<p>真的没有让我失望。当时我学习的是为期 6 个月的 Python 爬虫。第一个月老师让我们放弃 Pycharm、VSCode 等能够自动补全的编辑器。课上的练习、课后的作业，完全在下面这样的白板（Python 自带的 IDLE，左边是编辑窗户口，右边是执行窗口）中手打代码。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111112008320.png" alt="image-20211111200833219"></p>
+<!-- raw HTML omitted -->
+<p>一个月后，不仅让当时的我感觉到编程能够如此顺手，现在看来也是编程的真正破冰阶段——<strong>抄写代码，提高写代码的熟悉度</strong>。就很像是游泳一样，想要学会游泳，不是说掌握手、脚、呼吸等技巧就可以了，还需要对水的熟悉度、亲和度，说白了就是要下水。想学编程还是得动手。</p>
+<h1 id="克服畏惧独自写代码">克服畏惧，独自写代码</h1>
+<p>即便掌握了编程语言基础语法，即便对写代码有一定的手感。一旦脱离老师在视频中的指导，自己独立去完成一个项目还是有些吃力。说到底还是实践少了，课上老师手把手教的例子没有都亲自做做一做，听过就当学到了，实际上并没有。因此，在真正会写代码之前，还要克服两个心理。<strong>第一个要克服怕难的心理，第二个要克服不想动手的习惯</strong>。越不想写，越不会写；越写的少，越连字母符号都找不到。那么怎么办？还是回头看视频，看老师怎么从 0 到 1 进行编程，从空白页写到满屏代码，跟着老师一个字母一个字母地敲。同时可以配上手抄不太理解、关键代码，味道真的绝了。</p>
+<h1 id="面向搜索编程">面向搜索编程</h1>
+<p>在有了部分实践后，自己也会产生一些思考，也就是说怎么提问。这个阶段开始也是比较难的，不知道怎么描述问题、不知道怎么组织语言。如 Python 编译器报错飘红，不再是问为什么编译器它会出错，而是会说，它在告诉我什么错误类型？我的代码哪里写错了？需要用什么方法才能正确？</p>
+<p>然后就会去搜索引擎，用关键词来描述你遇到的问题。来到这里，恭喜你，编程的大门为你敞开~</p>
+<p>最后，你可能要问了，程序员的工作就是在用搜索吗？没错，我们的工作内容就是面向百度编程、面向 Google 编程。</p>
+<p><!-- raw HTML omitted --></p>
+
+    </div>
+  </article>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">主页</a></li>
+         
+          <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+          <li><a href="/posts">杂谈</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+         
+          <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents"></nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+
+  
+  <li>
+    <a class="icon" href="mailto:?subject=%e6%88%91%e7%9a%84%e7%bc%96%e7%a8%8b%e4%b9%8b%e8%b7%af%e2%80%94%e2%80%94%e5%85%b3%e4%ba%8ePython%20%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%9b%9e%e5%bf%86&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-11-my_programming_road%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e6%88%91%e7%9a%84%e7%bc%96%e7%a8%8b%e4%b9%8b%e8%b7%af%e2%80%94%e2%80%94%e5%85%b3%e4%ba%8ePython%20%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%9b%9e%e5%bf%86&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-11-my_programming_road%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e6%88%91%e7%9a%84%e7%bc%96%e7%a8%8b%e4%b9%8b%e8%b7%af%e2%80%94%e2%80%94%e5%85%b3%e4%ba%8ePython%20%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%9b%9e%e5%bf%86&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-11-my_programming_road%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+
+
+
+</html>
