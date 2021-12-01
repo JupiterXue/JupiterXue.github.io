@@ -7,14 +7,121 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Tue, 23 Nov 2021 22:59:35 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Dec 2021 13:46:40 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>2021 11 23 How_to_training_logic</title>
+      <title>Day33 Sync_structure_3</title>
+      <link>https://jupiterxue.github.io/go-to-top/day33-sync_structure_3/</link>
+      <pubDate>Wed, 01 Dec 2021 13:46:40 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day33-sync_structure_3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>2021 11 30 Why_learning_coding_by_copy</title>
+      <link>https://jupiterxue.github.io/posts/2021-11-30-why_learning_coding_by_copy/</link>
+      <pubDate>Tue, 30 Nov 2021 00:16:11 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-11-30-why_learning_coding_by_copy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发数据结构（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day32-sync_structure_2/</link>
+      <pubDate>Mon, 29 Nov 2021 22:39:57 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day32-sync_structure_2/</guid>
+      <description>本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。
+sync.Pool 上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：
+可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
+一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。
+并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。
+semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：
+semaphore 它的底层其实可以理解为一个个 waitlink 的链表（先看最下方）。不过这个链表需要在 runtime 中去维护，所以设计了一个 semtable（最上方）。semtable 就是一个定长的数组，这里的长度为 251，也就是锁信号量的地址移进来的。其中每一个元素都是 treap 的数据结构，从字面上来看，“treap”其实就是“tree”和“heap”的合成词，也就是说它既是一棵树也是一个堆：</description>
+    </item>
+    
+    <item>
+      <title>Go 语言优势与行业前景</title>
+      <link>https://jupiterxue.github.io/posts/2021-11-27-go_advantage_and_employ_prospect/</link>
+      <pubDate>Sat, 27 Nov 2021 21:37:16 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-11-27-go_advantage_and_employ_prospect/</guid>
+      <description>在我开始从事 Golang 工作的时候，并没有去了解过 Golang 的前景是如何的。可能是自己的直觉，也可能是对这门编程语言有着迷之信仰，又或者当前 Golang 工程师的薪资待遇稍微高点，就莫名开始从事这么语言的程序开发工作。今天有个机会在小组做分享，也可以将之前落下的功课都补回来，同时我自己也好奇，这门语言的技术生态。
+下面我就以六个主题来介绍这门语言，分别是：
+ 前生今世 多方优势 自身优势 应用场景 市场行情 从业建议  大家在学编程的路上有没有想过一件事，我们学习编程语言的目的是什么？解决问题。解决项目问题，解决公司问题，解决顾客问题，解决社会问题，最重要的是解决我们自己的生活温饱问题或者说学业就业问题吧。
+现在各大互联网公司都在极力储备 Golang 的人才，主要还是微服务 docker 的成功，它成为了 Go 语言的第一个 killer 杀手级应用，很多公司都会使用 docker 来部署他们的系统，也会用 Go 来开发许多新的系统。包括谷歌脸书 BAT、美团滴滴七牛云、京东小米360 等也都在招聘 Golang 工程师。
+前生今世 当我们选择了一门编程语言，很可能意味着选择了一段历史、一个技术生态。
+早在 2007 年，有三位 Google 的大佬程序员在进行一个有趣的讨论，就是下面三位看起来《平凡》的人。
+那时候谷歌公司的产品和应用多是用 C++ 来写的，复杂性巨大，了解过 C++ 的同学也知道，相比于现在流行的 Java、Python，非常复杂。并且它们公司那样巨无霸的产品用 C++ 来编译构建速度非常慢，对一些服务端程序的并发支持也不友好。
+然后他们三个好基友拍一拍头，握握手，就设计出了 Go 语言，并且第二年也是 Unix 之父的 Ken Thompson （第三位白胡子老爷爷）实现了第一版 Go 编译器，用来验证之前的设计。直到 2009年 11 月 30 日，Go 语言开源了。
+Go 语言一经发布后就吸引了一些公司，尤其是云计算领域的初创公司成为了 Go 语言的早期接纳者和布道者。一些公司中还诞生了像 Docker、Kubernetes 这样的“杀手级”或示范性项目，这些项目也让 Go 语言真正地被称誉为“云计算语言”。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发数据结构</title>
+      <link>https://jupiterxue.github.io/go-to-top/day31-sync_structure/</link>
+      <pubDate>Thu, 25 Nov 2021 23:22:55 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day31-sync_structure/</guid>
+      <description>我们之所以使用 Go 语言，其中一个很大的原因是它原生支持高并发，通过 Goroutine 和 Channel 完美实现。并且 Go 的并发是属于一种 CSP 并发编程模式的实现。如果我们想很好利用到这个特性，知其然知其所以然，是学习阶段最好的成果，在生产环境中遇到问题才能有的放矢。下面就从它的一些基础数据结构开始讲起。
+并发内置数据结构 sync.Once 在 Go 语言的并发结构中，比较简单的是 sync.Once。可以在源码 sync/once.go 中看到代码并不多，但注释很多，还有部分我用省略号隐去了。
+sync.Once 只有一个方法，DO。不过其中有一些要点，如果 done 被人修改了，那么就需要做一个初始化；如果是非零就可以直接返回了。也就是说 o.Do 需要保证：
+ 初始化方法必须且只能被调用一次。 Do 返回后，初始化一定已经执行完成。  以上代码虽然非常短，但我们在开发的时候还是会遇到一些问题。这时还得找官方，为什么一定要有 atomic 操作，为什么 doSlow 函数中一定要用 defer 来处理锁。官方对这些“看似”很基础的问题感到烦，于是就写了非常多的注释，让读者自己去搞懂这些问题（从图中看到）。
+这里的功能对于业务层开发的 Gopher 来说比较简单：有个全局资源，只能够初始化一次，需要初始化完成之后去执行一些操作，不过初始化的入口可能会被很多地方调用到。这种情况很常见，一方面是因为我们在做网络编程的时候要处理连接，如果多次 close 连接会出现诡异的错误。所以有很多网络程序中的 Connection 对象再加个 Once 对象，来保证关闭只会执行一次。
+sync.Pool 这个结构用的场合非常非常多，不过主要在两种场景使用：
+ 进程中 inuse_objects 数过多，gc mark 消耗大量 CPU。这种情况多出现于当我们发现程序吞吐量很低时。 进程中 inuse_objects 数过多，进程 RSS 占用过高。这种情况是我们的程序可能运行在比较苛刻的环境下，比如 docker 中内存限制，只有 2GB 的内存。如果超过的话这个进程就会被 kill。  基本的使用方法是在请求生命周期开始时，调用 pool.Get 去获取缓存的 struct 或者 slice，当请求结束时，再调用 pool.</description>
+    </item>
+    
+    <item>
+      <title>程序员的终极法宝？</title>
+      <link>https://jupiterxue.github.io/posts/2021-11-25-outstanding_tech_or_concept/</link>
+      <pubDate>Thu, 25 Nov 2021 15:39:05 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-11-25-outstanding_tech_or_concept/</guid>
+      <description>也有人说，会搜索就能击败 90% 的人。但是
+不可否认，大千世界无奇不有，突飞猛进的方法也许真的存在。 但问题是，你也需要花时间去学习，去尝试、去实践啊。查理·芒格说过，我的剑留给能够挥舞他的人。他有着 100 多个思维模型，又有谁能够全部掌握，又有多少人能够真正理解其中的道理。更可怕的是，有时我们迫切希望现在糟糕的处境能有改观，羡慕别人拥有的自己也能很快获得，所以一些付费课、营销局、诈骗信的妖魔鬼怪都无孔不入。屠龙宝刀无人拿起，屠龙者最终成了恶龙。最终我们是花了钱去学习那些“标题”，最终一无所获。
+你想获得的突飞猛进的概念或技术，本质上还是逃不开你人性中想要一夜暴富急功近利的心理。 有些东西真的不是靠一时之间就能改变，它叫做时间的壁垒。
+凭什么你花了好几年时间，看了好十几本关于编程的书，练习了几百上千道 Leetcode 的题，而有人十天半个月突击就说他掌握了某些知识或者框架，就能超过你的理论基础、超过你的编码能力？
+凭什么你耐心耐心耐心和别人沟通磨合项目，被产品、领导挨骂挨骂挨骂，终于懂得了一点如何去做好一个产品，如何去。
+凭什么
+这些都是时间的壁垒，一般人无法超过，真的。如果能很快超过你，说明人家本来就和你不在一条赛道的，别人自小聪明，家境优越，师从名师，师出高校。自大小就开始学习编程，参加算法竞赛。别人很快超过你都是有原因的，也正因如此，别人和你的竞争不在单一的努力方向，而是家族、资产、社会地位等等。
+所以，年轻人讲点武德，不要好高骛远，不要想着一夜暴富，踏踏实实地做好自己该做的事，上课认真听课，工作认真完成，学习不偷工减料，做事不拖泥带水，你的每次认真付出，就是你最大的法宝。
+最后也引用来自 encro 的一句话作为本文的结尾
+ 既然你允许存在“突飞猛进”，那么也不要怀疑会存在“突然消失”。
+ </description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——GC 补充与总结</title>
+      <link>https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/</link>
+      <pubDate>Wed, 24 Nov 2021 21:33:37 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/</guid>
+      <description>最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。
+GC 补充 在 GC 标记流程中有一个环节能够辅助标记：
+ Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中   Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。  在标记流程阶段，堆上对象可能出现引用交叉情况：
+ 一个是 isMarked 剪枝   另一个是 atomic.Or8  再补充一些零零碎碎的小知识点：
+ GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。 当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作：  作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。 作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。 另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。   Worker 运行模式位于：_p_.</description>
+    </item>
+    
+    <item>
+      <title>如何训练逻辑思维？</title>
       <link>https://jupiterxue.github.io/posts/2021-11-23-how_to_training_logic/</link>
       <pubDate>Tue, 23 Nov 2021 22:59:35 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/posts/2021-11-23-how_to_training_logic/</guid>
-      <description></description>
+      <description>我们总会羡慕那些心思缜密、妙语连珠、出口成章的人，也会在惊讶之后转瞬欣赏那些金句频频、有理有据、一针见血的人。这些人我们在诸如辩论赛场上、突发事件报道记者身上、外交官回复上都或多或少有见到。他们的这些能力，我们习惯性地归纳为逻辑思维。并且我们对生活中许多能够提高逻辑思维的东西趋之若鹜。可惜的是，费时费钱，还是没能将逻辑思维提高到理想中的高度。今天，就来揭开到底什么是“逻辑思维”、怎样训练提高逻辑思维的神秘面纱。
+在谈逻辑思维之前，需要先请出它的另外一位朋友“形象思维”，也叫做艺术思维。其实也就是我们平时在生活中眼睛看到的、耳朵听到的、鼻子闻到的、嘴里尝到的以及身体接触感受到的，我们能够对这些“感受”进行理解、描述、表达和记录。因为这些都是实实在在的东西，通过我们的五官能够去体会到。
+而逻辑思维不是这样的，逻辑思维也叫做抽象思维。是借助不存在与现实世界中的东西，来帮助我们更好理解、便于记忆、做出结论的思维运动。即我们人在认识事物过程中，借助了概念、判断、推理等思维形式，去将现实抽象为概念、揭示除了事物与现象背后的本质，进而能够认识世界并改造世界。
+这么说有点抽象了，再来说说逻辑思维中常用的方法，就能很好理解了，这些方法其实我们从小学就已经开始掌握，只是我今天再把它们都拎了出来。
+  分析与综合。分析是在思维中把对象分解为各个部分或因素，分别加以考察的逻辑方法。综合是在思维中把对象的各个部分或因素结合成为一个统一体加以考察的逻辑方法。
+  分类与比较。根据事物的共同性与差异性就可以把事物分类，具有相同属性的事物归入一类。具有不同属性的事物归入不同的类。比较就是比较两个或两类事物的共同点和差异点。通过比较就能更好地认识事物的本质。分类是比较的后继过程，重要的是分类标准的选择，选择的好还可导致重要规律的发现。
+  归纳与演绎。归纳是从个别性的前提推出一般性的结论，前提与结论之间的联系是或然性的。演绎是从一般性的前提推出个别性的结论，前提与结论之间的联系是必然性的。
+  抽象与概括。抽象就是运用思维的力量，从对象中抽取它本质的属性，抛开其他非本质的东西。概括是在思维中从单独对象的属性推广到这一类事物的全体的思维方法。抽象与概括和分析与综合一样，也是相互联系不可分割的。
+  最后再来说说，怎样训练逻辑思维？其实方法很简单——写作，认真对待你写的每样东西。如果你写不清楚，那就是代表你没想清楚。
+这么说明白了吗？还是不太明白，那么以上我所说的都是白说的，因为前面我的这句话也在引导你进行思考，也是希望你能够组织语言去表达，怎样训练逻辑思维。要想训练逻辑思维，需要的是多去细致地观察生活，借助以上四种逻辑思维方法去用文字记录，最后刻意提炼出对你有帮助、有价值的信息。
+通过写作能够锻炼思考，但不一定能提高逻辑性。而不写作的话，在平时是很难说去刻意去提高自己的逻辑思维能力的，毕竟，很多时候我们只想把作业早点完成，把工作早点做完。所以，写吧！</description>
     </item>
     
     <item>
