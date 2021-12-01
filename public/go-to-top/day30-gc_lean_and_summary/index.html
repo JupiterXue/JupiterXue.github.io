@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——GC 补充与总结 | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——GC 补充与总结" />
+<meta property="og:description" content="最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。
+GC 补充 在 GC 标记流程中有一个环节能够辅助标记：
+ Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中   Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。  在标记流程阶段，堆上对象可能出现引用交叉情况：
+ 一个是 isMarked 剪枝   另一个是 atomic.Or8  再补充一些零零碎碎的小知识点：
+ GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。 当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作：  作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。 作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。 另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。   Worker 运行模式位于：_p_." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-11-24T21:33:37+08:00" />
+<meta property="article:modified_time" content="2021-11-24T21:33:37+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——GC 补充与总结"/>
+<meta name="twitter:description" content="最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。
+GC 补充 在 GC 标记流程中有一个环节能够辅助标记：
+ Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中   Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。  在标记流程阶段，堆上对象可能出现引用交叉情况：
+ 一个是 isMarked 剪枝   另一个是 atomic.Or8  再补充一些零零碎碎的小知识点：
+ GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。 当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作：  作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。 作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。 另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。   Worker 运行模式位于：_p_."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://jupiterxue.github.io/">
+  
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+      
+        <li><a href="/posts">杂谈</a></li>
+      
+        <li><a href="/tags">标签</a></li>
+      
+        <li><a href="/about">关于我</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p>最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。</p>
+<h2 id="gc-补充">GC 补充</h2>
+<p>在 GC 标记流程中有一个环节能够辅助标记：</p>
+<ul>
+<li>Goroutine 中有 gcAssistBytes 字段。</li>
+<li>当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111242333365.png" alt="image-20211124233351199"></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。</li>
+<li>如果借不到，那就先协助标记，标记完成后再去分配内存。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111242334952.png" alt="image-20211124233409903"></p>
+<!-- raw HTML omitted -->
+<p>在标记流程阶段，堆上对象可能出现引用交叉情况：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111242342645.png" alt="标记流程-堆对象引用交叉情况"></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>一个是 isMarked 剪枝</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111242339052.png" alt="image-20211124233904984"></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>另一个是 atomic.Or8</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111242339838.png" alt="image-20211124233915764"></p>
+<!-- raw HTML omitted -->
+<p>再补充一些零零碎碎的小知识点：</p>
+<ul>
+<li>GC 的 CPU 控制目标是整体的 25%。</li>
+<li>当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。</li>
+<li>当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作：
+<ul>
+<li>作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。</li>
+<li>作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。</li>
+<li>另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。</li>
+</ul>
+</li>
+<li>Worker 运行模式位于：_p_.gcMarkWorkerMode。</li>
+<li>栈本身的内存：newstack、shrinkstack。</li>
+<li>使用 allocManual 和 freeManual 相当于手动管理内存，不计入 heap_inuse 和 heap_sys，而是计入 stackinuse 和 stacksys。</li>
+<li>栈上变量的内存变化：SP 移动销毁，简单快速。</li>
+</ul>
+<h1 id="总结">总结</h1>
+<p>最后来做个总结，还是简单回顾一下垃圾回收代码的流程。</p>
+<ol>
+<li><strong>gcStart → gcBgMarkWorker &amp;&amp; gcBgRootPrepare</strong>。GC 触发后，进入 gcStart 函数，这个函数会启动所有 P 相应的后台 MarkWorker 并且进入休眠状态，同时也会准备好整个 GC 标记流程的根节点对象。</li>
+<li><strong>schedule → findRunnableGCWorker → gcBgMarkWorker</strong>。在调度流程 schedule 中，findRunnableGCWorker 会去唤醒适宜数量的 gcBgMarkWorker</li>
+<li><strong>gcBgMarkWorker → gcDrain  → scanobject → greyobject</strong>。这些 gcBgMarkWorker 被唤醒之后执行自己的工作，进入 gcDrain  排空 GC 任务，然后执行广度优先遍历算法 scanobject，扫描这些对象并且标灰 greyobject（也就是将 gcMarkbit 置为 1 并放入 gcw 队列中，set mark bit and put to gcw）</li>
+<li><strong>gcMarkTermination → gcSweep → sweepg &amp;&amp; scvg → sweep → wake bgsweep &amp;&amp; bgscaveng</strong>。gcBgMarkWorker 在调用 gcMarkDone 去排空各种 wbBuf 后，就会使用分布式检查算法 termination 结束流程。进入gcMarkTermination，调用 gcSweep 唤醒最终清扫的 Goroutine，即后台沉睡的 sweepg 和还给操作系统的 Goroutine，即环内存 scvg，最后再去执行清扫 sweep，然后 wake 唤醒 bgsweep 和 bgscavenge。</li>
+</ol>
+<p>可以看到 Go 语言的标记流程部分包含广度优先遍历算法，意味着 GC 消耗的 CPU 主要是和对象的数量相关的。所以我们在做优化的时候，抓住这个重点，想方设法地做对象复用和降低全局堆上分配的对象数。</p>
+<p>梳理清楚 GC 的整个流程是挺有意思的，如果去看一些关于垃圾回收的书籍，书中都会把这样类似的流程也梳理出来。但其实我们并不需要把整个 GC 的流程都背下来的，因为对工作的帮助没那么大。实际上这个 GC 算法能够维护的也就那么官方的几个写了十五、二十年代码、牛得不行的人。（在 GC 中还有涉及有锁和无锁并发的算法，这种比理解调度的困难程度还高一些）</p>
+<p>假如在平时工作中，我们遇到了 GC 的 bug，多半只能等官方来维护了。而我们普通人如果能够把流程和理论研究明白，把别人写的代码也看懂，已经很不错了。</p>
+
+  
+
+  </div>
+</article>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> 程序员的终极法宝？ | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-11-25-outstanding_tech_or_concept/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="程序员的终极法宝？" />
+<meta property="og:description" content="也有人说，会搜索就能击败 90% 的人。但是
+不可否认，大千世界无奇不有，突飞猛进的方法也许真的存在。 但问题是，你也需要花时间去学习，去尝试、去实践啊。查理·芒格说过，我的剑留给能够挥舞他的人。他有着 100 多个思维模型，又有谁能够全部掌握，又有多少人能够真正理解其中的道理。更可怕的是，有时我们迫切希望现在糟糕的处境能有改观，羡慕别人拥有的自己也能很快获得，所以一些付费课、营销局、诈骗信的妖魔鬼怪都无孔不入。屠龙宝刀无人拿起，屠龙者最终成了恶龙。最终我们是花了钱去学习那些“标题”，最终一无所获。
+你想获得的突飞猛进的概念或技术，本质上还是逃不开你人性中想要一夜暴富急功近利的心理。 有些东西真的不是靠一时之间就能改变，它叫做时间的壁垒。
+凭什么你花了好几年时间，看了好十几本关于编程的书，练习了几百上千道 Leetcode 的题，而有人十天半个月突击就说他掌握了某些知识或者框架，就能超过你的理论基础、超过你的编码能力？
+凭什么你耐心耐心耐心和别人沟通磨合项目，被产品、领导挨骂挨骂挨骂，终于懂得了一点如何去做好一个产品，如何去。
+凭什么
+这些都是时间的壁垒，一般人无法超过，真的。如果能很快超过你，说明人家本来就和你不在一条赛道的，别人自小聪明，家境优越，师从名师，师出高校。自大小就开始学习编程，参加算法竞赛。别人很快超过你都是有原因的，也正因如此，别人和你的竞争不在单一的努力方向，而是家族、资产、社会地位等等。
+所以，年轻人讲点武德，不要好高骛远，不要想着一夜暴富，踏踏实实地做好自己该做的事，上课认真听课，工作认真完成，学习不偷工减料，做事不拖泥带水，你的每次认真付出，就是你最大的法宝。
+最后也引用来自 encro 的一句话作为本文的结尾
+ 既然你允许存在“突飞猛进”，那么也不要怀疑会存在“突然消失”。
+ " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/posts/2021-11-25-outstanding_tech_or_concept/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-11-25T15:39:05+08:00" />
+<meta property="article:modified_time" content="2021-11-25T15:39:05+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="程序员的终极法宝？"/>
+<meta name="twitter:description" content="也有人说，会搜索就能击败 90% 的人。但是
+不可否认，大千世界无奇不有，突飞猛进的方法也许真的存在。 但问题是，你也需要花时间去学习，去尝试、去实践啊。查理·芒格说过，我的剑留给能够挥舞他的人。他有着 100 多个思维模型，又有谁能够全部掌握，又有多少人能够真正理解其中的道理。更可怕的是，有时我们迫切希望现在糟糕的处境能有改观，羡慕别人拥有的自己也能很快获得，所以一些付费课、营销局、诈骗信的妖魔鬼怪都无孔不入。屠龙宝刀无人拿起，屠龙者最终成了恶龙。最终我们是花了钱去学习那些“标题”，最终一无所获。
+你想获得的突飞猛进的概念或技术，本质上还是逃不开你人性中想要一夜暴富急功近利的心理。 有些东西真的不是靠一时之间就能改变，它叫做时间的壁垒。
+凭什么你花了好几年时间，看了好十几本关于编程的书，练习了几百上千道 Leetcode 的题，而有人十天半个月突击就说他掌握了某些知识或者框架，就能超过你的理论基础、超过你的编码能力？
+凭什么你耐心耐心耐心和别人沟通磨合项目，被产品、领导挨骂挨骂挨骂，终于懂得了一点如何去做好一个产品，如何去。
+凭什么
+这些都是时间的壁垒，一般人无法超过，真的。如果能很快超过你，说明人家本来就和你不在一条赛道的，别人自小聪明，家境优越，师从名师，师出高校。自大小就开始学习编程，参加算法竞赛。别人很快超过你都是有原因的，也正因如此，别人和你的竞争不在单一的努力方向，而是家族、资产、社会地位等等。
+所以，年轻人讲点武德，不要好高骛远，不要想着一夜暴富，踏踏实实地做好自己该做的事，上课认真听课，工作认真完成，学习不偷工减料，做事不拖泥带水，你的每次认真付出，就是你最大的法宝。
+最后也引用来自 encro 的一句话作为本文的结尾
+ 既然你允许存在“突飞猛进”，那么也不要怀疑会存在“突然消失”。
+ "/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="https://jupiterxue.github.io/go-to-top/day31-sync_structure/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+
+  
+  <li>
+    <a class="icon" href="mailto:?subject=%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%bb%88%e6%9e%81%e6%b3%95%e5%ae%9d%ef%bc%9f&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-25-outstanding_tech_or_concept%2f" aria-label="Github">
+        <i class="fab fa-github " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%bb%88%e6%9e%81%e6%b3%95%e5%ae%9d%ef%bc%9f&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-25-outstanding_tech_or_concept%2f" aria-label="QQ">
+      <i class="fab fa-qq " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%bb%88%e6%9e%81%e6%b3%95%e5%ae%9d%ef%bc%9f&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-25-outstanding_tech_or_concept%2f" aria-label="微信">
+      <i class="fab fa-weixin " aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents"></nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        程序员的终极法宝？
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2021-11-25 15:39:05 &#43;0800 CST" itemprop="datePublished">2021-11-25</time>
+          
+        </div>
+        
+        
+        <div class="article-read-time">
+          <i class="far fa-clock"></i>
+          
+          3 minute read
+        </div>
+        
+        
+        
+        <div class="article-tag">
+            <i class="fas fa-tag"></i>
+            
+            
+            <a class="tag-link" href="/tags/%E7%94%9F%E6%B4%BB" rel="tag">生活</a>
+            
+        </div>
+        
+      </div>
+    </header>
+
+  
+    <div class="content" itemprop="articleBody">
+
+      <p>也有人说，会搜索就能击败 90% 的人。但是</p>
+<p>不可否认，大千世界无奇不有，突飞猛进的方法也许真的存在。
+但问题是，你也需要花时间去学习，去尝试、去实践啊。查理·芒格说过，我的剑留给能够挥舞他的人。他有着 100 多个思维模型，又有谁能够全部掌握，又有多少人能够真正理解其中的道理。更可怕的是，有时我们迫切希望现在糟糕的处境能有改观，羡慕别人拥有的自己也能很快获得，所以一些付费课、营销局、诈骗信的妖魔鬼怪都无孔不入。屠龙宝刀无人拿起，屠龙者最终成了恶龙。最终我们是花了钱去学习那些“标题”，最终一无所获。</p>
+<p>你想获得的突飞猛进的概念或技术，本质上还是逃不开你人性中想要一夜暴富急功近利的心理。
+有些东西真的不是靠一时之间就能改变，它叫做时间的壁垒。</p>
+<p>凭什么你花了好几年时间，看了好十几本关于编程的书，练习了几百上千道 Leetcode 的题，而有人十天半个月突击就说他掌握了某些知识或者框架，就能超过你的理论基础、超过你的编码能力？</p>
+<p>凭什么你耐心耐心耐心和别人沟通磨合项目，被产品、领导挨骂挨骂挨骂，终于懂得了一点如何去做好一个产品，如何去。</p>
+<p>凭什么</p>
+<p>这些都是时间的壁垒，一般人无法超过，真的。如果能很快超过你，说明人家本来就和你不在一条赛道的，别人自小聪明，家境优越，师从名师，师出高校。自大小就开始学习编程，参加算法竞赛。别人很快超过你都是有原因的，也正因如此，别人和你的竞争不在单一的努力方向，而是家族、资产、社会地位等等。</p>
+<p>所以，年轻人讲点武德，不要好高骛远，不要想着一夜暴富，踏踏实实地做好自己该做的事，上课认真听课，工作认真完成，学习不偷工减料，做事不拖泥带水，你的每次认真付出，就是你最大的法宝。</p>
+<p>最后也引用来自 encro 的一句话作为本文的结尾</p>
+<blockquote>
+<p>既然你允许存在“突飞猛进”，那么也不要怀疑会存在“突然消失”。</p>
+</blockquote>
+
+    </div>
+  </article>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">主页</a></li>
+         
+          <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+          <li><a href="/posts">杂谈</a></li>
+         
+          <li><a href="/tags">标签</a></li>
+         
+          <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents"></nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+
+  
+  <li>
+    <a class="icon" href="mailto:?subject=%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%bb%88%e6%9e%81%e6%b3%95%e5%ae%9d%ef%bc%9f&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-25-outstanding_tech_or_concept%2f" aria-label="Github">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%bb%88%e6%9e%81%e6%b3%95%e5%ae%9d%ef%bc%9f&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-25-outstanding_tech_or_concept%2f" aria-label="QQ">
+      <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+  <li>
+    <a class="icon" href="mailto:?subject=%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%bb%88%e6%9e%81%e6%b3%95%e5%ae%9d%ef%bc%9f&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-11-25-outstanding_tech_or_concept%2f" aria-label="微信">
+      <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+
+
+
+</html>

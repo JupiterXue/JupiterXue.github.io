@@ -7,7 +7,59 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Mon, 22 Nov 2021 11:49:45 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Dec 2021 13:46:40 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day33 Sync_structure_3</title>
+      <link>https://jupiterxue.github.io/go-to-top/day33-sync_structure_3/</link>
+      <pubDate>Wed, 01 Dec 2021 13:46:40 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day33-sync_structure_3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发数据结构（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day32-sync_structure_2/</link>
+      <pubDate>Mon, 29 Nov 2021 22:39:57 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day32-sync_structure_2/</guid>
+      <description>本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。
+sync.Pool 上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：
+可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
+一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。
+并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。
+semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：
+semaphore 它的底层其实可以理解为一个个 waitlink 的链表（先看最下方）。不过这个链表需要在 runtime 中去维护，所以设计了一个 semtable（最上方）。semtable 就是一个定长的数组，这里的长度为 251，也就是锁信号量的地址移进来的。其中每一个元素都是 treap 的数据结构，从字面上来看，“treap”其实就是“tree”和“heap”的合成词，也就是说它既是一棵树也是一个堆：</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发数据结构</title>
+      <link>https://jupiterxue.github.io/go-to-top/day31-sync_structure/</link>
+      <pubDate>Thu, 25 Nov 2021 23:22:55 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day31-sync_structure/</guid>
+      <description>我们之所以使用 Go 语言，其中一个很大的原因是它原生支持高并发，通过 Goroutine 和 Channel 完美实现。并且 Go 的并发是属于一种 CSP 并发编程模式的实现。如果我们想很好利用到这个特性，知其然知其所以然，是学习阶段最好的成果，在生产环境中遇到问题才能有的放矢。下面就从它的一些基础数据结构开始讲起。
+并发内置数据结构 sync.Once 在 Go 语言的并发结构中，比较简单的是 sync.Once。可以在源码 sync/once.go 中看到代码并不多，但注释很多，还有部分我用省略号隐去了。
+sync.Once 只有一个方法，DO。不过其中有一些要点，如果 done 被人修改了，那么就需要做一个初始化；如果是非零就可以直接返回了。也就是说 o.Do 需要保证：
+ 初始化方法必须且只能被调用一次。 Do 返回后，初始化一定已经执行完成。  以上代码虽然非常短，但我们在开发的时候还是会遇到一些问题。这时还得找官方，为什么一定要有 atomic 操作，为什么 doSlow 函数中一定要用 defer 来处理锁。官方对这些“看似”很基础的问题感到烦，于是就写了非常多的注释，让读者自己去搞懂这些问题（从图中看到）。
+这里的功能对于业务层开发的 Gopher 来说比较简单：有个全局资源，只能够初始化一次，需要初始化完成之后去执行一些操作，不过初始化的入口可能会被很多地方调用到。这种情况很常见，一方面是因为我们在做网络编程的时候要处理连接，如果多次 close 连接会出现诡异的错误。所以有很多网络程序中的 Connection 对象再加个 Once 对象，来保证关闭只会执行一次。
+sync.Pool 这个结构用的场合非常非常多，不过主要在两种场景使用：
+ 进程中 inuse_objects 数过多，gc mark 消耗大量 CPU。这种情况多出现于当我们发现程序吞吐量很低时。 进程中 inuse_objects 数过多，进程 RSS 占用过高。这种情况是我们的程序可能运行在比较苛刻的环境下，比如 docker 中内存限制，只有 2GB 的内存。如果超过的话这个进程就会被 kill。  基本的使用方法是在请求生命周期开始时，调用 pool.Get 去获取缓存的 struct 或者 slice，当请求结束时，再调用 pool.</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——GC 补充与总结</title>
+      <link>https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/</link>
+      <pubDate>Wed, 24 Nov 2021 21:33:37 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day30-gc_lean_and_summary/</guid>
+      <description>最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。
+GC 补充 在 GC 标记流程中有一个环节能够辅助标记：
+ Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中   Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。  在标记流程阶段，堆上对象可能出现引用交叉情况：
+ 一个是 isMarked 剪枝   另一个是 atomic.Or8  再补充一些零零碎碎的小知识点：
+ GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。 当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作：  作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。 作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。 另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。   Worker 运行模式位于：_p_.</description>
+    </item>
+    
     <item>
       <title>Go 翻山越岭——现代化标记丢失解决方案</title>
       <link>https://jupiterxue.github.io/go-to-top/day29-morden_write_barrier/</link>
