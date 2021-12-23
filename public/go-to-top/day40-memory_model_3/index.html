@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——并发模型（3） | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day40-memory_model_3/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——并发模型（3）" />
+<meta property="og:description" content="在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
+Goroutine 在 Go 语言中，同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系。比如我在一个 goroutine 里执行了一个很简单的函数：
+1func printA() { 2 a = 1 3 println(a) 4} 只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。
+另一个特征是说：编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。
+最后个特征，不同的 goroutine 观察到的共享变量的修改顺序可能不一样。其实也就是我们在上期文章中提到的内存重排。在 Go 语言中，我们说到同步的时候是指在 goroutine 之间发生的操作，其实在其他语言中是和线程的概念和操作是一样的。说到底，goroutine 在运行的时候就是在线程上去执行的。
+上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。
+Happen-before 在官方的并发模型文档中，Happen-before 说的是什么呢？
+第一个特征：Init 函数一定在 main.main 之前执行：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day40-memory_model_3/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-12-17T07:24:03+08:00" />
+<meta property="article:modified_time" content="2021-12-17T07:24:03+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——并发模型（3）"/>
+<meta name="twitter:description" content="在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
+Goroutine 在 Go 语言中，同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系。比如我在一个 goroutine 里执行了一个很简单的函数：
+1func printA() { 2 a = 1 3 println(a) 4} 只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。
+另一个特征是说：编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。
+最后个特征，不同的 goroutine 观察到的共享变量的修改顺序可能不一样。其实也就是我们在上期文章中提到的内存重排。在 Go 语言中，我们说到同步的时候是指在 goroutine 之间发生的操作，其实在其他语言中是和线程的概念和操作是一样的。说到底，goroutine 在运行的时候就是在线程上去执行的。
+上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。
+Happen-before 在官方的并发模型文档中，Happen-before 说的是什么呢？
+第一个特征：Init 函数一定在 main.main 之前执行："/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://jupiterxue.github.io/">
+  
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+      
+        <li><a href="/posts">杂谈</a></li>
+      
+        <li><a href="/tags">标签</a></li>
+      
+        <li><a href="/about">关于我</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p>在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。</p>
+<h2 id="goroutine">Goroutine</h2>
+<p>在 Go 语言中，<strong>同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系</strong>。比如我在一个 goroutine 里执行了一个很简单的函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">printA</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    <span style="color:#a6e22e">a</span> = <span style="color:#ae81ff">1</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>    println(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>}
+</code></pre></div><p>只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。</p>
+<p>另一个特征是说：<strong>编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑</strong>。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。</p>
+<p>最后个特征，<strong>不同的 goroutine 观察到的共享变量的修改顺序可能不一样</strong>。其实也就是我们在上期文章中提到的内存重排。在 Go 语言中，我们说到同步的时候是指在 goroutine 之间发生的操作，其实在其他语言中是和线程的概念和操作是一样的。说到底，goroutine 在运行的时候就是在线程上去执行的。</p>
+<p>上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112170753914.png" alt="image-20211217075309734"></p>
+<h2 id="happen-before">Happen-before</h2>
+<p>在官方的并发模型文档中，Happen-before 说的是什么呢？</p>
+<p>第一个特征：Init 函数一定在 main.main 之前执行：</p>
+<blockquote>
+<p>A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。</p>
+</blockquote>
+<p>这句话有点像废话文学？记得我上次导入包的时候，还是上一次。其实我们如果能够看到初始化代码的话，基本上能够知道什么时候去调用哪些模块的函数。</p>
+<p>第二个特征，Goroutine 的创建：</p>
+<blockquote>
+<p>Goroutine 的创建（creation）一定先入 goroutine 的执行（execution）</p>
+</blockquote>
+<p>这句话也是很好理解的，如果我们的 goroutine 创建到一半的时候就开始执行了，那么其中的状态就没办法保证了。</p>
+<p>第三个特征，Goroutine 的结束：</p>
+<blockquote>
+<p>在没有显式同步的情况下，goroutine 的结束没有任何保证，可能被执行，也可能不被执行</p>
+</blockquote>
+<p>这里的意思是说，比如我们写了一个 main 函数，最后打印了一个 “Hello World”，不过在打印函数 println 之前，又写了一个 go func 目的是想打印一个别的字符串。显然，go func 中的代码没有被执行，整个进程还退出了。如果想要这个 go func 一定被执行到，那么就需要显式地去执行诸如 wg.Add, wg.Wait 之类的东西。这个特征也是比较符合人的直觉的。</p>
+<p>第四个特征，Channel 收/发：</p>
+<blockquote>
+<p>A send on a channel happens before the corresponding receive from that channel completes.</p>
+</blockquote>
+<p>有点像玩文字游戏了呢。也就是说，如果我向 channel 发送值的时候，这个操作一定是在 channel 接收操作之前完成的。这里有一段代码例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">10</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">string</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">f</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#a6e22e">a</span> = <span style="color:#e6db74">&#34;hello, world&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">f</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    print(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>}
+</code></pre></div><p>在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接手前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。</p>
+<p>在实际代码中，我们不仅可以用 channel 来保证先后顺序性，还可以通过加锁的方式来实现。这里有个比较难的思考题，为什么我们可以通过互斥量来实现锁？因为互斥量里面也是自己的 state，和用户定义的 state 没什么关系。lock 中的变量又为什么没有被内存重排呢？这个问题还需要再深入学习才能了解了，这就作者也还在研究中。</p>
+<p>如果 f 函数中，c 不是一个 channel 而是一个变量，进行了变量赋值，那么就可能发生内存重排。这是因为 channel 操作是同步的，这个官方给出的约束告诉我们用了 channel 就不会发生内存重排。</p>
+<p>第五个特征，Channel 收/发：</p>
+<blockquote>
+<p>The closing of a channel happens before a receive that returns a zero value because the channel is closed.</p>
+</blockquote>
+<p>也是有的像句绕口令，其实案例代码改动不大：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">10</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">string</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">f</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#a6e22e">a</span> = <span style="color:#e6db74">&#34;hello, world&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    close(<span style="color:#a6e22e">c</span>)  <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#75715e"></span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">f</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    print(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>}
+</code></pre></div><p>这里可以看到其实只是把 f 函数中向 channel c 发送值变为了关闭 channel c 。最终得到的结果其实是一样的，因为关闭操作里面是有唤醒操作的。在之前的分析文章中，我们看过 channel 的源码就知道，关闭 channel 操作的时候会把所有阻塞在</p>
+
+  
+
+  </div>
+</article>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

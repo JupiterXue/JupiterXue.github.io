@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——常见并发 bug（3） | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day37-normal_sync_bug_3/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——常见并发 bug（3）" />
+<meta property="og:description" content="这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
+引用传递 1for i := 17; i &lt;= 21; i&#43;&#43; { // write 2 go func() { /* Create a new goroutine */ } // before modify 3 go func(i int) { // modified 4 apiVersion := fmt.Sprintf(&#34;v1.%d&#34;, i) // read 5 }() // before modify 6 }(i) // modified 7} 这里说的是，更改代码之前，我们启动一个 goroutine，这个 goroutine 用的是一个闭包，闭包捕获了外面的变量 i，而这个 i 用的还是地址。而迭代器 for 用的也是同一个 i 的地址，所以到 goroutine 执行的时候，最后 Print 出来的 i 就是最后一个了。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day37-normal_sync_bug_3/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-12-10T21:18:46+08:00" />
+<meta property="article:modified_time" content="2021-12-10T21:18:46+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——常见并发 bug（3）"/>
+<meta name="twitter:description" content="这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
+引用传递 1for i := 17; i &lt;= 21; i&#43;&#43; { // write 2 go func() { /* Create a new goroutine */ } // before modify 3 go func(i int) { // modified 4 apiVersion := fmt.Sprintf(&#34;v1.%d&#34;, i) // read 5 }() // before modify 6 }(i) // modified 7} 这里说的是，更改代码之前，我们启动一个 goroutine，这个 goroutine 用的是一个闭包，闭包捕获了外面的变量 i，而这个 i 用的还是地址。而迭代器 for 用的也是同一个 i 的地址，所以到 goroutine 执行的时候，最后 Print 出来的 i 就是最后一个了。"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://jupiterxue.github.io/">
+  
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+      
+        <li><a href="/posts">杂谈</a></li>
+      
+        <li><a href="/tags">标签</a></li>
+      
+        <li><a href="/about">关于我</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112102120452.png" alt="img"></p>
+<p>这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。</p>
+<h2 id="引用传递">引用传递</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">17</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">21</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {  <span style="color:#75715e">// write
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() { <span style="color:#75715e">/* Create a new goroutine */</span> }   <span style="color:#75715e">// before modify
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) {  <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">apiVersion</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;v1.%d&#34;</span>, <span style="color:#a6e22e">i</span>) <span style="color:#75715e">// read
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span style="color:#75715e"></span>    }()   <span style="color:#75715e">// before modify
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span style="color:#75715e"></span>    }(<span style="color:#a6e22e">i</span>)  <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span style="color:#75715e"></span>}
+</code></pre></div><p>这里说的是，更改代码之前，我们启动一个 goroutine，这个 goroutine 用的是一个闭包，闭包捕获了外面的变量 i，而这个 i 用的还是地址。而迭代器 for 用的也是同一个 i 的地址，所以到 goroutine 执行的时候，最后 Print 出来的 i 就是最后一个了。</p>
+<p>这里的修改方式比较简单，就是把 i 当作参数传过去，因为是值传递，也就解决问题了。</p>
+<h2 id="waitgroup">WaitGroup</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">peer</span>) <span style="color:#a6e22e">send</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">status</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">idle</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>        <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>            <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)   <span style="color:#75715e">// before modify
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#75715e"></span>            <span style="color:#f92672">......</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>            <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>        }()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">stopped</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">peer</span>) <span style="color:#a6e22e">stop</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>    <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>    <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">status</span> = <span style="color:#a6e22e">stopped</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>    <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>    <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>}
+</code></pre></div><p>这里代码还是涉及到 WaitGroup 的用法，在修改代码之前，Add 是放在 go func 中，有可能 WaitGroup 依旧是 0，WaitGroup 的 Wait 就不需要等待任何 goroutine 就能执行完成，整个程序也就执行结束了。</p>
+<p>因此，在启动 goroutine 前要保证 Add 完成，将 Add 放在 go func 之前就能使得整个逻辑在不同条件下正常执行。</p>
+<h2 id="重复关闭-channel">重复关闭 Channel</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#66d9ef">select</span> {   <span style="color:#75715e">// before modify
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">closed</span>:   <span style="color:#75715e">// before modify
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">default</span>:   <span style="color:#75715e">// before modify
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Once</span>.<span style="color:#a6e22e">Do</span>(<span style="color:#66d9ef">func</span>() {   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span style="color:#75715e"></span>            close(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">closed</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>    })   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span style="color:#75715e"></span>}   <span style="color:#75715e">// before modify
+</span></code></pre></div><p>这代码在执行并发操作 channel 时，多次关闭同一个 channel。这种情况也是我们平时开发中最常见的问题，重复关闭 channel。</p>
+<p>为了解决代码逻辑有误的情况，又得额外去打一些补丁。比如这里的 Once.Do 都是之后修改的代码，说明之前的 select 可能会进入多次，因此就会对这个 channel close 关闭多次。编译器就会抛出 channel panic 的错误。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#a6e22e">ticker</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">NewTicker</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#66d9ef">for</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#66d9ef">select</span> {   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">stopCh</span>:   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span>   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">default</span>:   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#75715e"></span>    }   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">f</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#66d9ef">select</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">stopCh</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>            <span style="color:#66d9ef">return</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ticker</span>:
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>}
+</code></pre></div><p>最后个代码例子，可能不是很直观。这段代码是中，是另一段 goroutine 代码来向 stopCh 的 channel 发送通知数据，在这段中接受的。</p>
+<p>在修改之前，这里的意思其实是程序有可能在执行 f 函数，而这个 f 函数内部逻辑比较复杂，时间复杂度比较高，需要计算半个小时之类的。当外部已经通过 stopCh 通知需要停止 f 函数的逻辑了，也就需要退出整个循环，而不是再回到循环，然后进入到 f 函数中。也就是说 Fn 耗时很久，但进入之前没有判断外部给的 stopCh 中的通知而浪费了算力。</p>
+<p>修改后的代码就在 f 函数之前，有一次判断，能够提前退出。不用再等 f 函数执行完成，再来接受和判定终止的通知。</p>
+<h2 id="小结">小结</h2>
+<p>到目前为止，通过三期的文章，已经将 Go 语言中并发部分的一些常见的 bug 都梳理了一遍，其中一些代码例子还是挺经典的。作为 Go 开发者，这些问题虽然我们没有全部都遇到，其中一两个发生在自己身上也是很正常不过的。</p>
+<p>以上的例子其实都来自于一篇 Go 语言的学术型论文当中。没想到学术界也会写一些工程界关于 bug 的论文，还挺神奇的。所以经过我三篇文章的介绍，给我们的启示是，去研读最新的科技论文，其中不仅有较为前沿的科技理论，也可能会有偏工程性的案例研究。学术无涯，研究无界，保持一颗热爱技术的心，无论是理论还是工程都是有研究的意义和价值的，感谢这样的研究者。我们专注于工程中的工程师也应该向他们多多学习和借鉴，不拘泥于做好自己手头上的事情，也可以适当探讨更好的理论解决方案，为科技世界一同贡献一份力。</p>
+
+  
+
+  </div>
+</article>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>
