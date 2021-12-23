@@ -7,14 +7,109 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Fri, 03 Dec 2021 20:32:49 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 22 Dec 2021 20:58:12 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day34 Sync_programming_pattern</title>
+      <title>Day41 How_to_choose_structure</title>
+      <link>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</link>
+      <pubDate>Wed, 22 Dec 2021 20:58:12 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发模型（3）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day40-memory_model_3/</link>
+      <pubDate>Fri, 17 Dec 2021 07:24:03 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day40-memory_model_3/</guid>
+      <description>在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
+Goroutine 在 Go 语言中，同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系。比如我在一个 goroutine 里执行了一个很简单的函数：
+1func printA() { 2 a = 1 3 println(a) 4} 只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。
+另一个特征是说：编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。
+最后个特征，不同的 goroutine 观察到的共享变量的修改顺序可能不一样。其实也就是我们在上期文章中提到的内存重排。在 Go 语言中，我们说到同步的时候是指在 goroutine 之间发生的操作，其实在其他语言中是和线程的概念和操作是一样的。说到底，goroutine 在运行的时候就是在线程上去执行的。
+上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。
+Happen-before 在官方的并发模型文档中，Happen-before 说的是什么呢？
+第一个特征：Init 函数一定在 main.main 之前执行：</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发模型（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day39-memory_model_2/</link>
+      <pubDate>Wed, 15 Dec 2021 10:45:03 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day39-memory_model_2/</guid>
+      <description>上期文章说到 Go 语言中，单变量的原子的读或写操作，CPU 的多核心使用了 mesi 协议来确保正确性，也就足够了。但是 mesi 协议还存在一些缺陷：如果对某个变量进行先读，然后修改，再写，这样的多步操作，mesi 协议是无法解决的。因此我们需要除了读和写之外的指令，能够保证这种一系列操作的原子性。
+内存重排 mesi 能够保证单变量全局顺序的正确性，但其他多变量的全局顺序其实是保证不了的。在 Go 语言的并发编程中，有个叫做内存重排，指的是内存的读/写指令重排。为什么会用到内存重排呢？一些硬件或者编译器会对程序进行一些指令优化，优化后的结果可能会导致程序编码时的顺序与代码编译后的先后顺序不一致。因此，内存重排就专门为其适配，提升程序执行效率，减少一些IO操作。
+一般我们可以使用工具 litmus 来验证内存重排，具体暂时不演示了，网上有很多文章。它会模拟本机上一些多线程的读写指令，来对其结果做一些判断。这部分内容不难，刚毕业的学生在面试的时候也会遇到面试官问其中的一些汇编指令是什么意思。其中涉及到的汇编源码，其实我们可以简化为以下的伪代码
+关键来了，我们在写并发代码的时候，如何考虑内存重排呢？对大多数程序员来说，不用考虑这个，既然知道在并发的时候诸如以上的操作都可能有内存重排，那么需要保证其顺序性的时候，直接在两遍加上互斥锁就 OK 了。而如果还要考虑更高的性能，就需要使用一些工具。
+Memory barrier 如果我们要阻止内存重排的发生，只能使用 Memory barrier。首先，它和内存回收 GC 中的 write barrier 和 read barrier 不是一回事。网上一些文章中会把它们混淆起来，因为它们看起来都有个 barrier。虽然看起来都有 barrier，但其实完全不是一回事。
+在并发编程中 ，Memory barrier 是为了防止各种类型的读写重排而专门设计出的工具。比如说 atomic load，在其他语言中都需要加条件，诸如 require、flag 线性一致。
+在 GC 中的 write/read barrier 其实是指在堆上的指针修改之前，插入的一小段的代码。
+以上的 barrier 其实对于做 Go 应用开发的程序员来说可以不用详细了解，只要知道程序在加锁的时候能够保证正确性就 OK 了。
+False sharing 上期文章我们说到了 CPU 采取的是分层存储结构，L1 cache 是 64 个字节。而实际上我们共享变量还不到 64 字节。比如我自定义了一个 struct，它只有 16 字节。但对 CPU 来说，它从内存去在加载这个 struct 的时候，它会把这个 struct 临近的内存也一起加载到 L1 cache 中。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——内存模型</title>
+      <link>https://jupiterxue.github.io/go-to-top/day38-memory_model/</link>
+      <pubDate>Mon, 13 Dec 2021 20:06:42 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day38-memory_model/</guid>
+      <description>今天聊一聊 Go 语言中的内存模型，这部分内容在对于利用 sync 库在进行应用开发中用处不大，不过我们在面试过程中可能会遇到，这里做个记录。
+我们日常的开发中，只要知道使用显示同步就可以保证正确性。也就是说只要发生了并发的情况，那么一定要显示地使用同步手段。显示同步手段，通常是指 channel 或者锁。并且，能够用 channel 和锁的情况下，基本上，只要没有 race 出现，就能够保障程序的正确性。
+但我们在开发中有时候会给别人提供偏底层的库，那么需要对底层有了解才能做得出来。因此就遇到了 Memory Model 内存模型。
+Memory Model 在具体了解之前，我们先要了解目前的 CPU 架构。现代的 CPU 内部的存储其实都是分级的，比如以下就是个多核 CPU 的典型架构图：
+在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
+L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
+L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 的大小为 64 bytes。这就是我们为什么在程序中经常会看到，有些数据结构会在其最后不足的情况下补足为 64 字节或 128 字节，都是有可能发生的。我们在 Linux 中也可以再动动手去做些实践尝试一下这个命令：getconf LEVEL1_DCACHE_LINESIZE，可以看到 Data cache 的 cache line 长度，也就是 64 个字节。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——常见并发 bug（3）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day37-normal_sync_bug_3/</link>
+      <pubDate>Fri, 10 Dec 2021 21:18:46 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day37-normal_sync_bug_3/</guid>
+      <description>这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
+引用传递 1for i := 17; i &amp;lt;= 21; i++ { // write 2 go func() { /* Create a new goroutine */ } // before modify 3 go func(i int) { // modified 4 apiVersion := fmt.Sprintf(&amp;#34;v1.%d&amp;#34;, i) // read 5 }() // before modify 6 }(i) // modified 7} 这里说的是，更改代码之前，我们启动一个 goroutine，这个 goroutine 用的是一个闭包，闭包捕获了外面的变量 i，而这个 i 用的还是地址。而迭代器 for 用的也是同一个 i 的地址，所以到 goroutine 执行的时候，最后 Print 出来的 i 就是最后一个了。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——常见并发 bug（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day36-normal_sync_bug_2/</link>
+      <pubDate>Wed, 08 Dec 2021 16:20:11 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day36-normal_sync_bug_2/</guid>
+      <description>上期文章说到了一些常见并发 bug 的场景，本期文章继续聊聊 Go 语言中常见的一些 bug，继续写 bug（当然不是），并通过代码案例来讲解。
+K8S 这里有段一篇论文的代码，这篇论文总结了业界比较知名的 bug，有一些是 k8s、docker 等耳熟能详的应用。因此，我们也可以发现，即便是 Google 的工程师，他们还是会写出来一些 bug，
+1func finishReq(timeout time.Duration) r ob { 2 ch := make(chan ob) // before modify 3 ch := make(chan ob, 1) // modified 4 go func() { 5 result := fn() 6 ch &amp;lt;- result // block 7 } () 8 select { 9 case result = &amp;lt;- ch: 10 return result 11 case &amp;lt;- time.After(timeout): 12 return nil 13 } 14} 这段代码的思路其实很简单：我现在想往外部发一个请求，同时要控制超时。如果请求超时那么就会给用户返回一个空。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——常见并发 bug</title>
+      <link>https://jupiterxue.github.io/go-to-top/day35-normal_sync_bug/</link>
+      <pubDate>Mon, 06 Dec 2021 22:30:43 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day35-normal_sync_bug/</guid>
+      <description>这期文章来聊一聊 Go 语言中常见的并发 bug 有哪些，并不是说要写 bug，而是在出现这些情况的时候，有相应的解决方案。
+死锁 死锁应该是最常见的，来看看代码，应该是最直观的：
+1func x() { 2 a.RLock() 3 defer a.RUnlock() 4 5 y() 6} 7 8func y() { 9 a.RLock() 10 defer a.RUnlock() 11 12 // do some logic 13} 这里举的例子都是对对象 a 加锁，可以认为它是个全局变量。a.RLock() 加了读锁，defer 延迟解锁 a.RUnlock()，这时候调用了一个函数 y。进入函数 y 以后，再次执行 a.RLock()和 defer 解锁 a.RUlock()。这个过程相当于递归地执行了两次 a.RLock()，就会发生死锁。
+还有段较为简单的代码：
+1func x() { 2 a.Lock() 3 b.Lock() 4} 5 6func y() { 7 b.Lock() 8 a.Lock() 9} 有两个函数 x 和 y，都有 a.</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——并发编程模式</title>
       <link>https://jupiterxue.github.io/go-to-top/day34-sync_programming_pattern/</link>
       <pubDate>Fri, 03 Dec 2021 20:32:49 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day34-sync_programming_pattern/</guid>
-      <description></description>
+      <description>通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 &amp;ldquo;Do not communicate by sharing memory; instead, share memory by communicating.&amp;rdquo;
+这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。
+第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。
+这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
+ 如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 + select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。  一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。</description>
     </item>
     
     <item>
