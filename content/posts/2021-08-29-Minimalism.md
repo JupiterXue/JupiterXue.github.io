@@ -1,5 +1,5 @@
 ---
-title: "对于'极简主义'的一点看法"
+title: "2021 08 29 Minimalism"
 date: 2021-08-29T18:21:22+08:00
 category: 杂谈
 tags:

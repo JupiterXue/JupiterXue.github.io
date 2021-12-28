@@ -162,7 +162,7 @@ Happen-before 在官方的并发模型文档中，Happen-before 说的是什么�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    print(<span style="color:#a6e22e">a</span>)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>}
-</code></pre></div><p>在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接手前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。</p>
+</code></pre></div><p>在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接收前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。</p>
 <p>在实际代码中，我们不仅可以用 channel 来保证先后顺序性，还可以通过加锁的方式来实现。这里有个比较难的思考题，为什么我们可以通过互斥量来实现锁？因为互斥量里面也是自己的 state，和用户定义的 state 没什么关系。lock 中的变量又为什么没有被内存重排呢？这个问题还需要再深入学习才能了解了，这就作者也还在研究中。</p>
 <p>如果 f 函数中，c 不是一个 channel 而是一个变量，进行了变量赋值，那么就可能发生内存重排。这是因为 channel 操作是同步的，这个官方给出的约束告诉我们用了 channel 就不会发生内存重排。</p>
 <p>第五个特征，Channel 收/发：</p>
@@ -184,6 +184,41 @@ Happen-before 在官方的并发模型文档中，Happen-before 说的是什么�
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    print(<span style="color:#a6e22e">a</span>)
 <span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>}
 </code></pre></div><p>这里可以看到其实只是把 f 函数中向 channel c 发送值变为了关闭 channel c 。最终得到的结果其实是一样的，因为关闭操作里面是有唤醒操作的。在之前的分析文章中，我们看过 channel 的源码就知道，关闭 channel 操作的时候会把所有阻塞在</p>
+<p>第六个特征，依然是Channel 收/发：</p>
+<blockquote>
+<p>A receive from an unbuffered channel happens before the send on that channel completes.</p>
+</blockquote>
+<p>同样的拗口+微调代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>)   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">string</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">f</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#a6e22e">a</span> = <span style="color:#e6db74">&#34;hello, world&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">c</span>  <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#75715e"></span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">f</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>    <span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0</span>   <span style="color:#75715e">// modified
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span style="color:#75715e"></span>    print(<span style="color:#a6e22e">a</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>}
+</code></pre></div><p>这里是说没有 buffer 的channel，receive 操作先于 send 操作执行完成，那么这里也可以保证打印出 “hello，world”</p>
+<p>第七个特征，Lock：</p>
+<blockquote>
+<p>For any sync.Mutex or sync.RWMutex variable I and n&lt;m, call n of I.Unlock() happens before call m of I.Lock() returns.</p>
+</blockquote>
+<p>这里的意思说是 Unlock 一定是先于 Lock 函数返回前执行完。也是很符合直觉的东西，但从文字表达上看起来有点拗口。</p>
+<p>最后，第八个特征，Once：</p>
+<blockquote>
+<p>A single call of f() from once.Do(f) happens (returns) before any call of once.Do(f) returns.</p>
+</blockquote>
+<p>在 once.Do 返回之前一定能够保证我的函数初始化执行完了。当然如果发生了 panic ，它也当成是执行完成了。</p>
+<h2 id="小结">小结</h2>
+<p>说了那么多，Happen-before 到底是什么呢？</p>
+<p>本质上其实是在用户不了解底层的 False sharing、内存重排，不知道 memory barrier 的概念和具体实现的前提下，依然能够按照官方所提供的 happen-before 的文档来编写正确的并发程序，并且有个文档可以参考。</p>
+<p>对于我们处于应用层开发的程序员，自己一个人直接去看底层的 memory barrier  的话，基本上是看不懂的。</p>
+<p>还有一些更深入的底层知识，待笔者去深入了解后再来分析，先做个标记，</p>
+<p>如：acquire、release、sequential consistency、Lock-Free、Wait-free 等等。</p>
 
   
 

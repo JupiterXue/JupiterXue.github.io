@@ -7,14 +7,20 @@
   <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> 2021 10 25 Escape From Escape Analysis | 木夜星空的个人博客</title>
+  <title> 读论文《Escape from Escape Analysis of Golang》 | 木夜星空的个人博客</title>
   <link rel = 'canonical' href = 'https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/'>
   <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:title" content="2021 10 25 Escape From Escape Analysis" />
-<meta property="og:description" content="" />
+  <meta property="og:title" content="读论文《Escape from Escape Analysis of Golang》" />
+<meta property="og:description" content="首先感谢谢大，推荐了这篇技术论文，我也很乐意读下去，因为一看到论文的标题 “Escape xxx Escape &hellip;”，就立刻联想到了我最喜爱的乐队——逃跑计划。所以这篇论文也是很和我的“胃口”。
+最近在练习 Leetcode 的过程中，会去阅读攻略教程，并且边读边看，边打开 process-on 思维导图-大纲模式去记笔记，也越来越能接受用思维导图去学习一个东西，这篇论文我也采取的这种模式，如下：
+这篇论文是用 Go 语言实现，通过编译和更改源码来优化堆内存使用和降低垃圾回收内存使用率。并且提出了一个验证方法，将该“解释器”应用于 10 个开源项目、16个字节跳动的工业级项目中，结果表明，在开源项目中，堆分配平均降低了 8.88%，堆使用率平均降低了 8.78%，时间消耗平均降低了9.48%，垃圾回收的暂停累积时间平均降低了 5.64%。在工业项目找到了 452 个可优化的案例。别小看这些百分之几的优化，对于大公司来说，业务量都是在千万用户级别，能够降低百分之几可以说节约了好几斤钞票，又可以给员工发福利了。
+对我来说，这篇文章标题很新颖，话题很新颖，论证也很新颖。所以有很大的热情能够读下去，即便是英语也没遇到太大的困难。不过后面的几个章节都还没概括出来，还需要再读一读，以后再多做这样的训练。
+最后，地址都放在这里了，大家感兴趣可以康一康。
+论文：http://www.wingtecher.com/themes/WingTecherResearch/assets/papers/ICSE20.pdf
+Github 源码：https://github.com/wangcong15/escape-from-escape-analysis-of-golang" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-10-25T23:20:11+08:00" />
@@ -22,8 +28,14 @@
 
 
   <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="2021 10 25 Escape From Escape Analysis"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:title" content="读论文《Escape from Escape Analysis of Golang》"/>
+<meta name="twitter:description" content="首先感谢谢大，推荐了这篇技术论文，我也很乐意读下去，因为一看到论文的标题 “Escape xxx Escape &hellip;”，就立刻联想到了我最喜爱的乐队——逃跑计划。所以这篇论文也是很和我的“胃口”。
+最近在练习 Leetcode 的过程中，会去阅读攻略教程，并且边读边看，边打开 process-on 思维导图-大纲模式去记笔记，也越来越能接受用思维导图去学习一个东西，这篇论文我也采取的这种模式，如下：
+这篇论文是用 Go 语言实现，通过编译和更改源码来优化堆内存使用和降低垃圾回收内存使用率。并且提出了一个验证方法，将该“解释器”应用于 10 个开源项目、16个字节跳动的工业级项目中，结果表明，在开源项目中，堆分配平均降低了 8.88%，堆使用率平均降低了 8.78%，时间消耗平均降低了9.48%，垃圾回收的暂停累积时间平均降低了 5.64%。在工业项目找到了 452 个可优化的案例。别小看这些百分之几的优化，对于大公司来说，业务量都是在千万用户级别，能够降低百分之几可以说节约了好几斤钞票，又可以给员工发福利了。
+对我来说，这篇文章标题很新颖，话题很新颖，论证也很新颖。所以有很大的热情能够读下去，即便是英语也没遇到太大的困难。不过后面的几个章节都还没概括出来，还需要再读一读，以后再多做这样的训练。
+最后，地址都放在这里了，大家感兴趣可以康一康。
+论文：http://www.wingtecher.com/themes/WingTecherResearch/assets/papers/ICSE20.pdf
+Github 源码：https://github.com/wangcong15/escape-from-escape-analysis-of-golang"/>
 
   
   
@@ -130,21 +142,21 @@
 
   
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e8%ae%ba%e6%96%87%e3%80%8aEscape%20from%20Escape%20Analysis%20of%20Golang%e3%80%8b&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="Github">
         <i class="fab fa-github " aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e8%ae%ba%e6%96%87%e3%80%8aEscape%20from%20Escape%20Analysis%20of%20Golang%e3%80%8b&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="QQ">
       <i class="fab fa-qq " aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e8%ae%ba%e6%96%87%e3%80%8aEscape%20from%20Escape%20Analysis%20of%20Golang%e3%80%8b&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="微信">
       <i class="fab fa-weixin " aria-hidden="true"></i>
     </a>
   </li>
@@ -228,7 +240,7 @@
   <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
     <header>
       <h1 class="posttitle" itemprop="name headline">
-        2021 10 25 Escape From Escape Analysis
+        读论文《Escape from Escape Analysis of Golang》
       </h1>
       <div class="meta">
         
@@ -242,7 +254,7 @@
         <div class="article-read-time">
           <i class="far fa-clock"></i>
           
-          0 minute read
+          3 minute read
         </div>
         
         
@@ -261,7 +273,16 @@
   
     <div class="content" itemprop="articleBody">
 
-      
+      <p>首先感谢谢大，推荐了这篇技术论文，我也很乐意读下去，因为一看到论文的标题 “Escape xxx Escape &hellip;”，就立刻联想到了我最喜爱的乐队——逃跑计划。所以这篇论文也是很和我的“胃口”。</p>
+<p>最近在练习 Leetcode 的过程中，会去阅读攻略教程，并且边读边看，边打开 process-on 思维导图-大纲模式去记笔记，也越来越能接受用思维导图去学习一个东西，这篇论文我也采取的这种模式，如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202110252326025.png" alt="Escape from Escape Analysis of"></p>
+<!-- raw HTML omitted -->
+<p>这篇论文是用 Go 语言实现，通过编译和更改源码来优化堆内存使用和降低垃圾回收内存使用率。并且提出了一个验证方法，将该“解释器”应用于 10 个开源项目、16个字节跳动的工业级项目中，结果表明，在开源项目中，堆分配平均降低了 8.88%，堆使用率平均降低了 8.78%，时间消耗平均降低了9.48%，垃圾回收的暂停累积时间平均降低了 5.64%。在工业项目找到了 452 个可优化的案例。别小看这些百分之几的优化，对于大公司来说，业务量都是在千万用户级别，能够降低百分之几可以说节约了好几斤钞票，又可以给员工发福利了。</p>
+<p>对我来说，这篇文章标题很新颖，话题很新颖，论证也很新颖。所以有很大的热情能够读下去，即便是英语也没遇到太大的困难。不过后面的几个章节都还没概括出来，还需要再读一读，以后再多做这样的训练。</p>
+<p>最后，地址都放在这里了，大家感兴趣可以康一康。</p>
+<p>论文：http://www.wingtecher.com/themes/WingTecherResearch/assets/papers/ICSE20.pdf</p>
+<p>Github 源码：https://github.com/wangcong15/escape-from-escape-analysis-of-golang</p>
+
     </div>
   </article>
   
@@ -327,21 +348,21 @@
 
   
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="Github">
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e8%ae%ba%e6%96%87%e3%80%8aEscape%20from%20Escape%20Analysis%20of%20Golang%e3%80%8b&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="Github">
         <i class="fab fa-github fa-lg" aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="QQ">
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e8%ae%ba%e6%96%87%e3%80%8aEscape%20from%20Escape%20Analysis%20of%20Golang%e3%80%8b&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="QQ">
       <i class="fab fa-qq fa-lg" aria-hidden="true"></i>
     </a>
   </li>
 
 
   <li>
-    <a class="icon" href="mailto:?subject=2021%2010%2025%20Escape%20From%20Escape%20Analysis&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="微信">
+    <a class="icon" href="mailto:?subject=%e8%af%bb%e8%ae%ba%e6%96%87%e3%80%8aEscape%20from%20Escape%20Analysis%20of%20Golang%e3%80%8b&body=Check out this article: https%3a%2f%2fjupiterxue.github.io%2fposts%2f2021-10-25-escape-from-escape-analysis%2f" aria-label="微信">
       <i class="fab fa-weixin fa-lg" aria-hidden="true"></i>
     </a>
   </li>

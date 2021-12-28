@@ -7,14 +7,42 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Wed, 22 Dec 2021 20:58:12 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 27 Dec 2021 22:11:54 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day41 How_to_choose_structure</title>
+      <title>Day43 Web_design_and_project_2</title>
+      <link>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</link>
+      <pubDate>Mon, 27 Dec 2021 22:11:54 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Day42 Web_design_and_project</title>
+      <link>https://jupiterxue.github.io/go-to-top/day42-web_design_and_project/</link>
+      <pubDate>Fri, 24 Dec 2021 19:14:59 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day42-web_design_and_project/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>软件开发如何选择优秀的框架？</title>
       <link>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</link>
       <pubDate>Wed, 22 Dec 2021 20:58:12 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</guid>
-      <description></description>
+      <description>在编程当中，当我们掌握了编程语言的基础知识、经过一段时间编程练习之后会发现三个问题：
+  项目复杂。最直接的就是代码越写越多，夸张到所有代码堆积在一个文件，比如单文件 10 w 行代码。这是因为没有培养好的代码习惯、没有软件设计与重构的一些理念，而如果代码素养好一点，我们通常会把代码拆分成几个文件，并根据目录进行分类。
+  没有规范。接上一条，也许代码多了我们会开始试着将代码拆分成几个文件，但其实没有一个统一的思想，我们还是容易继续在拆分出的文件中重新写出个 10 w 行代码的单文件，并在需要修改代码的时候东翻西翻找，浪费了时间。
+  重复写代码。我们会发现当想要实现几个不同功能的时候，它们的代码是有很大部分一样的结构，比如接口开发中的抽象类。我们很希望有一个模板，也会自己去做一些可以复用的代码模板。
+  为了解决这三个常见的问题，于是有越来越多的开发者或团队开发了解决方案，框架。其他开发者可以直接使用这个框架，基于作者设计好的项目架构、文件结构和代码规范，能够在短时间内开发项目更清晰，性能更优越，维护更简单的软件。
+而有些框架要么因为太简单，要么因为太复杂，而不能直接拿来用。除非现有的框架中的功能是和我们业务中的需求是完全匹配，而且其中的代码不是复杂、能够很快阅读完，这种框架直接拿来用是非常合适的。但实际中有一个和需求比较契合的框架也是很难找的、甚至没有的，找得到的话那都是运气好的情况了。尤其是大公司，做大了之后，肯定会有和别人不一样自己的定制需求，这个就不在今天讨论的框架范畴内了。
+今天来聊聊一些偏主观点的内容，怎么判断框架的优劣？这里我们不讨论具体某个框架、代码写得好不好。有几个框架设计时需要考虑的问题，如果框架符合了，那么说明可能会是优秀的项目：代码规范、自动化、平台化、集成化、组件化、插件化、通用化。如果我们在企业中是扮演企业自研框架的设计者，考虑这几个问题也是很有帮助的。
+代码规范 不考虑一个框架的工程质量，如果我们亲自去看，仅凭自己的感受，亲自去看代码的其实比较容易发现代码写得是否好。这里以 Golang 的框架为例，一个代码规范的框架，是老老实实规规矩矩用上静态代码检查工具 GolangCI-Lint 并且遵守着 Go 社区的规范。而不规范的框架虽然声势浩大的，但注释写得很少，代码很乱，随处可见不知道哪里来的下划线的命名（Golang 中的命名是以小驼峰命名法）。
+自动化  Layout 代码自动生成（DDD/Clean Atch） 服务上线自动发布 自动生成接口文档 服务接入 SDK 自动生成 常见 code snippet（boilerplate）内置在 CLI 工具内 不要让用户去复制粘贴，我们来帮他自动写好  我们既然要写一个框架，那么写新接口的时候，涉及到大量的重复代码，比如在入口写一个 Controller 或者在 logic 中写一个入口又或者在 Dao 里面又要写一些入口之类的东西等等。这些东西其实都是应该有自动的工具去生成的，通过模板生成工具去实现。
+第二点说的是公司中内部的交接需要打通，一旦服务上线之后，就会自动发布到服务注册系统里，不再需要我们人工去做一大堆的申请流程。
+自动生成接口文档，这个功能在 Golang 领域最早发现于 Beego 框架。可以直接把 Swagger 集成到里面，通过注解的方式，能把我们开发的接口相应的文档都生成出来。目前，在公司内，有些开发不一定会用到 HTTP，那就需要有一套专门的接口定义，就比如 Thrift 定义的 IDL，gRPC 的 Protobuf。有些新兴公司会用到 gRPC，这种情况还是用 pb 去做服务的定义，因此就需要把 pb 和客户端的生成尽量都做出平台，并且写一些注释，然后自动生成接口文档，做好自动化。</description>
     </item>
     
     <item>
@@ -118,7 +146,12 @@ K8S 这里有段一篇论文的代码，这篇论文总结了业界比较知名�
       <pubDate>Wed, 01 Dec 2021 13:46:40 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day33-sync_structure_3/</guid>
-      <description></description>
+      <description>一个优质的程序、优秀的设计不是凭空产生的，而是经过由简至精，不断迭代产生出来的。在上期文章中，我们了解了 Go 语言中的信号量 semaphore 和互斥锁 sync.Mutex，在此基础上我们还可以实现更加复杂的锁。
+sync.RWMutex 读写锁 (sync.RWMutex)，可以来看下它的数据结构和运作逻辑：
+可以看到它的第一个结构叫做 w 其实就是互斥锁 sync.Mutex。在这里的作用是为了挡住大部分写操作的 Goroutine，只让第一个进来的能够和其他的读操作的 Goroutine 去做竞争。
+现在有一个写 Goroutine writer 进来了，如果还有其他 reader 在做操作，就会把这个进入的挂载在 writerSem 后面的 sudog。如果后面来了新的 writer，前面的 writer 还没有退出的话，那么新的 writer 就需要挂载在之前的互斥锁 sync.Mutex 上的 sudog 后面。同样的 writer 和 reader 也会在不同阶段去做些竞争和唤醒的操作。
+一旦有一个 writer 进入并且调用了 lock，那么就会在 writerSem 后面挂载一个阻塞的 sudog，并且把 readerCount 减去一个最大的值，即图中 1 左移 30 的值，最终让 readerCount 变为负数。当 readerCount 变为负数时，reader 在执行 Runlcok 的操作以后，会发现当前已经变为特殊模式了，所以就会后来进来新来的 reader，这些新的 reader 会去调用 Rlock，那么就会挂载在 readerSem 队列中。readerSem 其实也是一个信号量，最终会对应一个等待队列，并且最后的结构 readerWait 的数量其实是和这个等待队列的数量是对应的。
+小结一下，一般正常的操作流程是这样的：如果没有 writer 在等待，那么 reader 可以直接去修改 readerCount。readerCount属于正值，readerWait 为 0。一旦有个 writer 阻塞了，那么 readerCount 变为负，readerWait 数量就和 readerSem 队列中等待的数量一致。最终之前来的 reader 它们都执行完之后，会发现 readerCount 是个特殊的值，然后就会把 writer 唤醒，让 writer 去执行它的逻辑。</description>
     </item>
     
     <item>

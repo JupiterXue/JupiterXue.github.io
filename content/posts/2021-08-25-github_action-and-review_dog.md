@@ -1,5 +1,5 @@
 ---
-title: "两个自动化管理工具"
+title: "Github_action 和 Review_dog"
 date: 2021-08-25T23:10:23+08:00
 tags:
    - 兴趣

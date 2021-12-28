@@ -87,7 +87,7 @@ func main() {
 }
 ```
 
-在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接手前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。
+在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接收前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。
 
 
 
@@ -122,3 +122,63 @@ func main() {
 ```
 
 这里可以看到其实只是把 f 函数中向 channel c 发送值变为了关闭 channel c 。最终得到的结果其实是一样的，因为关闭操作里面是有唤醒操作的。在之前的分析文章中，我们看过 channel 的源码就知道，关闭 channel 操作的时候会把所有阻塞在
+
+
+
+第六个特征，依然是Channel 收/发：
+
+> A receive from an unbuffered channel happens before the send on that channel completes.
+
+同样的拗口+微调代码
+
+```go
+var c = make(chan int)   // modified
+var a string
+
+func f() {
+    a = "hello, world"
+    <-c  // modified
+}
+
+func main() {
+    go f()
+    c <- 0   // modified
+    print(a)
+}
+```
+
+这里是说没有 buffer 的channel，receive 操作先于 send 操作执行完成，那么这里也可以保证打印出 “hello，world”
+
+
+
+第七个特征，Lock：
+
+> For any sync.Mutex or sync.RWMutex variable I and n<m, call n of I.Unlock() happens before call m of I.Lock() returns.
+
+这里的意思说是 Unlock 一定是先于 Lock 函数返回前执行完。也是很符合直觉的东西，但从文字表达上看起来有点拗口。
+
+
+
+最后，第八个特征，Once：
+
+> A single call of f() from once.Do(f) happens (returns) before any call of once.Do(f) returns.
+
+在 once.Do 返回之前一定能够保证我的函数初始化执行完了。当然如果发生了 panic ，它也当成是执行完成了。
+
+## 小结
+
+说了那么多，Happen-before 到底是什么呢？
+
+
+
+本质上其实是在用户不了解底层的 False sharing、内存重排，不知道 memory barrier 的概念和具体实现的前提下，依然能够按照官方所提供的 happen-before 的文档来编写正确的并发程序，并且有个文档可以参考。
+
+
+
+对于我们处于应用层开发的程序员，自己一个人直接去看底层的 memory barrier  的话，基本上是看不懂的。
+
+
+
+还有一些更深入的底层知识，待笔者去深入了解后再来分析，先做个标记，
+
+如：acquire、release、sequential consistency、Lock-Free、Wait-free 等等。
