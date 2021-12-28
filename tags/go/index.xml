@@ -7,23 +7,51 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Wed, 22 Dec 2021 20:58:12 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 27 Dec 2021 22:11:54 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day41 How_to_choose_structure</title>
-      <link>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</link>
-      <pubDate>Wed, 22 Dec 2021 20:58:12 +0800</pubDate>
+      <title>Day43 Web_design_and_project_2</title>
+      <link>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</link>
+      <pubDate>Mon, 27 Dec 2021 22:11:54 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>2021 12 21 Learn_and_love</title>
-      <link>https://jupiterxue.github.io/posts/2021-12-21-learn_and_love/</link>
-      <pubDate>Tue, 21 Dec 2021 22:04:18 +0800</pubDate>
+      <title>Day42 Web_design_and_project</title>
+      <link>https://jupiterxue.github.io/go-to-top/day42-web_design_and_project/</link>
+      <pubDate>Fri, 24 Dec 2021 19:14:59 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.io/posts/2021-12-21-learn_and_love/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/day42-web_design_and_project/</guid>
       <description></description>
+    </item>
+    
+    <item>
+      <title>2021 12 23 Buy_valuables_in_poverty</title>
+      <link>https://jupiterxue.github.io/posts/2021-12-23-buy_valuables_in_poverty/</link>
+      <pubDate>Thu, 23 Dec 2021 22:36:35 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-12-23-buy_valuables_in_poverty/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>软件开发如何选择优秀的框架？</title>
+      <link>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</link>
+      <pubDate>Wed, 22 Dec 2021 20:58:12 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day41-how_to_choose_structure/</guid>
+      <description>在编程当中，当我们掌握了编程语言的基础知识、经过一段时间编程练习之后会发现三个问题：
+  项目复杂。最直接的就是代码越写越多，夸张到所有代码堆积在一个文件，比如单文件 10 w 行代码。这是因为没有培养好的代码习惯、没有软件设计与重构的一些理念，而如果代码素养好一点，我们通常会把代码拆分成几个文件，并根据目录进行分类。
+  没有规范。接上一条，也许代码多了我们会开始试着将代码拆分成几个文件，但其实没有一个统一的思想，我们还是容易继续在拆分出的文件中重新写出个 10 w 行代码的单文件，并在需要修改代码的时候东翻西翻找，浪费了时间。
+  重复写代码。我们会发现当想要实现几个不同功能的时候，它们的代码是有很大部分一样的结构，比如接口开发中的抽象类。我们很希望有一个模板，也会自己去做一些可以复用的代码模板。
+  为了解决这三个常见的问题，于是有越来越多的开发者或团队开发了解决方案，框架。其他开发者可以直接使用这个框架，基于作者设计好的项目架构、文件结构和代码规范，能够在短时间内开发项目更清晰，性能更优越，维护更简单的软件。
+而有些框架要么因为太简单，要么因为太复杂，而不能直接拿来用。除非现有的框架中的功能是和我们业务中的需求是完全匹配，而且其中的代码不是复杂、能够很快阅读完，这种框架直接拿来用是非常合适的。但实际中有一个和需求比较契合的框架也是很难找的、甚至没有的，找得到的话那都是运气好的情况了。尤其是大公司，做大了之后，肯定会有和别人不一样自己的定制需求，这个就不在今天讨论的框架范畴内了。
+今天来聊聊一些偏主观点的内容，怎么判断框架的优劣？这里我们不讨论具体某个框架、代码写得好不好。有几个框架设计时需要考虑的问题，如果框架符合了，那么说明可能会是优秀的项目：代码规范、自动化、平台化、集成化、组件化、插件化、通用化。如果我们在企业中是扮演企业自研框架的设计者，考虑这几个问题也是很有帮助的。
+代码规范 不考虑一个框架的工程质量，如果我们亲自去看，仅凭自己的感受，亲自去看代码的其实比较容易发现代码写得是否好。这里以 Golang 的框架为例，一个代码规范的框架，是老老实实规规矩矩用上静态代码检查工具 GolangCI-Lint 并且遵守着 Go 社区的规范。而不规范的框架虽然声势浩大的，但注释写得很少，代码很乱，随处可见不知道哪里来的下划线的命名（Golang 中的命名是以小驼峰命名法）。
+自动化  Layout 代码自动生成（DDD/Clean Atch） 服务上线自动发布 自动生成接口文档 服务接入 SDK 自动生成 常见 code snippet（boilerplate）内置在 CLI 工具内 不要让用户去复制粘贴，我们来帮他自动写好  我们既然要写一个框架，那么写新接口的时候，涉及到大量的重复代码，比如在入口写一个 Controller 或者在 logic 中写一个入口又或者在 Dao 里面又要写一些入口之类的东西等等。这些东西其实都是应该有自动的工具去生成的，通过模板生成工具去实现。
+第二点说的是公司中内部的交接需要打通，一旦服务上线之后，就会自动发布到服务注册系统里，不再需要我们人工去做一大堆的申请流程。
+自动生成接口文档，这个功能在 Golang 领域最早发现于 Beego 框架。可以直接把 Swagger 集成到里面，通过注解的方式，能把我们开发的接口相应的文档都生成出来。目前，在公司内，有些开发不一定会用到 HTTP，那就需要有一套专门的接口定义，就比如 Thrift 定义的 IDL，gRPC 的 Protobuf。有些新兴公司会用到 gRPC，这种情况还是用 pb 去做服务的定义，因此就需要把 pb 和客户端的生成尽量都做出平台，并且写一些注释，然后自动生成接口文档，做好自动化。</description>
     </item>
     
     <item>
@@ -40,15 +68,6 @@ Goroutine 在 Go 语言中，同一个 goroutine 内的逻辑有依赖的语句�
 上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。
 Happen-before 在官方的并发模型文档中，Happen-before 说的是什么呢？
 第一个特征：Init 函数一定在 main.main 之前执行：</description>
-    </item>
-    
-    <item>
-      <title>2021 12 16 Brute_force</title>
-      <link>https://jupiterxue.github.io/posts/2021-12-16-brute_force/</link>
-      <pubDate>Thu, 16 Dec 2021 21:04:34 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/posts/2021-12-16-brute_force/</guid>
-      <description></description>
     </item>
     
     <item>
@@ -94,15 +113,6 @@ L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 
     </item>
     
     <item>
-      <title>2021 12 09 Free_or_not</title>
-      <link>https://jupiterxue.github.io/posts/2021-12-09-free_or_not/</link>
-      <pubDate>Thu, 09 Dec 2021 22:25:46 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/posts/2021-12-09-free_or_not/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Go 翻山越岭——常见并发 bug（2）</title>
       <link>https://jupiterxue.github.io/go-to-top/day36-normal_sync_bug_2/</link>
       <pubDate>Wed, 08 Dec 2021 16:20:11 +0800</pubDate>
@@ -114,12 +124,26 @@ K8S 这里有段一篇论文的代码，这篇论文总结了业界比较知名�
     </item>
     
     <item>
-      <title>2021 12 07 Disconnected_with_society</title>
+      <title>为什么会与社会脱节？</title>
       <link>https://jupiterxue.github.io/posts/2021-12-07-disconnected_with_society/</link>
       <pubDate>Tue, 07 Dec 2021 13:31:54 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/posts/2021-12-07-disconnected_with_society/</guid>
-      <description></description>
+      <description>有学生说，担心在学校呆久了，和社会脱节。尤其感到毕业后不会和人交流，找不到工作。如何防止和社会的脱节？自己有点焦虑，像个山顶洞人。
+有上班族说，平时我不刷视频、不刷新闻、不刷微博，感觉就和社会脱节了，同事说的梗一句都听不懂，什么 yyds 啊，什么 edg 牛逼。这都是哪儿到哪儿了。
+还有个不到 30岁，高中毕业就结婚，现在带俩娃的女青年要找工作。她的朋友推荐她去当打字员，而她说没有做过、没有什么自信。朋友提供了电脑让她试试一分钟能打多少字，结果她一分钟才打了 28 个字。因为打字速度慢，连一份工作的找不到，她觉得和社会完全脱节了。
+试问一下，你又和社会有多大的联系呢？不会交流、不刷新闻视频，不会打字，就被视为和社会脱节了？
+学生在校园中大多是和年龄相近的人一起学习、成长，不会交流只是因为和别人之间没有合作、没有共事，离开校园步入职场，你会遇到面试官、会和直系领导畅谈，会和同事打招呼。
+上班之后，每个人涉猎的方面各有不一。他能说出景德镇陶瓷花纹的具体走势，他能说出太阳系外还有什么行星，她能说出公司团队有哪些人他们之间怎样进行协作。他们都来自不同领域，都有着自己的专业语言。同样的，在网络上流行的语言，也是那些经常混迹各大网络社区、论坛和娱乐休闲平台的人最熟悉。其实他们在接触这些语言后，一开始也不是就懂了，还是自己去了解、在反复遇见中加深理解。后来，他们觉得有意思，便一传十，十传百，网络传递千千万万，也便有了网络热梗。
+最后是那位因为打字速度慢而找不到打字员工作的女青年，其实不必苦恼。因为你只是找不到打字员的工作，而 360 行，这行不行可以换一行。平时会照顾两个孩子，有着丰富经验也必定很细心，所以可以尝试为其他新晋宝妈提供建议帮助、提供辅导，或尝试做一快销品零售业务员，或尝试做团队人员之间的沟通人等等。总有一个机会是自己向来就擅长的。
+所以，说到这里，其实并不存在所谓的社会脱节。即便有，在我看来可能就是《肖申克的救赎》中那个老布，在监狱住了 50 年，习惯了“监狱的社会”。而监狱把他释放回归到正常社会后，亲人都逝去了，朋友早已没有音讯，自己也没有子女。最重要的是，自己太老了，生活上快要不能自理，适应能力、学习能力跟不上，因此对正常社会的种种感到格格不入，夜里也总是惊慌。
+相反，现在的新闻媒体、娱乐资讯才是需要注意的。大多数新闻只能对事件进行粗糙的归类、简单二元地将因果进行关联。对事件背后的本质，他们说不清楚，也不会说清楚，因为需要照顾大多数读者的理解，因为想要火爆，想要红。
+并且，新闻提供的论断不能辅助我们进行决策判断，媒体不会把一件事背后所有的厉害关系挑明，他们会为资本卖力，会为流量眼红。他们甚至有时不在意自己说的是否真实，而只要自己是最早说的、自己是最新的，最早触达读者点击的，就是好的。
+针对这个问题，已经有个知名作者写过一本小册子《Stop Reading The News》并在卫报发表来解答了。作者劝解我们戒除新闻，而夺取读非虚构的长篇作品，以及研究性的文章。多家注重上下文和思考，避免浮于表面的信息。
+其实说白了，多关注自己工作上的事情、关注自己专业上的问题以及在自己能力范围内行事。不必去做些超出自己能力范围、超出认知边界的事情，比如叙利亚为什么又打仗了，哪国总统又会见哪国总理，臭氧层又变薄了等和我们并无直接关系的问题。因为这些问题会无端地消耗我们的心智精神，而让我们在生活中碌碌无为。所以，还是得自己多去思考，多去做点实际有价值有意义的事情。
+最后，借助《娱乐至死》一书所说来结束今天的讨论
+ 娱乐至死的可怕之处不在于娱乐本身，而在于人们日渐失去对社会事务进行严肃思考和理智判断的能力，在于被轻佻的文化环境养成了既无知且无畏的理性文盲而不自知。 —— 尼尔・波兹曼
+ </description>
     </item>
     
     <item>
@@ -154,16 +178,12 @@ K8S 这里有段一篇论文的代码，这篇论文总结了业界比较知名�
       <pubDate>Wed, 01 Dec 2021 13:46:40 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day33-sync_structure_3/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>2021 11 30 Why_learning_coding_by_copy</title>
-      <link>https://jupiterxue.github.io/posts/2021-11-30-why_learning_coding_by_copy/</link>
-      <pubDate>Tue, 30 Nov 2021 00:16:11 +0800</pubDate>
-      
-      <guid>https://jupiterxue.github.io/posts/2021-11-30-why_learning_coding_by_copy/</guid>
-      <description></description>
+      <description>一个优质的程序、优秀的设计不是凭空产生的，而是经过由简至精，不断迭代产生出来的。在上期文章中，我们了解了 Go 语言中的信号量 semaphore 和互斥锁 sync.Mutex，在此基础上我们还可以实现更加复杂的锁。
+sync.RWMutex 读写锁 (sync.RWMutex)，可以来看下它的数据结构和运作逻辑：
+可以看到它的第一个结构叫做 w 其实就是互斥锁 sync.Mutex。在这里的作用是为了挡住大部分写操作的 Goroutine，只让第一个进来的能够和其他的读操作的 Goroutine 去做竞争。
+现在有一个写 Goroutine writer 进来了，如果还有其他 reader 在做操作，就会把这个进入的挂载在 writerSem 后面的 sudog。如果后面来了新的 writer，前面的 writer 还没有退出的话，那么新的 writer 就需要挂载在之前的互斥锁 sync.Mutex 上的 sudog 后面。同样的 writer 和 reader 也会在不同阶段去做些竞争和唤醒的操作。
+一旦有一个 writer 进入并且调用了 lock，那么就会在 writerSem 后面挂载一个阻塞的 sudog，并且把 readerCount 减去一个最大的值，即图中 1 左移 30 的值，最终让 readerCount 变为负数。当 readerCount 变为负数时，reader 在执行 Runlcok 的操作以后，会发现当前已经变为特殊模式了，所以就会后来进来新来的 reader，这些新的 reader 会去调用 Rlock，那么就会挂载在 readerSem 队列中。readerSem 其实也是一个信号量，最终会对应一个等待队列，并且最后的结构 readerWait 的数量其实是和这个等待队列的数量是对应的。
+小结一下，一般正常的操作流程是这样的：如果没有 writer 在等待，那么 reader 可以直接去修改 readerCount。readerCount属于正值，readerWait 为 0。一旦有个 writer 阻塞了，那么 readerCount 变为负，readerWait 数量就和 readerSem 队列中等待的数量一致。最终之前来的 reader 它们都执行完之后，会发现 readerCount 是个特殊的值，然后就会把 writer 唤醒，让 writer 去执行它的逻辑。</description>
     </item>
     
     <item>
@@ -376,12 +396,18 @@ OK，了解了虚拟内存地址分布情况，那么是谁来对内存进行分
     </item>
     
     <item>
-      <title>2021 10 25 Escape From Escape Analysis</title>
+      <title>读论文《Escape from Escape Analysis of Golang》</title>
       <link>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</link>
       <pubDate>Mon, 25 Oct 2021 23:20:11 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/posts/2021-10-25-escape-from-escape-analysis/</guid>
-      <description></description>
+      <description>首先感谢谢大，推荐了这篇技术论文，我也很乐意读下去，因为一看到论文的标题 “Escape xxx Escape &amp;hellip;”，就立刻联想到了我最喜爱的乐队——逃跑计划。所以这篇论文也是很和我的“胃口”。
+最近在练习 Leetcode 的过程中，会去阅读攻略教程，并且边读边看，边打开 process-on 思维导图-大纲模式去记笔记，也越来越能接受用思维导图去学习一个东西，这篇论文我也采取的这种模式，如下：
+这篇论文是用 Go 语言实现，通过编译和更改源码来优化堆内存使用和降低垃圾回收内存使用率。并且提出了一个验证方法，将该“解释器”应用于 10 个开源项目、16个字节跳动的工业级项目中，结果表明，在开源项目中，堆分配平均降低了 8.88%，堆使用率平均降低了 8.78%，时间消耗平均降低了9.48%，垃圾回收的暂停累积时间平均降低了 5.64%。在工业项目找到了 452 个可优化的案例。别小看这些百分之几的优化，对于大公司来说，业务量都是在千万用户级别，能够降低百分之几可以说节约了好几斤钞票，又可以给员工发福利了。
+对我来说，这篇文章标题很新颖，话题很新颖，论证也很新颖。所以有很大的热情能够读下去，即便是英语也没遇到太大的困难。不过后面的几个章节都还没概括出来，还需要再读一读，以后再多做这样的训练。
+最后，地址都放在这里了，大家感兴趣可以康一康。
+论文：http://www.wingtecher.com/themes/WingTecherResearch/assets/papers/ICSE20.pdf
+Github 源码：https://github.com/wangcong15/escape-from-escape-analysis-of-golang</description>
     </item>
     
     <item>
@@ -617,6 +643,24 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
     </item>
     
     <item>
+      <title>编译与反编译</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-19-go-top-day7-assembly/</link>
+      <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-19-go-top-day7-assembly/</guid>
+      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而最重要的就是进行虚拟地址重定位（Relocation）。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。
+重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。
+具体而言，GO 程序在编译后，所有函数地址都是从 0 开始，每天指令是相对函数第一条指令的偏移，并在进行链接后，所有指令都有了全局唯一的虚拟地址。（注意：不是上方框选地址，这里是指某个函数的偏移量，而是箭头下方的地址，虚拟地址）
+编译与反编译工具 我们学习掌握 Go 语言编译原理理论的过程，会相对有些枯燥。不过通过实践，我们能够很好地将所学到的理论融汇贯通，并且即便你对理论不是很熟悉，也能够玩转这些工具。我会提到平时我们在研究 GO 汇编底层经常用到的工具，让我们来看看它是什么，跟着我一起动动手。
+1go tool 这里我标注出了两个最常用的工具 go tool compile 和 go tool objdump。在我们卷 Go 汇编底层的时候，业内还有这么一句黑话：
+ 几乎没有任何一个 Go 汇编底层问题不是用一条 go tool compile 不能解决的，如果不行的话，就用 go tool objdump，总能知道是怎么回事。
+ 再让我们看看这两句指令在具体场合下都是什么意思：
+ go tool compile -S main.go # 反编译代码为汇编代码。
+  go tool objdump # 可用于查看任意函数的机器码、汇编指令、偏移。（go 源码下面有个 cmd/internal/goobj包，可以读到.o文件的重定向信息，更好）
+go tool objdump [-s symregexp] 二进制 # Objdump 打印二进制文件中所有文本符号（代码）的反汇编。如果存在 -s 选项，objdump 只会反汇编名称与正则表达式匹配的符号。</description>
+    </item>
+    
+    <item>
       <title>Go 翻山越岭——编译原理基础</title>
       <link>https://jupiterxue.github.io/go-to-top/day6-parse/</link>
       <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
@@ -637,11 +681,44 @@ spec 告诉我们，make 可以用在三种结构上的：slice，map，channel�
     </item>
     
     <item>
+      <title>Go 翻山越岭——编译原理基础</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</link>
+      <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-15-go-top-day6-parse/</guid>
+      <description>Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接。看似简单，但其中蕴藏着极大的能量，尤其在面对不能一时半会就解决的业务场景中，稍微深挖编译与链接的过程就有奇效。今天我们就来聊聊 “Go 语言中编译原理的基础”。
+上期文章提到了 8 个常见 Go 业务场景，虽说都是业务场景，但在代码性能、数据结构转换和系统设计中偏细颗粒度的实践中我们通常感到茫然和繁琐。这是因为在平时开发中，编译器会自动帮我们屏蔽掉代码编译的过程，我们只用关注最后的 ELF 可执行文件。那么我们就来看看，编译器会帮我们做些什么工作，进一步理解我们所写的程序发生了什么样的转化。
+编译原理概述 我们可以把编译分为两个部分：编译器前端和编译器后端，如图所示：（这些都是我们软件工程专业课上的基础知识）
+**词法分析（Lexical Analysis）**是计算机科学中将字符序列转换为标记（token）序列的过程。
+1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 println(1 + 2) 7} 我们这里有一段简单代码，通过词法分析的方法，转化为 token 就是如下结果：
+我们在 Go 语言中没有分号，但其实像很多其他编程语言一样，是需要的。
+语法分析（syntactic analysis，又称 parsing）是根据某种给定的形式文法对由单词序列（如英语单词序列）构成的输入文本进行分析并确定其语法结构的一种过程。当我们对 Go 源代码进行词法分析后，会形成上图的 token 流，我们想要把这个再转换成汇编还是不行，还需要转换一步，转换为另一种数据结构——AST 语法树，才能够用计算机的逻辑去处理。
+抽象语法树（Abstract Syntax Tree，AST），或简称语法树（Syntax tree），是源代码语法结构的一种抽象表示。
+这里提供一个在线编译 AST 的网站：https://astexplorer.net/，将上面的代码粘贴进来，就可以发现如下结果：
+左边是代码，右边会把所有代码相应地转换成了树结构呈现出来。（建议大家动手玩一玩，里面会有语法高亮和代码与树一一匹配的功能。如果未来你有机会写一些解释器，很可能会用到这个）
+语义分析（Semantic Analysis）是对结构上正确的源程序进行上下文有关性质的审查，进行类型审查。比如我们写了类似这样的代码：
+1package main 2 3import &amp;#34;fmt&amp;#34; 4 5func main() { 6 var x int = &amp;#34;abc&amp;#34; 7 println(x) 8} 作为一个找茬小能手（当然不是买瓜），可以发现，字符串 &amp;ldquo;abc&amp;rdquo; 是不能赋值为 int 变量 x，这时候我们直接编译 go build 就会出现如下问题：</description>
+    </item>
+    
+    <item>
       <title>Go 翻山越岭——常见业务问题</title>
       <link>https://jupiterxue.github.io/go-to-top/day5-problem/</link>
       <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day5-problem/</guid>
+      <description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
+场景1，这两段代码运行速度怎样？第一个比第二个快？
+1// 代码1 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var a = &amp;amp;person{111} 10 fmt.Println(a) 11} 1// 对比代码2 2package main 3 4type person struct { 5 age int 6} 7 8func main() { 9 var b = person {111} 10 var a = &amp;amp;b 11 fmt.Println(a) 12} 场景2，类型转换的原理是怎样的？
+1package main 2 3func main() { 4 var a = &amp;#34;hello&amp;#34; 5 var b = []byte(a) 6 println(b) 7} 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——常见业务问题</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/</link>
+      <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-14-go-top-day5-problem/</guid>
       <description>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
 常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
 场景1，这两段代码运行速度怎样？第一个比第二个快？
@@ -668,11 +745,48 @@ Go：1.14.12
     </item>
     
     <item>
+      <title>Go 翻山越岭——调试2</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-11-go-top-day4-run/</link>
+      <pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-11-go-top-day4-run/</guid>
+      <description>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
+[toc]
+实验环境与回顾  操作系统：CentOS 7
+Go：1.14.12
+调试工具：readelf、dlv
+ 这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
+1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 4# 进入项目目录 5cd /project/work/ch01 6# 查看文件 7ls 8 这里的绿色 hello，就是我们 Go 语言编译后产生的 ELF 格式可执行程序（ELF 不知道是什么，可回顾上期文章）
+我们一般通过工具 readelf 来找到进入可执行程序底层的入口 entry point address，通过以下命令来实现，这里的 -h 表示去读取 header
+ -h &amp;ndash;file-header	Display the ELF file header
+ 1readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。</description>
+    </item>
+    
+    <item>
       <title>Go 翻山越岭——调试1</title>
       <link>https://jupiterxue.github.io/go-to-top/day3-run/</link>
       <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day3-run/</guid>
+      <description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
+既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
+ 操作系统：CentOS7 或其他 Linux 环境
+Go：1.14.12
+Go 调试工具：readelf
+ 是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
+ 搭建实验环境  1docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
+1# 挂载目录，文件也可以生成 2docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 3 创建目录与文件  在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
+实验环境准备完毕。
+编写一段简单代码  我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
+1vi hello.go 1// hello.</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——调试1</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-09-go-top-day3-run/</link>
+      <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-09-go-top-day3-run/</guid>
       <description>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
 既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
  操作系统：CentOS7 或其他 Linux 环境
@@ -706,11 +820,62 @@ Go 调试工具：readelf
     </item>
     
     <item>
+      <title>Go 翻山越岭——调度-day2</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-05-go-top-day2-scheduler/</link>
+      <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-05-go-top-day2-scheduler/</guid>
+      <description>1package main 2 3// sd1 4 5func main() { 6 // test 7} </description>
+    </item>
+    
+    <item>
       <title>Go 翻山越岭——调度-day1</title>
       <link>https://jupiterxue.github.io/go-to-top/day1-scheduler/</link>
       <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day1-scheduler/</guid>
+      <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
+ Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory	：当代码需要内存时，负责内存分配工作
+Garbage	：当内存不再需要时，负责回收内存
+ 而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
+什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
+1go func() { 2println(&amp;#34;hello world in goroutine!&amp;#34;) 3} 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
+Goroutine 生产过程3,4
+Goroutine 消费过程
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——调度-day1</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-03-go-top-day1-scheduler/</link>
+      <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-03-go-top-day1-scheduler/</guid>
+      <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
+ Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory	：当代码需要内存时，负责内存分配工作
+Garbage	：当内存不再需要时，负责回收内存
+ 而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
+什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
+1go func() { 2println(&amp;#34;hello world in goroutine!&amp;#34;) 3} 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
+Goroutine 生产过程3,4
+Goroutine 消费过程
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——调度-day1</title>
+      <link>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</link>
+      <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/posts/2021-08-03-scheduler/</guid>
       <description>前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
 Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
  Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环

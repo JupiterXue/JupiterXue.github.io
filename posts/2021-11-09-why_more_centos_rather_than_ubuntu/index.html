@@ -14,11 +14,14 @@
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
   <meta property="og:title" content="为什么公司更多用 CentOS 而不是 Ubuntu" />
-<meta property="og:description" content="想做个类似鹤老师经济学一样的专栏，利用到经济学的工具，对自己的领域进行一些思辨。
-有的人说：这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。 有的人说：本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。 还有人说：历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。
-摘自网友 namelosw 的一个梗：
- 服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐 编程语言（以前）：要说还是 C&#43;&#43; 牛皮，Java 就图一乐 编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐 建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐 引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐 引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐 桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意
- " />
+<meta property="og:description" content="想做个类似鹤老师经济学一样的专栏，无关他的观点是否正确，仅就他能够尽量从经济学的角度来看现实问题就值得学习。所以也想利用到经济学的工具，对自己领域的一些东西做分析。既是加深自主学习的理解，也从另外一个角度去理解自己领域的一些概念。
+作为开发者，我们经常会用到的操作系统更多的可能不是 Windows 而是 Linux，而 Linux 目前已经发行了几百种操作系统，但主流的也就那么两个 CentOS 和 Ubuntu。一般而言，公司倾向于用 CentOS 而不是 Ubuntu。为什么会有这种局面呢？明明感觉 Ubuntu 更友好，界面更美观，为什么公司还都是用黑窗口的 CentOS？
+网上有很多人也在讨论这个话题：
+ 这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。
+本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。
+历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。
+ 还有摘自网友 namelosw 的一个梗，就图一乐：
+ 服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐 编程语言（以前）：要说还是 C&#43;&#43; 牛皮，Java 就图一乐 编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐 建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐 引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐 引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐 桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jupiterxue.github.io/posts/2021-11-09-why_more_centos_rather_than_ubuntu/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-11-09T10:08:30+08:00" />
@@ -27,11 +30,14 @@
 
   <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="为什么公司更多用 CentOS 而不是 Ubuntu"/>
-<meta name="twitter:description" content="想做个类似鹤老师经济学一样的专栏，利用到经济学的工具，对自己的领域进行一些思辨。
-有的人说：这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。 有的人说：本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。 还有人说：历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。
-摘自网友 namelosw 的一个梗：
- 服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐 编程语言（以前）：要说还是 C&#43;&#43; 牛皮，Java 就图一乐 编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐 建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐 引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐 引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐 桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意
- "/>
+<meta name="twitter:description" content="想做个类似鹤老师经济学一样的专栏，无关他的观点是否正确，仅就他能够尽量从经济学的角度来看现实问题就值得学习。所以也想利用到经济学的工具，对自己领域的一些东西做分析。既是加深自主学习的理解，也从另外一个角度去理解自己领域的一些概念。
+作为开发者，我们经常会用到的操作系统更多的可能不是 Windows 而是 Linux，而 Linux 目前已经发行了几百种操作系统，但主流的也就那么两个 CentOS 和 Ubuntu。一般而言，公司倾向于用 CentOS 而不是 Ubuntu。为什么会有这种局面呢？明明感觉 Ubuntu 更友好，界面更美观，为什么公司还都是用黑窗口的 CentOS？
+网上有很多人也在讨论这个话题：
+ 这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。
+本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。
+历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。
+ 还有摘自网友 namelosw 的一个梗，就图一乐：
+ 服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐 编程语言（以前）：要说还是 C&#43;&#43; 牛皮，Java 就图一乐 编程语言（现在）：要说还是 Java 牛皮，Go 就图一乐 建模：要说建模还是 AutoDesk 牛皮，Blender 就图一乐 引擎：（不太久前）要说引擎还是 UE 牛皮，Unity 就图一乐 引擎：（估计不久以后）要说引擎还是 Unity 牛皮，Godot 就图一乐 桌面（ 03 年）：要说还是 Win 98 牛皮，2000 XP 的什么叼玩意 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意"/>
 
   
   
@@ -250,7 +256,7 @@
         <div class="article-read-time">
           <i class="far fa-clock"></i>
           
-          2 minute read
+          5 minute read
         </div>
         
         
@@ -269,11 +275,15 @@
   
     <div class="content" itemprop="articleBody">
 
-      <p>想做个类似鹤老师经济学一样的专栏，利用到经济学的工具，对自己的领域进行一些思辨。</p>
-<p>有的人说：这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。
-有的人说：本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。
-还有人说：历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。</p>
-<p>摘自网友 namelosw 的一个梗：</p>
+      <p>想做个类似鹤老师经济学一样的专栏，无关他的观点是否正确，仅就他能够尽量从经济学的角度来看现实问题就值得学习。所以也想利用到经济学的工具，对自己领域的一些东西做分析。既是加深自主学习的理解，也从另外一个角度去理解自己领域的一些概念。</p>
+<p>作为开发者，我们经常会用到的操作系统更多的可能不是 Windows 而是 Linux，而 Linux 目前已经发行了几百种操作系统，但主流的也就那么两个 CentOS 和 Ubuntu。一般而言，公司倾向于用 CentOS 而不是 Ubuntu。为什么会有这种局面呢？明明感觉 Ubuntu 更友好，界面更美观，为什么公司还都是用黑窗口的 CentOS？</p>
+<p>网上有很多人也在讨论这个话题：</p>
+<blockquote>
+<p>这就跟许多国内互联网公司喜欢用 go 一样，说不出什么道理的。</p>
+<p>本质上是谁有钱，谁更稳。CentOS 的背后是 Redhat 。</p>
+<p>历史习惯问题，由于某些原因，centos 在中国流行，高校用、企业用，用的人多了一传十十传百，长年累月下来用户体量保持一定优势。</p>
+</blockquote>
+<p>还有摘自网友 namelosw 的一个梗，就图一乐：</p>
 <blockquote>
 <p>服务器：要说还是 CentOS 牛皮，Ubuntu 就图一乐
 编程语言（以前）：要说还是 C++ 牛皮，Java 就图一乐
@@ -285,6 +295,66 @@
 桌面（ 10 年）：要说还是 XP 牛皮，Win 7 什么叼玩意
 桌面（ 16 年）：要说还是 Win 7 牛皮，Win 10 什么叼玩意</p>
 </blockquote>
+<p>再来看看基本情况</p>
+<table>
+<thead>
+<tr>
+<th>对比</th>
+<th>CentOS</th>
+<th>Ubuntu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>内核</td>
+<td>基于 Red Hat</td>
+<td>基于 Debian</td>
+</tr>
+<tr>
+<td>更新频率</td>
+<td>很少</td>
+<td>经常更新</td>
+</tr>
+<tr>
+<td>虚拟主机管理面板</td>
+<td>支持 cPanel / WHM</td>
+<td>没有 cPanel 支持（但有替代品）</td>
+</tr>
+<tr>
+<td>社区大学</td>
+<td>较少用户和开发人员社区</td>
+<td>更大的用户和开发者社区</td>
+</tr>
+<tr>
+<td>教程</td>
+<td>提供帮助较少</td>
+<td>教程详细，免费指南帮助很多</td>
+</tr>
+<tr>
+<td>学习难度</td>
+<td>由于发行版不多，难以为初学者学习</td>
+<td>学过 Ubuntu 桌面的初学者更容易学习</td>
+</tr>
+<tr>
+<td>包管理</td>
+<td>使用 yum 包管理，安装 .rpm 的包</td>
+<td>使用 apt-get 包管理，安装 .deb 包</td>
+</tr>
+<tr>
+<td>默认用户</td>
+<td>一般默认 root 用户进行操作</td>
+<td>没有 root 用户，而是通过 sudo 授权</td>
+</tr>
+<tr>
+<td>界面 UI</td>
+<td>一般用服务端，界面用的少</td>
+<td>漂亮的用户界面</td>
+</tr>
+</tbody>
+</table>
+<!-- raw HTML omitted -->
+<p>一家公司的生存，靠的还是盈利，不是潜在收益如何，而是净收入如何。其次，成本决定了一个科技企业在市场中的竞争力。互联网的到来将过去许多信息差、地域差、时间差等高额费用的行为与商品的成本无下限地往下拉，所以才有了现在出门不用带钱的移动支付，手机点单就能送餐到家的美团饿了么等等。所以我们衡量公司如何选择操作系统也可以从这两个角度入手，更为有效。因为相比以上的评论与对比要素，更多是从个人用户的角度出发，这些大多都是相关关系，而盈利和低成本才是公司抉择的因果关系。</p>
+<p>所以，到这里关于如何选择操作系统，相信你有一个清晰的判断了。公司选择 CentOS 多是因为其维护成本更低，系统相对更稳定。至于如何盈利就是看公司的业务、商业模式以及对操作系统的理解和运用了。</p>
 
     </div>
   </article>
