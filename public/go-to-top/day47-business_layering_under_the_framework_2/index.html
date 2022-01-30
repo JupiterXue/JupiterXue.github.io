@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——架构下的业务逻辑（2） | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day47-business_layering_under_the_framework_2/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——架构下的业务逻辑（2）" />
+<meta property="og:description" content="上期文章讲了后端 API 层面的框架模式演变历史，以及介绍了面向设计 5 大原则 SOLID 中的依赖倒置原则 DIP，为今天的文章奠定了基础，来聊聊怎么具体来写代码。
+Clean Architecture 整洁架构（Clean Architecture），是由 Uncle Bob 在书《Clean Code》中提到的概念，作者也是面向对象编程中 SOLID 原则的提出者。书中还提到了涉及到了依赖倒置的一个概念图，理解之后我们能够实现编程的洋葱模式：
+ 最中心 Entities 是指企业的业务规则。 外面红色层 Use Cases 是指应用业务逻辑，这层就是上期文章中说到的 logic。 黑色箭头是指依赖的方向。整个依赖的方向是从外部到内部的。  可以发现，所有和业务相关的结构体的定义、逻辑都位于整洁架构的内层。外层有控制器 Controller、网关 Gateways、展示 Presenters。最外层是设备 Devices、数据库 DB、外部接口 External Interface、界面 UI、框架 Web。
+简单来说，就是业务逻辑和业务实体都放在中心，其他与业务无关的外部资源相关的东西都放在外环上。不会让业务逻辑去依赖任何外部实现，这也是整个整洁架构最出彩的地方：不让业务逻辑和外部框架绑定。如果用 Java 或 .Net 开发是很难避免这个问题，因为它们的 web 框架很强大。而 Golang 中可能不需要考虑这些问题，因为 web 框架并没有多强大，就可以用 Go 语言去实现业务逻辑与外层实现的隔离是比较容易的。
+整洁架构的核心观点 整洁架构中有以下几点核心观点，摘自博客《The Clean Code Blog》 https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+ 不与框架绑定：业务不应该与某个 web 框架绑定，应该做到想换就换。 可测试：业务逻辑应该在没有 UI、database 环境、web server 等所有外部环境的前提下做到可测试。 不与 UI 绑定：不与具体的 UI 库绑定，项目应该做到随意切换外部 UI，比如可以将 web UI 替换为 console UI，同时无需业务逻辑做修改。 不与数据库绑定：可以把 Oracle 换成 SQL Server，也可以换成 Mongo，换成 BigTable 或 换成 CouchDB。总之，业务不依赖具体的存储方式。 不依赖任何外部代理：业务应该对外部环境一无所知。  然后我们再来看看，这几个核心观点在业务和代码中是怎样的设计与实现。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day47-business_layering_under_the_framework_2/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-12-30T19:36:20+08:00" />
+<meta property="article:modified_time" content="2021-12-30T19:36:20+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——架构下的业务逻辑（2）"/>
+<meta name="twitter:description" content="上期文章讲了后端 API 层面的框架模式演变历史，以及介绍了面向设计 5 大原则 SOLID 中的依赖倒置原则 DIP，为今天的文章奠定了基础，来聊聊怎么具体来写代码。
+Clean Architecture 整洁架构（Clean Architecture），是由 Uncle Bob 在书《Clean Code》中提到的概念，作者也是面向对象编程中 SOLID 原则的提出者。书中还提到了涉及到了依赖倒置的一个概念图，理解之后我们能够实现编程的洋葱模式：
+ 最中心 Entities 是指企业的业务规则。 外面红色层 Use Cases 是指应用业务逻辑，这层就是上期文章中说到的 logic。 黑色箭头是指依赖的方向。整个依赖的方向是从外部到内部的。  可以发现，所有和业务相关的结构体的定义、逻辑都位于整洁架构的内层。外层有控制器 Controller、网关 Gateways、展示 Presenters。最外层是设备 Devices、数据库 DB、外部接口 External Interface、界面 UI、框架 Web。
+简单来说，就是业务逻辑和业务实体都放在中心，其他与业务无关的外部资源相关的东西都放在外环上。不会让业务逻辑去依赖任何外部实现，这也是整个整洁架构最出彩的地方：不让业务逻辑和外部框架绑定。如果用 Java 或 .Net 开发是很难避免这个问题，因为它们的 web 框架很强大。而 Golang 中可能不需要考虑这些问题，因为 web 框架并没有多强大，就可以用 Go 语言去实现业务逻辑与外层实现的隔离是比较容易的。
+整洁架构的核心观点 整洁架构中有以下几点核心观点，摘自博客《The Clean Code Blog》 https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+ 不与框架绑定：业务不应该与某个 web 框架绑定，应该做到想换就换。 可测试：业务逻辑应该在没有 UI、database 环境、web server 等所有外部环境的前提下做到可测试。 不与 UI 绑定：不与具体的 UI 库绑定，项目应该做到随意切换外部 UI，比如可以将 web UI 替换为 console UI，同时无需业务逻辑做修改。 不与数据库绑定：可以把 Oracle 换成 SQL Server，也可以换成 Mongo，换成 BigTable 或 换成 CouchDB。总之，业务不依赖具体的存储方式。 不依赖任何外部代理：业务应该对外部环境一无所知。  然后我们再来看看，这几个核心观点在业务和代码中是怎样的设计与实现。"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://jupiterxue.github.io/">
+  
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+      
+        <li><a href="/posts">杂谈</a></li>
+      
+        <li><a href="/tags">标签</a></li>
+      
+        <li><a href="/about">关于我</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p>上期文章讲了后端 API 层面的框架模式演变历史，以及介绍了面向设计 5 大原则 SOLID 中的依赖倒置原则 DIP，为今天的文章奠定了基础，来聊聊怎么具体来写代码。</p>
+<h1 id="clean-architecture">Clean Architecture</h1>
+<p>整洁架构（Clean Architecture），是由 Uncle Bob 在书《Clean Code》中提到的概念，作者也是面向对象编程中 SOLID 原则的提出者。书中还提到了涉及到了依赖倒置的一个概念图，理解之后我们能够实现编程的洋葱模式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112312227207.png" alt="image-20211231222701004"></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>最中心 Entities 是指企业的业务规则。</li>
+<li>外面红色层 Use Cases 是指应用业务逻辑，这层就是上期文章中说到的 logic。</li>
+<li>黑色箭头是指依赖的方向。整个依赖的方向是从外部到内部的。</li>
+</ul>
+<p>可以发现，所有和业务相关的结构体的定义、逻辑都位于整洁架构的内层。外层有控制器 Controller、网关 Gateways、展示 Presenters。最外层是设备 Devices、数据库 DB、外部接口 External Interface、界面 UI、框架 Web。</p>
+<p>简单来说，就是业务逻辑和业务实体都放在中心，其他与业务无关的外部资源相关的东西都放在外环上。不会让业务逻辑去依赖任何外部实现，这也是整个整洁架构最出彩的地方：不让业务逻辑和外部框架绑定。如果用 Java 或 .Net 开发是很难避免这个问题，因为它们的 web 框架很强大。而 Golang 中可能不需要考虑这些问题，因为 web 框架并没有多强大，就可以用 Go 语言去实现业务逻辑与外层实现的隔离是比较容易的。</p>
+<h2 id="整洁架构的核心观点">整洁架构的核心观点</h2>
+<p>整洁架构中有以下几点核心观点，摘自博客《The Clean Code Blog》 <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html</a></p>
+<ul>
+<li><strong>不与框架绑定</strong>：业务不应该与某个 web 框架绑定，应该做到想换就换。</li>
+<li><strong>可测试</strong>：业务逻辑应该在没有 UI、database 环境、web server 等所有外部环境的前提下做到可测试。</li>
+<li><strong>不与 UI 绑定</strong>：不与具体的 UI 库绑定，项目应该做到随意切换外部 UI，比如可以将 web UI 替换为 console UI，同时无需业务逻辑做修改。</li>
+<li><strong>不与数据库绑定</strong>：可以把 Oracle 换成 SQL Server，也可以换成 Mongo，换成 BigTable 或 换成 CouchDB。总之，业务不依赖具体的存储方式。</li>
+<li><strong>不依赖任何外部代理</strong>：业务应该对外部环境一无所知。</li>
+</ul>
+<p>然后我们再来看看，这几个核心观点在业务和代码中是怎样的设计与实现。</p>
+<h3 id="不与框架绑定">不与框架绑定</h3>
+<p>业务代码入口不应与任何协议绑定，同时框架代码（比如 gin.Context）不要入侵到业务层。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#75715e">// GetNotes is the logic entry for api /user/getAllNotes
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetNotes</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GetNotesReq</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">GetNotesResp</span>, <span style="color:#66d9ef">error</span>) {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>    <span style="color:#75715e">// business logic
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span>}
+</code></pre></div><p>GetNotes 是业务模块的入口，如 logic 或 domain model，在这层就不应该有外层的协议，如 http.Request 或 protobuf 中的 grpc.XXX。同时也不应该有任何框架相关的字眼。</p>
+<p>既然业务代码不能和框架绑定，意味着未来某天可能会把今天用到的 gin 框架换掉，如果业务代码中引用了，那么在换框架中肯定都会该业务代码，这是有非常大的工作量、不合适的。</p>
+<h3 id="可测试">可测试</h3>
+<p>在没有 UI、database 环境、web server 等所有外部环境的前提下做到可测试，这在 Go 语言中有一些可应用的方案：</p>
+<ul>
+<li>Sql driver mock for Golang</li>
+<li>Go monkeypatching</li>
+<li>etcd issues 11849</li>
+<li>Redis client Mock</li>
+<li>gomock</li>
+<li>Go 内置 net/http/httptest</li>
+<li>Testify - Thou Shalt Write Tests</li>
+</ul>
+<h3 id="不与-ui-绑定">不与 UI 绑定</h3>
+<p>在公司中我们做的基本上都是前后端分离的系统，不太容易与 UI 发生绑定</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112312342291.png" alt="image-20211231234203190"></p>
+<!-- raw HTML omitted -->
+<h3 id="不与数据库绑定">不与数据库绑定</h3>
+<p>不与具体的 UI 库绑定，项目应该做到随意切换外部 UI，比如可以将 web UI 提花那位 console UI，同时无需业务逻辑做修改。</p>
+<p>我们就需要借助 DDD 中的 Repo 设计方式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112312343762.png" alt="image-20211231234359689"></p>
+<!-- raw HTML omitted -->
+<p>直接抽象出来对象存储接口，然后可以用任何存储方式实现接口，比如 mysql、内存。我们的业务也不依赖存储，而是依赖接口。</p>
+<h3 id="不依赖任何外部代理">不依赖任何外部代理</h3>
+<p>意思是说，没有外部的 agent，项目也能启动。这种方式做到是比较难的。比如我们经常会碰到：</p>
+<ul>
+<li>没有配置下发的 agent 的环境，系统跑不起来。</li>
+<li>没有 service mesh 模块，系统跑不起来。</li>
+<li>没有 metrics 采集模块，系统跑不起来。</li>
+</ul>
+<p>最后推荐两个资料，第一个是作者对整洁架构做了总结，告诉了大家怎么使用 clean architecture 去写代码。第二个是他的博文的实际案例：</p>
+<ul>
+<li>《Clean Architecture, 2 years later》https://eltonminetto.dev/en/post/2020-07-06-clean-architecture-2years-later/</li>
+<li>《clean-architecture-go-v2》https://github.com/eminetto/clean-architecture-go-v2</li>
+</ul>
+<p>OK，下期文章聊聊比较期待的 DDD 模式！</p>
+
+  
+
+  </div>
+</article>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2022  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

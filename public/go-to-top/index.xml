@@ -7,23 +7,101 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>JupiterXue</copyright>
-    <lastBuildDate>Mon, 27 Dec 2021 22:11:54 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 30 Dec 2021 19:37:18 +0800</lastBuildDate><atom:link href="https://jupiterxue.github.io/go-to-top/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Day43 Web_design_and_project_2</title>
-      <link>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</link>
-      <pubDate>Mon, 27 Dec 2021 22:11:54 +0800</pubDate>
+      <title>Day48 Business_layering_under_the_framework_3</title>
+      <link>https://jupiterxue.github.io/go-to-top/day48-business_layering_under_the_framework_3/</link>
+      <pubDate>Thu, 30 Dec 2021 19:37:18 +0800</pubDate>
       
-      <guid>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</guid>
+      <guid>https://jupiterxue.github.io/go-to-top/day48-business_layering_under_the_framework_3/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Day42 Web_design_and_project</title>
+      <title>Go 翻山越岭——架构下的业务逻辑（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day47-business_layering_under_the_framework_2/</link>
+      <pubDate>Thu, 30 Dec 2021 19:36:20 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day47-business_layering_under_the_framework_2/</guid>
+      <description>上期文章讲了后端 API 层面的框架模式演变历史，以及介绍了面向设计 5 大原则 SOLID 中的依赖倒置原则 DIP，为今天的文章奠定了基础，来聊聊怎么具体来写代码。
+Clean Architecture 整洁架构（Clean Architecture），是由 Uncle Bob 在书《Clean Code》中提到的概念，作者也是面向对象编程中 SOLID 原则的提出者。书中还提到了涉及到了依赖倒置的一个概念图，理解之后我们能够实现编程的洋葱模式：
+ 最中心 Entities 是指企业的业务规则。 外面红色层 Use Cases 是指应用业务逻辑，这层就是上期文章中说到的 logic。 黑色箭头是指依赖的方向。整个依赖的方向是从外部到内部的。  可以发现，所有和业务相关的结构体的定义、逻辑都位于整洁架构的内层。外层有控制器 Controller、网关 Gateways、展示 Presenters。最外层是设备 Devices、数据库 DB、外部接口 External Interface、界面 UI、框架 Web。
+简单来说，就是业务逻辑和业务实体都放在中心，其他与业务无关的外部资源相关的东西都放在外环上。不会让业务逻辑去依赖任何外部实现，这也是整个整洁架构最出彩的地方：不让业务逻辑和外部框架绑定。如果用 Java 或 .Net 开发是很难避免这个问题，因为它们的 web 框架很强大。而 Golang 中可能不需要考虑这些问题，因为 web 框架并没有多强大，就可以用 Go 语言去实现业务逻辑与外层实现的隔离是比较容易的。
+整洁架构的核心观点 整洁架构中有以下几点核心观点，摘自博客《The Clean Code Blog》 https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+ 不与框架绑定：业务不应该与某个 web 框架绑定，应该做到想换就换。 可测试：业务逻辑应该在没有 UI、database 环境、web server 等所有外部环境的前提下做到可测试。 不与 UI 绑定：不与具体的 UI 库绑定，项目应该做到随意切换外部 UI，比如可以将 web UI 替换为 console UI，同时无需业务逻辑做修改。 不与数据库绑定：可以把 Oracle 换成 SQL Server，也可以换成 Mongo，换成 BigTable 或 换成 CouchDB。总之，业务不依赖具体的存储方式。 不依赖任何外部代理：业务应该对外部环境一无所知。  然后我们再来看看，这几个核心观点在业务和代码中是怎样的设计与实现。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——架构下的业务逻辑</title>
+      <link>https://jupiterxue.github.io/go-to-top/day46-business_layering_under_the_framework/</link>
+      <pubDate>Thu, 30 Dec 2021 19:36:09 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day46-business_layering_under_the_framework/</guid>
+      <description>在我们互联网公司中都会有一类工程师叫做，架构师。他们经常会去参加一些架构师大会。在他们的圈子中也会有一些黑话，我们一般的程序员是听不懂的，因此就需要我们在写代码的同时，去学习一些相关的理论。这些理论只是名词多，其实并不难。
+因为 Go 语言主要用在做后端系统，下面说的也是 API 层面的业务分层。
+传统分层 在很早的 web 项目中，都是采用的 MVC 的框架模式。
+MVC 这种模式在上个世纪 70 年代就已提出，到现在一直在被使用，因此可以说使用 MVC 的 web 项目称得上远古时代。最早的 web 开发用 PHP 的比较多，而 PHP 的架构尤其以 MVC 模式比较多，Model、View、Controller 都是标准化的组件。
+但是，存在一个局限性：前后端所有的代码都放在一起的。所以前端可能不那么讲究，就在 PHP 代码中做一套模板引擎，然后直接在在 Vue 里面去写渲染代码；后端的逻辑也很简单，都写在 Controller 里面。情况更糟的是，有些的公司对业务逻辑到底写在哪里还有争议，有的人写在 Model 里。
+后来，当前后端分离变成主流共识之后，View 层直接被干掉了。
+有一个原因在于前端和后端各自都变得比较复杂了，所以前端也要专门去做工程化了，随后有了 Angular、React、Vue 等三大知名的前端框架。
+而后端将 View 拆出去以后，只剩 Model 和 Controller，不过项目也开始变得复杂，一个接口就有几千、上万行代码的情况。这种情况，如果将全部代码堆积在 Controller 里面，并且还是按照以前的编程流程，过程式开发的话，整个代码维护起来相当地费劲。
+所以，大多数公司的后端会将逻辑越来越复杂的业务，拆分成单独的 logic，如下：
+ model 改成了 dao（data access object）。由于 model 很多时候都被当作领域模型来用，看起来里面就应该有一些逻辑。而 dao 就是仅仅作为数据获取的结构体。 controller 直接被拆分成了两部分，一部分还是叫做 controller，不过功能上更加简单，可能负责的是 API 接口的入口、协议或校验入口等。另一部分 logic ，这个在不同公司有不同的名字，可能叫做 services，都是用来写业务逻辑的。  但是，随着公司的发展，业务逻辑也在逐渐地膨胀，到后面越来越复杂。如果对 拆分后的 controller 没有指导的话，业务代码是很难管理、很难看懂维护的。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——web 框架原理（4）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day45-web_design_and_project_4/</link>
+      <pubDate>Tue, 28 Dec 2021 22:15:36 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day45-web_design_and_project_4/</guid>
+      <description>这周尝试连续更技术文。上期说到，Validator 组件能够将复杂的字段校验工作完全自动化完成，只需使用到 go-playground 中的 validator 包就能实现这一功能。今天继续聊聊其他组件。
+Request Binder 这是一段摘自 gin 框架的代码：
+1// Content-Type MIME of the most common data formats. 2const ( 3 MIMEJSON	= &amp;#34;application/json&amp;#34; 4 MIMEHTML	= &amp;#34;text/html&amp;#34; 5 MIMEXML	= &amp;#34;application/xml&amp;#34; 6 MIMEXML2	= &amp;#34;text/xml&amp;#34; 7 MIMEPlain	= &amp;#34;text/plain&amp;#34; 8 MIMEPOSTFORM	= &amp;#34;application/x-www-form-urlencoded&amp;#34; 9 MIMEMutipartPOSTForm	= &amp;#34;multipart/form-data&amp;#34; 10 MIMEPROTOBUF	= &amp;#34;application/x-protobuf&amp;#34; 11 MIMEMSGPACK	= &amp;#34;application/x-msgpack&amp;#34; 12 MIMEMSGPACK2	= &amp;#34;application/msgpack&amp;#34; 13 MIMEYAML	= &amp;#34;application/x-yaml&amp;#34; 14) 由于 gin 走的是 HTTP 协议，所以 Request binding 请求绑定，本质上是根据 HTTP header 中的 Contet-Type 的各种类型情况。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——web 框架原理（3）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day44-web_design_and_project_3/</link>
+      <pubDate>Tue, 28 Dec 2021 22:15:02 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day44-web_design_and_project_3/</guid>
+      <description>没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
+Validator 在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：
+1type RegisterReq struct { 2 Username string `json:&amp;#34;username&amp;#34;` 3 PasswordNew string `josn:&amp;#34;password_new&amp;#34;` 4 PasswordRepeat string `json:&amp;#34;password_repeat&amp;#34;` 5 Email string `json:email` 6} 7 8func register(req RegisterReq) error { 9 if len(req.Username) &amp;gt; 0 { 10 if len(req.PasswordNew) &amp;gt; 0 &amp;amp;&amp;amp; len(req.PasswordRepeat) &amp;gt; 0 { 11 if req.PasswordNew == req.PassowrdRepeat { 12 createUser() 13 return nil 14 } else { 15 return errors.</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——web 框架原理（2）</title>
+      <link>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</link>
+      <pubDate>Mon, 27 Dec 2021 22:11:54 +0800</pubDate>
+      
+      <guid>https://jupiterxue.github.io/go-to-top/day43-web_design_and_project_2/</guid>
+      <description>上期我们说到了 Middleware 可实现洋葱模式，将一些前置或后置的自定义代码插入到业务逻辑之前，并且便于修改。这期文章继续来聊聊常见 Web 框架中的组件。
+Router 本质上，路由（Router）就是从字符串匹配到用户函数的过程。这里有两段示例代码：
+这里用到的是 http 标准库的签名，所以参数类型为 http.responseWriter，和 http.Request。
+左边的字符串并不是单独的一个字符串。我们知道在 Rest ful 风格的路由中，很多时候可以带一些参数，比如上方路由有个 id 参数，就可以在用户函数 h1 中的 http.Request 中的路由中解析出来。但我们很多时候知道怎么用，却不知道如何自己来实现这种带参数的实现的，这时候就需要用到一个树结构。
+在了解这个树结构之前，我们需要先知道什么是字典树（trie），这里有一幅图：
+ 单个节点代表一个字母。 如果需要对字符串进行匹配，只要从根节点开始依次匹配即可。  我们可以从这个字典树发现几个单词：比如中间的 OK，右边的 OUT，左边略微复杂的 ONLINE。如果我们需要做一些文本匹配的工作，用到字典树是不错的方式。
+但字典树的设计比较浪费空间，有时候我们只是需要存一个字母，但其实开辟了很多空间，这个在路由当中好比有多个层级 /XXX。而如果还想要做字典树的查询，无疑时间上开销还是略大，因为在树的节点之间跳转，一般还是要经过指针的，而经过指针意味着它的内存的局部性不那么好，所以匹配起来可能会比较慢。
+Radix Tree 在此基础上，我们可以再了解一下 Radix Tree。
+Radix Tree 一般叫做奇数树或放射树，也有叫压缩前缀树。它本身是经过空间优化的字典树。在它里面会把一些子节点的公共的内容合并到父节点里面去，也就意味着单个节点不只存单个字母。
+然后来看看 Radix Tree 的几个特征：
+ 同一个 URI 在 HTTP 规范中会有多个方法  在我们 HTTP 的 Router 实现里，其实不止有一颗 Radix Tree。我们知道，在同一个路由字符串上，可以设置多种操作的。像这里的 Rest ful API 不仅有常见的 GET、POST 方法，还有 DELETE、PUT、UPDATE、PATCH 等方法，并且每一个方法其实都对应一颗 Radix Tree，大概的样子是这样的：
+可能我们实际写的例子类似上面，有三种方法 PUT、POST 和 PATCH。在 PUT 下面有这样一个前缀树 /bilibili 然后接 /22 和 /33，在 POST 下面也有相同前缀树 /bilibili 然后接 /33 和 /44，PATCH 类似。这种实现方式是可以的，因为每一个方法的树都是和其他方法彼此独立的。</description>
+    </item>
+    
+    <item>
+      <title>Go 翻山越岭——web 框架原理</title>
       <link>https://jupiterxue.github.io/go-to-top/day42-web_design_and_project/</link>
       <pubDate>Fri, 24 Dec 2021 19:14:59 +0800</pubDate>
       
       <guid>https://jupiterxue.github.io/go-to-top/day42-web_design_and_project/</guid>
-      <description></description>
+      <description>今天来讨论一下流行、常见的具有 RESTful API 风格的 web 框架中的原理，涵盖了 gin、go-chi 和 ego 的一些组件。我们会发现，它们框架中的组件，或多或少会有以下几个设计：middleware、router、validator、request binder、sql binder，。或许名称不都叫这个，但其实现的逻辑大概是差不多的。下面就来具体讲解它们的实现。
+Middleware 实际场景 在讲 middleware 底层实现之前，我们先来看看它在我们实际项目中是怎么用到的：
+1package main 2 3func hello(wr http.ResponseWriter, r *http.Request) { 4 wr.Write([]byte(&amp;#34;hello&amp;#34;)) 5} 6 7func main() { 8 http.HandleFunc(&amp;#34;/&amp;#34;, hello) 9 err := http.ListenAndServe(&amp;#34;:8080&amp;#34;, nil) 10 ...... 11} 这里我们有个 hello world 的业务逻辑，监听了 8080 端口，配置了一个 http 的 Handler，只要访问了路由 / 就会进入 hello 的逻辑。内部的逻辑这里只有个简单的写动作，实际场景中还会不断地叠加业务逻辑。
+某一天新的业务来了，想要统计每个请求所花费的时间，怎么实现呢？
+1// mindware/hello_with_time.elapse.go 2var logger = log.New(os.Stdout, &amp;#34;&amp;#34;, 0) 3 4func hello(we http.ReponseWriter, r *http.</description>
     </item>
     
     <item>
