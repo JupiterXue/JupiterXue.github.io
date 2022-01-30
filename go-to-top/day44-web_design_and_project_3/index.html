@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Go 翻山越岭——web 框架原理（3） | 木夜星空的个人博客</title>
+  <link rel = 'canonical' href = 'https://jupiterxue.github.io/go-to-top/day44-web_design_and_project_3/'>
+  <meta name="description" content="东方不亮木星亮，黑了白昼有星空">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Go 翻山越岭——web 框架原理（3）" />
+<meta property="og:description" content="没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
+Validator 在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：
+1type RegisterReq struct { 2 Username string `json:&#34;username&#34;` 3 PasswordNew string `josn:&#34;password_new&#34;` 4 PasswordRepeat string `json:&#34;password_repeat&#34;` 5 Email string `json:email` 6} 7 8func register(req RegisterReq) error { 9 if len(req.Username) &gt; 0 { 10 if len(req.PasswordNew) &gt; 0 &amp;&amp; len(req.PasswordRepeat) &gt; 0 { 11 if req.PasswordNew == req.PassowrdRepeat { 12 createUser() 13 return nil 14 } else { 15 return errors." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jupiterxue.github.io/go-to-top/day44-web_design_and_project_3/" /><meta property="article:section" content="go-to-top" />
+<meta property="article:published_time" content="2021-12-28T22:15:02+08:00" />
+<meta property="article:modified_time" content="2021-12-28T22:15:02+08:00" />
+
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Go 翻山越岭——web 框架原理（3）"/>
+<meta name="twitter:description" content="没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
+Validator 在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：
+1type RegisterReq struct { 2 Username string `json:&#34;username&#34;` 3 PasswordNew string `josn:&#34;password_new&#34;` 4 PasswordRepeat string `json:&#34;password_repeat&#34;` 5 Email string `json:email` 6} 7 8func register(req RegisterReq) error { 9 if len(req.Username) &gt; 0 { 10 if len(req.PasswordNew) &gt; 0 &amp;&amp; len(req.PasswordRepeat) &gt; 0 { 11 if req.PasswordNew == req.PassowrdRepeat { 12 createUser() 13 return nil 14 } else { 15 return errors."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://jupiterxue.github.io/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css" integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxxx"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QVC54HS9T');
+</script>
+
+
+  
+<link rel="icon" type="image/png" href="https://jupiterxue.github.io/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+    <header id="header">
+  <a href="https://jupiterxue.github.io/">
+  
+    <div id="logo" style="background-image: url(https://jupiterxue.github.io/images/logo.png)"></div>
+  
+  <div id="title">
+    <h1>木夜星空的个人博客</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></a>
+      </li>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+      
+        <li><a href="/posts">杂谈</a></li>
+      
+        <li><a href="/tags">标签</a></li>
+      
+        <li><a href="/about">关于我</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <p>没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。</p>
+<h1 id="validator">Validator</h1>
+<p>在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RegisterReq</span> <span style="color:#66d9ef">struct</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#a6e22e">Username</span>             <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`json:&#34;username&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>    <span style="color:#a6e22e">PasswordNew</span>      <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`josn:&#34;password_new&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#a6e22e">PasswordRepeat</span>  <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`json:&#34;password_repeat&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    <span style="color:#a6e22e">Email</span>                   <span style="color:#66d9ef">string</span>   <span style="color:#e6db74">`json:email`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">register</span>(<span style="color:#a6e22e">req</span> <span style="color:#a6e22e">RegisterReq</span>) <span style="color:#66d9ef">error</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Username</span>) &gt; <span style="color:#ae81ff">0</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>        <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PasswordNew</span>) &gt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PasswordRepeat</span>) &gt; <span style="color:#ae81ff">0</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PasswordNew</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PassowrdRepeat</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>                <span style="color:#a6e22e">createUser</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>            } <span style="color:#66d9ef">else</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>                <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;invalid email&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>            }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>        } <span style="color:#66d9ef">else</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;password and password reinput must be loger than 0&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>        }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>    } <span style="color:#66d9ef">else</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;length of username cannot be 0&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>}
+</code></pre></div><p>这段代码的意思是说，我们想要创建一个账户。</p>
+<ul>
+<li>首先，用户名的长度需要大于 0；</li>
+<li>其次，密码的长度大于 0，并且重复确认输入的密码的长度也大于 0；</li>
+<li>然后，密码和重复确认的密码必须相同；</li>
+<li>再然后，注册用到的 email 必须是合法的。</li>
+</ul>
+<p>这段代码看起来就像开了花，但其实是很多公司的日常开发写的。但我们如果这种代码写多了不仅感到繁琐，看起来更是感到不舒服。</p>
+<p>于是我们会去学习一些重构的理念之后，比如 early return / guard cluuse 的重构思想后，重构改造写出的代码可能就是这样的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">register</span>(<span style="color:#a6e22e">req</span> <span style="color:#a6e22e">RegisterReq</span>) <span style="color:#66d9ef">error</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Username</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;length of username cannot be 0&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PassowrdNew</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> len(<span style="color:#a6e22e">reqPasswordRepeat</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;password and password reinput must be loger than 0&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PassowordNEw</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">PassowrdRepeat</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;passowrd and reinput must be the same&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">emailFormatValid</span>(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Email</span>) {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;invalid email&#34;</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>    
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>    <span style="color:#a6e22e">createUser</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>}
+</code></pre></div><p>重构之后的代码看起来相比之前的代码是更加清晰、有条理些。</p>
+<p>但其实这种代码还能通过 validator 进行改造优化，像这种字段校验的脏活、累活，就尽量不要自己手动去写，可以用一个包来实现，在 go-playground 包中，有一个 validator，代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/go-playground/validator/v10&#34;</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RegisterReq</span> <span style="color:#66d9ef">struct</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>    <span style="color:#75715e">// 字符串的 gt=0 表示长度必须 &gt; 0, gt means greater than
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Username</span>            <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`validate:&#34;gt=0&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>    <span style="color:#75715e">// 同上
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">PasswordNew</span>     <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`validate:&#34;gt=0&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    <span style="color:#75715e">// eqfield 跨字段相等校验
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">PasswordRepeat</span>  <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`validate:&#34;eqfield=PasswordNew&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#75715e">// 合法 email 格式校验
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Email</span>                   <span style="color:#66d9ef">string</span>    <span style="color:#e6db74">`validate:&#34;email&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">validate</span> = <span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">New</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">validateFunc</span>(<span style="color:#a6e22e">req</span> <span style="color:#a6e22e">RegisterReq</span>) <span style="color:#66d9ef">error</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">validate</span>.<span style="color:#a6e22e">Struct</span>(<span style="color:#a6e22e">req</span>)
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span>        <span style="color:#a6e22e">domSomething</span>()
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span>    }
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span>    <span style="color:#f92672">......</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span>}
+</code></pre></div><ul>
+<li>
+<p>我们前面提到的校验规则都可以写在当前的 RegisterRequest 结构中某个字段 的 tag 里。比如我们要求 Username 的长度必须大于 0，就是 gt=0，英文意思是 greater than 0。</p>
+</li>
+<li>
+<p>我们可以在字段和字段之间去做校验，比如我们输入的密码和重复输入的密码必须相等；比如我们输入的 email 必须是内置规则下的合法的 email。</p>
+</li>
+<li>
+<p>下方的函数 validateFunc 就是在使用全局定义的 validate。将 RegisterRequest 对象进行 validate.Struct 校验匹配，然后依次校验每个字段是否符合规则，如果不符合规则就返回错误信息，这些错误信息其实我们也可以去做定制的。</p>
+</li>
+</ul>
+<p>像这种 validator 的应用是比较广泛的，我们常见的 gin 框架里面，其实是把这个组件集成在了一起。虽然平常不怎么看得到，但底层就是这么个设计。</p>
+<p>如果不是作为外部领域的应用，我们还可以将validator 单独拎出来使用。比如防御性的编程之类的。</p>
+<h2 id="validator-基本原理">Validator 基本原理</h2>
+<p>我们除了知道怎么去运用 validator 去做编程开发，还可以进一步了解它的基本原理。</p>
+<p>在此之前，我们需要意识到，我们日常工作中定义的 struct 可以这样理解：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Nested</span> <span style="color:#66d9ef">struct</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span>    <span style="color:#a6e22e">Email</span>    <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`validaate:&#34;email&#34;`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span>}
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">T</span> <span style="color:#66d9ef">struct</span> {
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span>    <span style="color:#a6e22e">Age</span>    <span style="color:#66d9ef">int</span> <span style="color:#e6db74">`validaate:&#34;eq=10&#34;
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span style="color:#e6db74">    Nested Nested`</span>
+<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span>}
+</code></pre></div><p>即，我们可以把任意多个 struct 理解成一棵树 。</p>
+<p>在 type T 结构中，有一个 Nested 字段，它对应着一个内嵌的结构体 Nested，Nested 结构体中有一个 Email 字段。然后我们将整个结构体的树状图画出来，就是这样的结构：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112282321720.png" alt="validator 基本原理-树-深度优先遍历 (1)"></p>
+<!-- raw HTML omitted -->
+<ul>
+<li>struct T 是一个根节点；</li>
+<li>左边是 Age 字段；</li>
+<li>右边是内嵌的结构体 Nested；</li>
+<li>内嵌结构体有着自己的 Email 字段。</li>
+</ul>
+<p>如果我们想要完成类似 validator 的功能，就需要对这棵树做深度优先遍历，或者广度优先遍历。</p>
+<p>既然我们可以通过深度优先遍历的方式，遍历到起始到内嵌结构体所有的字段。那么我们就可以利用反射的 API 做到这件事，可以访问到字段并且可以拿到对应字段的注释和注释中的 tag。这句话反过来说也成立，既然可以拿到所有字段，那么通过深度优先遍历的方式可以扫描到所有字段。</p>
+<p><strong>参考资料</strong></p>
+<p>[1] 《Go 高级编程》5.4 validator请求校验</p>
+<p><a href="https://github.com/chai2010/advanced-go-programming-book/blob/master/ch5-web/ch5-04-validator.md#543-%E5%8E%9F%E7%90%86">https://github.com/chai2010/advanced-go-programming-book/blob/master/ch5-web/ch5-04-validator.md#543-%E5%8E%9F%E7%90%86</a></p>
+<p>OK，下期文章继续讲解请求绑定的组件 request binder 的基本原理和实现！</p>
+
+  
+
+  </div>
+</article>
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "JupiterXue/BlogComment"
+            issue-term="title"
+            theme="github-light"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+
+
+
+
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2022  JupiterXue 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">主页</a></li>
+         
+        <li><a href="/go-to-top">Go 语言系列</a></li>
+         
+        <li><a href="/posts">杂谈</a></li>
+         
+        <li><a href="/tags">标签</a></li>
+         
+        <li><a href="/about">关于我</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>
