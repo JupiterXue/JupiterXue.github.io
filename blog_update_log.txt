@@ -1,0 +1,3 @@
+2024-10-17
+1. 更换主题为 blog-awesome
+2. 集成 github actions，自动部署。

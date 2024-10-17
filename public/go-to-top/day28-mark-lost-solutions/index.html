@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——GC 标记丢失解决初步方案 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——GC 标记丢失解决初步方案 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——GC 标记丢失解决初步方案 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——GC 标记丢失解决初步方案 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——GC 标记丢失解决初步方案 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day28-mark-lost-solutions/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day28-mark-lost-solutions/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——GC 标记丢失解决初步方案">
+  <meta property="og:description" content="Go 语言采用三色标记算法来实现垃圾回收，但标记过程中存在对象漏标情况，最终导致变量被意外回收掉。为了解决这个问题我们需要一个理论基础——强弱三色性。
+强弱三色性 强三色不变性和弱三色不变性是解决标记流程中对象漏标或错标的方案，还是看图好理解：
+图 1：强弱三色不变性流程 左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。
+右边的弱三色不变性是说黑色对象可以指向白色对象，是合法的，但是必须保证还有指向灰色对象的可达路径，比如 A → E，前提是 A → C → E。因为有灰色可达路径，所以黑色对象指向白色对象是合法的，这种方式适当地放宽了强三色不变性的条件，保证了我们的算法可以顺利都执行完。
+以上都只是理论，我们要实现这两种三色不变性，最终还是回到了 writebarrier 或 readbarrier（Go 语言中没有）。需要注意：在 GC 中的 writebarrier 和并发中的 writebarrier 不是一个东西。GC 中 barrier 的本质是：指针在编辑之前，可以插入一段代码 snippet of code insert before pointer modify，而 writebarrier 就是指的这段代码：
+图 2：chan.go 中 writebarrier 的实现位置 图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。
+图 3：gcWriteBarrier 源码对应位置 可以看到在源码的 252 行，确实是将 waiting 指针指向了空。
+强弱三色性的实现例子 以上说了强弱三色不变性和 writebarrier，还都偏抽象、偏基础的，再来看一下强弱三色不变性分别通过哪些 writebarrier 来实现的。首先来一组实现例子：Dijkstra barrier 和 Yuasa barrier。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-11-19T21:31:07+08:00">
+    <meta property="article:modified_time" content="2021-11-19T21:31:07+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——GC 标记丢失解决初步方案">
+  <meta name="twitter:description" content="Go 语言采用三色标记算法来实现垃圾回收，但标记过程中存在对象漏标情况，最终导致变量被意外回收掉。为了解决这个问题我们需要一个理论基础——强弱三色性。
+强弱三色性 强三色不变性和弱三色不变性是解决标记流程中对象漏标或错标的方案，还是看图好理解：
+图 1：强弱三色不变性流程 左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。
+右边的弱三色不变性是说黑色对象可以指向白色对象，是合法的，但是必须保证还有指向灰色对象的可达路径，比如 A → E，前提是 A → C → E。因为有灰色可达路径，所以黑色对象指向白色对象是合法的，这种方式适当地放宽了强三色不变性的条件，保证了我们的算法可以顺利都执行完。
+以上都只是理论，我们要实现这两种三色不变性，最终还是回到了 writebarrier 或 readbarrier（Go 语言中没有）。需要注意：在 GC 中的 writebarrier 和并发中的 writebarrier 不是一个东西。GC 中 barrier 的本质是：指针在编辑之前，可以插入一段代码 snippet of code insert before pointer modify，而 writebarrier 就是指的这段代码：
+图 2：chan.go 中 writebarrier 的实现位置 图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。
+图 3：gcWriteBarrier 源码对应位置 可以看到在源码的 252 行，确实是将 waiting 指针指向了空。
+强弱三色性的实现例子 以上说了强弱三色不变性和 writebarrier，还都偏抽象、偏基础的，再来看一下强弱三色不变性分别通过哪些 writebarrier 来实现的。首先来一组实现例子：Dijkstra barrier 和 Yuasa barrier。">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day28-mark-lost-solutions/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/posts/">
+                        文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——GC 标记丢失解决初步方案</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-11-19T21:31:07&#43;08:00" itemprop="datePublished"> Nov 19, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#强弱三色性的实现例子">强弱三色性的实现例子</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <p>Go 语言采用三色标记算法来实现垃圾回收，但标记过程中存在对象漏标情况，最终导致变量被意外回收掉。为了解决这个问题我们需要一个理论基础——强弱三色性。</p>
+<h1 id="强弱三色性">强弱三色性</h1>
+<p>强三色不变性和弱三色不变性是解决标记流程中对象漏标或错标的方案，还是看图好理解：<img alt="强弱三色性" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111192153481.png"></p>
+<center>图 1：强弱三色不变性流程</center>
+<p>左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。</p>
+<p>右边的弱三色不变性是说黑色对象可以指向白色对象，是合法的，但是必须保证还有指向灰色对象的可达路径，比如 A → E，前提是 A → C → E。因为有灰色可达路径，所以黑色对象指向白色对象是合法的，这种方式适当地放宽了强三色不变性的条件，保证了我们的算法可以顺利都执行完。</p>
+<p>以上都只是理论，我们要实现这两种三色不变性，最终还是回到了 writebarrier 或 readbarrier（Go 语言中没有）。<strong>需要注意</strong>：在 GC 中的 writebarrier 和并发中的 writebarrier 不是一个东西。GC 中 barrier 的本质是：指针在编辑之前，可以插入一段代码 snippet of code insert before pointer modify，而 writebarrier 就是指的这段代码：</p>
+<p><img alt="image-20211119224915061" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111192249194.png"></p>
+<center>图 2：chan.go 中 writebarrier 的实现位置</center>
+<p>图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。</p>
+<p><img alt="image-20211119225429746" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111192254821.png"></p>
+<center>图 3：gcWriteBarrier 源码对应位置</center>
+<p>可以看到在源码的 252 行，确实是将 waiting 指针指向了空。</p>
+<h2 id="强弱三色性的实现例子">强弱三色性的实现例子</h2>
+<p>以上说了强弱三色不变性和 writebarrier，还都偏抽象、偏基础的，再来看一下强弱三色不变性分别通过哪些 writebarrier 来实现的。首先来一组实现例子：Dijkstra barrier 和 Yuasa barrier。</p>
+<p>迪杰斯特拉 Dijkstra 是通过插入 barrier 来实现强三色不变性。（又是他！这个大牛还发明了很多让我们学计算机中痛不欲生的理论）</p>
+<p><img alt="image-20211119230051917" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111192300979.png"></p>
+<center>图 4：Dijkstra barrier</center>
+<p>这个函数中需要注意的是 slot 和 ptr。slot 其实是指类似图 3 中的 waiting 指针，ptr 相当于 waiting 所接收的、等号右侧的值。这段函数的意思是如果想修改 slot ，让它指向新的 ptr，需要先把这个指向的对象先标记为灰。</p>
+<p>汤浅 Yuasa 是通过删除 barrier 来实现的弱三色不变性：</p>
+<p><img alt="image-20211119231116908" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111192311965.png"></p>
+<center>图 5：Yuasa barrier</center>
+<p>这段函数的意思是如果想修改 slot ，让它指向新的 ptr，需要先把待指向对象的原来对象先标记为灰。</p>
+<p>这两个 writebarrier 实现的区别在于：一个是去标记新对象，一个是标记以前指向的对象。所以左边叫做插入 writebarrier，右边叫做删除 writebarrier。</p>
+<p>理论来说，我们有了一个强三色不变性的算法，在所有指针操作中都加上 Dijkstra barrier，就可以避免对象丢失了。那是不是就能屡试不爽，在程序中只用这种实现方式，不再需要使用 Tyasa barrier 了？其实是不达成的。</p>
+<p>因为在 Go 语言中对栈的操作频率是极其高的，但是 Go 官方设计者在设计的时候其实是不希望栈上的操作去加 barrier 的。如果加了很多 barrier，那么成本就非常高了。所以 Go 语言在栈上指针的操作都是不加任何 barrier 的。</p>
+<p>也就意味着上面所说的两种 barrier 都是有问题的，两种 barrier 都遇到了水土不服的情况，这两者算法的自述如下：</p>
+<ul>
+<li>Dijkstra 算法说：我在标记和用户进程并发的时候，会出现栈上的黑色对象指向白色对象的情况（这个白色对象之前被堆上某对象所指），最终 GC 会把这些白色对象之前的堆对象回收丢弃掉。</li>
+<li>Yuasa 算法说：我也是在标记和用户进程并发的时候，不过我会出现堆上的黑色对象指向堆上白色的情况（这个白色对象之前被栈上某对象所指），最终 GC 会把这些白色对象之前的栈对象回收丢弃掉。</li>
+</ul>
+<p>OK，留下一个未解决的悬念，下期文章聊一聊 Go 语言中的高质量 barrier。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>

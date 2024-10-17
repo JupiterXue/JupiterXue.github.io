@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——调试1 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——调试1 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——调试1 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——调试1 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——调试1 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day3-run/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day3-run/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——调试1">
+  <meta property="og:description" content="今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
+既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
+操作系统：CentOS7 或其他 Linux 环境
+Go：1.14.12
+Go 调试工具：readelf
+是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
+搭建实验环境 docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
+# 挂载目录，文件也可以生成 docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 创建目录与文件 在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
+实验环境准备完毕。
+编写一段简单代码 我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
+vi hello.go // hello.go 文件中写入 package main import &#34;fmt&#34; func main() { fmt.Println(&#34;Hello World&#34;) } 编译代码 生成可执行程序并查看：">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-08-09T09:38:51+08:00">
+    <meta property="article:modified_time" content="2021-08-09T09:38:51+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——调试1">
+  <meta name="twitter:description" content="今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。
+既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：
+操作系统：CentOS7 或其他 Linux 环境
+Go：1.14.12
+Go 调试工具：readelf
+是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 Docker 教程。好，就当你已经会基本操作啦，跟我开始敲代码了：
+搭建实验环境 docker run -it xargin/go1.14.12-dev bash 这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。
+# 挂载目录，文件也可以生成 docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash 创建目录与文件 在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）
+实验环境准备完毕。
+编写一段简单代码 我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：
+vi hello.go // hello.go 文件中写入 package main import &#34;fmt&#34; func main() { fmt.Println(&#34;Hello World&#34;) } 编译代码 生成可执行程序并查看：">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day3-run/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/posts/">
+                        文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——调试1</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-08-09T09:38:51&#43;08:00" itemprop="datePublished"> Aug 9, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。</p>
+<p>既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：</p>
+<blockquote>
+<p>操作系统：CentOS7 或其他 Linux 环境</p>
+<p>Go：1.14.12</p>
+<p>Go 调试工具：readelf</p>
+</blockquote>
+<p>是不是有点复杂？如果版本和我的不一样，那么实验结果可能不一样。如果版本比较低，有的工具需要自己去找旧版本的去匹配安装。那有没有什么办法可以简化这些实验环境的搭建呢？用上容器技术——Docker。简单说，当你用 Docker 的时候，就像在自己的电脑中装上了我所说版本的实验环境，里面包括了上面所说的所有东西。你可以用我给出的定制环境（我们称之为镜像），也可以用其他人给出的定制环境，并且可以做到无缝切换。就这么说，在你的 windows 上可以运行 CentOS、Ubuntu，甚至还能在 windows 上运行一个微型 windows，是不是很神奇？OK，我们说回今天的实验，在开始之前希望你能去了解 Docker 是怎样操作的，这里推荐我非常喜爱的 B 站 UP 主“遇见狂神说”推出的 <a href="https://www.bilibili.com/video/BV1og4y1q7M4?from=search&seid=13499423805328211071">Docker 教程</a>。好，就当你已经会基本操作啦，跟我开始敲代码了：</p>
+<ol>
+<li>搭建实验环境</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run -it xargin/go1.14.12-dev bash
+</span></span></code></pre></div><p>这里我们运行了曹大（曹春晖）提供的实验环境，并且进入到这个容器环境中。但是存在一个问题，我们在这里面写的代码在这个容器销毁后就没有了，所以我们需要对容器做一个映射，在容器中写了文件，在我们本地也有一份记录。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 挂载目录，文件也可以生成</span>
+</span></span><span class="line"><span class="cl">docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash
+</span></span></code></pre></div><ol start="2">
+<li>创建目录与文件</li>
+</ol>
+<p>在home目录下创建文件夹所有实验目录 work，创建第一个实验目录 ch。（这里的样式和大家不一样是因为 安装了 zsh ，你不一定也要按照，如果感兴趣，请自行搜索安装，当前配色主题是 ys）</p>
+<p><img alt="img" src="c:\\Users\\Xfavor\\AppData\\Local\\YNote\\data\\weixinobU7VjplR8GhsqZn6qPSNHGlLvOg\\2a19397ad8e14472b1f4c9358d3a8ed7\\clipboard.png"></p>
+<p>实验环境准备完毕。</p>
+<ol start="2">
+<li>编写一段简单代码</li>
+</ol>
+<p>我们来打开一个叫做 hello.go 的文件，写一段我们最熟悉的代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vi hello.go
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// hello.go 文件中写入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Hello World&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="3">
+<li>编译代码</li>
+</ol>
+<p>生成可执行程序并查看：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go build hello.go
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ls
+</span></span></code></pre></div><p><img alt="img" src="c:\\Users\\Xfavor\\AppData\\Local\\YNote\\data\\weixinobU7VjplR8GhsqZn6qPSNHGlLvOg\\03dcb6b3af0b4816b55c2babbe182f59\\clipboard.png"></p>
+<p>这里的绿色 hello，就是我们 Go 语言编译后的可执行程序，通过这么几步操作我们其实是实现了这样的一个流程：</p>
+<blockquote>
+<p>文本 → 编译 → 二进制可执行文件</p>
+</blockquote>
+<p>这里大家需要注意，在不同的操作系统上，可执行文件的格式（规范）是不一样的。</p>
+<blockquote>
+<p>Linux 可执行文件叫做 ELF</p>
+<p>Windows 可执行文件叫做 PE</p>
+<p>MacOS 可执行文件叫做 Mach-O</p>
+</blockquote>
+<p>今天我们用到的是 Linux，所以这里着重讲一下 Linux 的可执行文件 ELF(Executable and Linkable Format)</p>
+<blockquote>
+<p>ELF 由三部分组成：ELF header、Section header、Sections</p>
+</blockquote>
+<blockquote>
+<p>Linux 执行 ELF 文件流程：解析 ELF header → 加载 文件内容至内存 → 从 entry point 开始执行代码</p>
+</blockquote>
+<ol start="4">
+<li>尝试使用 readelf 工具</li>
+</ol>
+<p>我们一般通过工具 readelf 来找到 entry point address，通过以下命令来实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">readelf -h hello
+</span></span></code></pre></div><p><img alt="image-20210809235305494" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210809235305494.png"></p>
+<p>Ok，通过这么几步简单的流程，我们就找到了进入 Go 底层的入口了，下期再为大家讲解底层有什么东西。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+Win
+- 安装 choco 方便安装一下 Linux 下软件
+- 通过 choco 安装 hugo扩展版
+choco install hugo-extended
+- 配置文件是 config.toml
+
+
+将每个文件放进对应文件夹命令：
+```powershell
+Get-ChildItem -File | ForEach-Object {
+    # 创建以文件名（不包括扩展名）为名称的文件夹
+    $folderName = $_.BaseName
+    New-Item -ItemType Directory -Name $folderName -Force
+    # 移动文件到新创建的文件夹中
+    Move-Item $_.FullName -Destination (Join-Path -Path . -ChildPath $folderName)
+}
+```
+
+Mac
+- 配置文件是 hugo.toml
+
+
+
+
+Blog
+- 英文主题：https://themes.gohugo.io/
+- 中文主题：https://www.gohugo.org/theme/  （很少）
+- 搭建博客并部署到 github pages：
+
+
+Blog Details
+- 文件夹梳理
+    - archetypes: 用于创建新内容的模板
+    - content: 存放博客文章的地方
+    - data: 存放数据文件的地方
+    - layouts: 存放模板文件的地方
+    - static: 存放静态文件的地方
+    - themes: 存放主题文件的地方
+    - config.toml: 配置文件
+- 创建新文章
+    - hugo new posts/first.md
+    - 启动本地服务 hugo server -D
+- 部署到 github pages
+    - 创建新的仓库
+    - git submodule add
+    - git add . && git commit -m "add new blog" && git push
+    - hugo -D
+    - cd public && git add . && git commit -m "add new blog" && git push
+- 配置域名
+    - 在仓库的 settings 中配置 custom domain
+    - 在域名服务商处配置 CNAME
+- 配置评论
+    - disqus
+    - gitalk
+- 配置统计
+    - google analytics
+    - baidu tongji
+- 配置搜索
+    - algolia
+    - lunr.js
+- 配置 RSS
+    - hugo server -D
+    - hugo --minify
+- 配置 SEO
+    - robots.txt
+    - sitemap.xml
+- 配置 CDN
+    - cloudflare
+- 配置 SSL
+    - cloudflare
+- 配置备案
+    - 备案号
+- 配置 PWA
+    - manifest.json
+    - service worker
+- 配置 AMP
+    - amp.html
+- 配置社交
+    - github
+    - twitter
+    - facebook
+    - linkedin
+    - weibo
+    - zhihu
+    - juejin
+    - segmentfault
+    - stackoverflow
+    - medium
+    - dev.to
+    - 掘金
+    - 知乎
+    - 简书
+    - CSDN
+    - 博客园
+    - 开源中国

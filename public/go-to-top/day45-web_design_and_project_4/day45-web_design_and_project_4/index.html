@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——web 框架原理（4） | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——web 框架原理（4） | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——web 框架原理（4） | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——web 框架原理（4） | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——web 框架原理（4） | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.136.0">
+
+    
+    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——web 框架原理（4）">
+  <meta property="og:description" content="这周尝试连续更技术文。上期说到，Validator 组件能够将复杂的字段校验工作完全自动化完成，只需使用到 go-playground 中的 validator 包就能实现这一功能。今天继续聊聊其他组件。
+Request Binder 这是一段摘自 gin 框架的代码：
+// Content-Type MIME of the most common data formats. const ( MIMEJSON	= &#34;application/json&#34; MIMEHTML	= &#34;text/html&#34; MIMEXML	= &#34;application/xml&#34; MIMEXML2	= &#34;text/xml&#34; MIMEPlain	= &#34;text/plain&#34; MIMEPOSTFORM	= &#34;application/x-www-form-urlencoded&#34; MIMEMutipartPOSTForm	= &#34;multipart/form-data&#34; MIMEPROTOBUF	= &#34;application/x-protobuf&#34; MIMEMSGPACK	= &#34;application/x-msgpack&#34; MIMEMSGPACK2	= &#34;application/msgpack&#34; MIMEYAML	= &#34;application/x-yaml&#34; ) 由于 gin 走的是 HTTP 协议，所以 Request binding 请求绑定，本质上是根据 HTTP header 中的 Contet-Type 的各种类型情况。
+根据这个 header 我们可以判断用户传的 body 和 url 是什么东西。
+下面就是我们在代码中，根据 http 的 contentType 做的简单的 switch-case：
+func Default(method, contentType string) Binding { if method == http.MethodGet { return Form } switch contentType { case MIMEJSON: return JSON case MIMEXML, MIMEXML2: return XML case MIMEPROTOBUF: return ProtoBuf case MIMEMSGPACK, MIMEMSGPACK2: return MsgPack case MIMEYAML: return YAML case MIMEMultipartPOSTForm: return FormMultipart default: // case MIMEPOSTForm: return Form } } 最后，switch-case 返回的是一个 binding 结构。这个过程其实是设计模式中简单工厂模式的应用。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-12-28T22:15:36+08:00">
+    <meta property="article:modified_time" content="2021-12-28T22:15:36+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——web 框架原理（4）">
+  <meta name="twitter:description" content="这周尝试连续更技术文。上期说到，Validator 组件能够将复杂的字段校验工作完全自动化完成，只需使用到 go-playground 中的 validator 包就能实现这一功能。今天继续聊聊其他组件。
+Request Binder 这是一段摘自 gin 框架的代码：
+// Content-Type MIME of the most common data formats. const ( MIMEJSON	= &#34;application/json&#34; MIMEHTML	= &#34;text/html&#34; MIMEXML	= &#34;application/xml&#34; MIMEXML2	= &#34;text/xml&#34; MIMEPlain	= &#34;text/plain&#34; MIMEPOSTFORM	= &#34;application/x-www-form-urlencoded&#34; MIMEMutipartPOSTForm	= &#34;multipart/form-data&#34; MIMEPROTOBUF	= &#34;application/x-protobuf&#34; MIMEMSGPACK	= &#34;application/x-msgpack&#34; MIMEMSGPACK2	= &#34;application/msgpack&#34; MIMEYAML	= &#34;application/x-yaml&#34; ) 由于 gin 走的是 HTTP 协议，所以 Request binding 请求绑定，本质上是根据 HTTP header 中的 Contet-Type 的各种类型情况。
+根据这个 header 我们可以判断用户传的 body 和 url 是什么东西。
+下面就是我们在代码中，根据 http 的 contentType 做的简单的 switch-case：
+func Default(method, contentType string) Binding { if method == http.MethodGet { return Form } switch contentType { case MIMEJSON: return JSON case MIMEXML, MIMEXML2: return XML case MIMEPROTOBUF: return ProtoBuf case MIMEMSGPACK, MIMEMSGPACK2: return MsgPack case MIMEYAML: return YAML case MIMEMultipartPOSTForm: return FormMultipart default: // case MIMEPOSTForm: return Form } } 最后，switch-case 返回的是一个 binding 结构。这个过程其实是设计模式中简单工厂模式的应用。">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/">
+    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——web 框架原理（4）</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-12-28T22:15:36&#43;08:00" itemprop="datePublished"> Dec 28, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>这周尝试连续更技术文。上期说到，Validator 组件能够将复杂的字段校验工作完全自动化完成，只需使用到 go-playground 中的 validator 包就能实现这一功能。今天继续聊聊其他组件。</p>
+<h1 id="request-binder">Request Binder</h1>
+<p>这是一段摘自 gin 框架的代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Content-Type MIME of the most common data formats.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">const</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEJSON</span>	  		    <span class="p">=</span> <span class="s">&#34;application/json&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEHTML</span>			<span class="p">=</span> <span class="s">&#34;text/html&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEXML</span>				<span class="p">=</span> <span class="s">&#34;application/xml&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEXML2</span>			 <span class="p">=</span> <span class="s">&#34;text/xml&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEPlain</span>			       <span class="p">=</span> <span class="s">&#34;text/plain&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEPOSTFORM</span>		  <span class="p">=</span>  <span class="s">&#34;application/x-www-form-urlencoded&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEMutipartPOSTForm</span>	<span class="p">=</span> <span class="s">&#34;multipart/form-data&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEPROTOBUF</span>		  <span class="p">=</span> <span class="s">&#34;application/x-protobuf&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEMSGPACK</span>			  <span class="p">=</span>  <span class="s">&#34;application/x-msgpack&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEMSGPACK2</span>		  <span class="p">=</span>  <span class="s">&#34;application/msgpack&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">MIMEYAML</span>			  <span class="p">=</span> <span class="s">&#34;application/x-yaml&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><p>由于 gin 走的是 HTTP 协议，所以 Request binding 请求绑定，本质上是根据 HTTP header 中的 Contet-Type 的各种类型情况。</p>
+<p>根据这个 header 我们可以判断用户传的 body 和 url 是什么东西。</p>
+<p>下面就是我们在代码中，根据 http 的 contentType 做的简单的 switch-case：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Default</span><span class="p">(</span><span class="nx">method</span><span class="p">,</span> <span class="nx">contentType</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">Binding</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">method</span> <span class="o">==</span> <span class="nx">http</span><span class="p">.</span><span class="nx">MethodGet</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">Form</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">switch</span> <span class="nx">contentType</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">MIMEJSON</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">JSON</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">MIMEXML</span><span class="p">,</span> <span class="nx">MIMEXML2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">XML</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">MIMEPROTOBUF</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">ProtoBuf</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">MIMEMSGPACK</span><span class="p">,</span> <span class="nx">MIMEMSGPACK2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">MsgPack</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">MIMEYAML</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">YAML</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">MIMEMultipartPOSTForm</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">FormMultipart</span>
+</span></span><span class="line"><span class="cl">        <span class="k">default</span><span class="p">:</span>    <span class="c1">// case MIMEPOSTForm:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">return</span> <span class="nx">Form</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>最后，switch-case 返回的是一个 binding 结构。这个过程其实是设计模式中简单工厂模式的应用。</p>
+<p>而不同的工厂实现很简单，其实就是某种 codec 的 unmarshal。</p>
+<p><img alt="image-20211229234220577" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112292342018.png"></p>
+<center>gin 中 Binding 位置</center>
+<h1 id="sql-binder">SQL Binder</h1>
+<p>我们在刚接触 Go 语言的时候，一般都是通过标准库的 database.sql 和 mysql 的驱动去写一些 db 相关的代码。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// db 是一个 sql.DB 类型的对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 该对象线程安全，且内部已包含了一个连接池
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 连接池的选项可以在 sql.DB 的方法中设置，这里为了简单省略了
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">db</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sql</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="s">&#34;mysql&#34;</span><span class="p">,</span> <span class="s">&#34;user:password@tcp(127.0.0.1:3306)/hello&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatil</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">defer</span> <span class="nx">db</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">name</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">rows</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">db</span><span class="p">.</span><span class="nf">Query</span><span class="p">(</span><span class="s">&#34;select id, name from users where id = ?&#34;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">defer</span> <span class="nx">rows</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// 必须把 rows 里面的内容读完，或者显示调用 Close() 方法，
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 否则在 defer 的 rows.Close() 执行之前，连接永远不会释放
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="nx">rows</span><span class="p">.</span><span class="nf">Next</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rows</span><span class="p">.</span><span class="nf">Scan</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">id</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ul>
+<li>标准库的 API 难用且容易犯错。比如 db 是可以不用关闭的。</li>
+<li>有无数的新手 Gopher 倒在 sql.Rows 忘记关闭的坑下。</li>
+</ul>
+<p>这里我们也可以看出来，Google 工程师平时不怎么写和业务打交道的代码的，这种 API 的设计明显是有问题的。</p>
+<p>这就是为什么我们不用标准的 API 去写代码的原因。因此我们在公司里大多数开发工作都需要在这个基础上包一层，不可能直接去用这个。哪怕是对 rows.Close 的操作简单封装一层，也能防止业务开发人员在做开发的时候忘了这件事，这种事故太容易发生了。</p>
+<p>还有一个比较麻烦的地方是，如果我们想要将 rows 和我们的结构体绑定也是比较麻烦，必须一行一行地用 rows.Next 遍历读取，再将所需的字段扫描出来，比如数组、字符串、结构体、map 绑定。</p>
+<p>因此，我们在写业务代码的时候都会用一些社区维护好的库去做开发，比如 sqlx，以下摘自它的 README：</p>
+<p><img alt="image-20211229234313279" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112292343369.png"></p>
+<center>sqlx 代码摘选</center>
+<p>这段代码是和事物相关，看起来略微复杂，但普通的查询应该比这个更简单些。它给用户提供的 SQL 有以下几个功能，不过总的来说，实现很简单，核心只有一句话：占位符替换。</p>
+<p>如果我们想要自己写代码来实现这种类似功能，就是个字符串遍历，只要能把特殊开头的单词提取出来就可以了，⽐如：开头，@开头，$开头。</p>
+<h1 id="go-micro">go-micro</h1>
+<p>最后来聊一聊目前最流行的微服务框架 go-micro 实现的插件原理，以下摘自 go 夜读：</p>
+<p><img alt="image-20211229234917298" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112292349393.png"></p>
+<center>go-micro 插件化原理</center>
+<p>它的原理是在每一层定义了都定义了一个接口，也就是说为每个组件强定义了接口。</p>
+<p>如果我们亲自去看了它的源码，会发现这个项目写得非常规范，是个非常好的开源项目学习范本。</p>
+<p>还需要注意一点，虽然开源框架的设计比较好，但整体的结构还是略微复杂的。我们在学习开源框架的时候不必完整地梳理流程，看每一层的抽象就好了；而如果真正用到这个框架的时候才需要深入去看。</p>
+<p>OK，到此为止，常见的 web 框架原理就讲解完了，你学会了吗。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+
+    
+
+</body>
+</html>

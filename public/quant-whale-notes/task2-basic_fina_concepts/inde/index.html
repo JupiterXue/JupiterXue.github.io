@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客</title>
+<meta property="og:title" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
+<meta itemprop="name" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
+<meta name="application-name" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/inde/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/inde/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="投资与量化-任务2-什么是金融市场">
+  <meta property="og:description" content="传送门：第二章-金融市场基础
+思考 亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。 货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。 利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。 利率计算公式 $$ PV = \frac{CF}{(1&#43;i)^n} $$
+，通过极限推导可以得到 PV = CF/r，可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出 PV=2/2%=100元，即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。 投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。 数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。 ">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="quant-whale-notes">
+    <meta property="article:published_time" content="2024-10-16T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-10-16T00:00:00+00:00">
+    <meta property="article:tag" content="Quant">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="投资与量化-任务2-什么是金融市场">
+  <meta name="twitter:description" content="传送门：第二章-金融市场基础
+思考 亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。 货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。 利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。 利率计算公式 $$ PV = \frac{CF}{(1&#43;i)^n} $$
+，通过极限推导可以得到 PV = CF/r，可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出 PV=2/2%=100元，即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。 投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。 数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。 ">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/inde/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/posts/">
+                        文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">投资与量化-任务2-什么是金融市场</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2024-10-16T00:00:00&#43;00:00" itemprop="datePublished"> Oct 16, 2024 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#思考">思考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <p>传送门：<a href="https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5">第二章-金融市场基础</a></p>
+<h3 id="思考">思考</h3>
+<ol>
+<li>亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。</li>
+<li>货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。</li>
+<li>利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。</li>
+<li>利率计算公式</li>
+</ol>
+<p>$$
+PV = \frac{CF}{(1+i)^n}
+$$</p>
+<ol start="5">
+<li>，通过极限推导可以得到 PV = CF/r，可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出 PV=2/2%=100元，即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。</li>
+<li>投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。</li>
+<li>数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。</li>
+</ol>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>

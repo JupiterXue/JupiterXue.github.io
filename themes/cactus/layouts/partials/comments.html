@@ -1,0 +1,37 @@
+<!--{{ if (not (isset .Site.Params "comments")) }}-->
+<!--{{ .Scratch.Set "enable_comments" false }}-->
+<!--{{ else if (isset .Params "comments") }}-->
+<!--{{ .Scratch.Set "enable_comments" .Params.comments }}-->
+<!--{{ else if (isset .Site.Params.Comments "enabled") }}-->
+<!--{{ .Scratch.Set "enable_comments" .Site.Params.Comments.Enabled }}-->
+<!--{{ else }}-->
+<!--{{ .Scratch.Set "enable_comments" true }}-->
+<!--{{ end }}-->
+
+<!--{{ $enable_comments := .Scratch.Get "enable_comments" }}-->
+<!--{{ if $enable_comments }}-->
+<!--<div class="blog-post-comments">-->
+<!--  {{ if (or (not (isset .Site.Params.Comments "engine")) (eq .Site.Params.Comments.Engine "disqus")) }}-->
+<!--  {{ partial "comments/disqus.html" . }}-->
+<!--  {{ else if eq .Site.Params.Comments.Engine "utterances" }}-->
+<!--  {{ partial "comments/utterances.html" . }}-->
+<!--  {{ else if eq .Site.Params.Comments.Engine "cactus_comments" }}-->
+<!--  {{ partial "comments/cactus_comments.html" . }}-->
+<!--  {{ end }}-->
+<!--</div>-->
+<!--{{ end }}-->
+
+{{ if and .IsPage (ne .Params.comment false) }}
+  <!-- utteranc -->
+  {{ if .Site.Params.utteranc.enable }}
+  <div class="post bg-white">
+    <script src="https://utteranc.es/client.js"
+            repo= "{{ .Site.Params.utteranc.repo }}"
+            issue-term="{{ .Site.Params.utteranc.issueTerm }}"
+            theme="{{ default "github-light" .Site.Params.utteranc.theme }}"
+    crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  {{ end }}
+{{ end }}

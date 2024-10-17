@@ -1,0 +1,1 @@
+package quant_whale_notes

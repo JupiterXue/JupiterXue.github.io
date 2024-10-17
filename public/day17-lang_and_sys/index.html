@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——系统调用基础 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——系统调用基础 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——系统调用基础 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——系统调用基础 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——系统调用基础 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/day17-lang_and_sys/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="http://localhost:1313/day17-lang_and_sys/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——系统调用基础">
+  <meta property="og:description" content="编程语言和操作系统之间的桥梁，也就是我们所说的系统调用。今天来聊聊，系统调用的基础概念。
+什么是系统调用 我们在了解系统调用之前，需要对操作系统有个简单的了解。操作系统（operating system,OS）是资源的管理器，也是计算机系统的内核与基石，其管理的资源都是经过了抽象。而对计算机来说，资源是硬件信息：CPU、RAM 内存、I/O 设备，以及进一步抽象的软件资源，如进程。
+为什么说操作系统是对资源进行了抽象呢？因为操作不方便、操作不安全，我们平时接触到的不是直接的硬件，比如磁盘操作，不会去操作扇区（嵌入式系统除外）。而我们所面对的都是这些：
+磁盘抽象：文件夹 内存抽象：虚拟内存 CPU 抽象：时间片 有了操作系统，我们对计算机的调度还是不够的。说白了，操作系统也是一个应用程序，底层还是一堆代码和汇编指令。这时候，我们需要由硬件提供支持，在应用和操作系统之间进行一层或多层隔离。
+分级保护域 CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。
+Intel64 有四个特权级别，不过实际上只用到了其中两个 ring-0 和 ring-3。ring-1 和 ring-2 本来计划是为了驱动程序和 OS 服务用，不过流行的 OS 们都没有接受这个方案。
+说到这里，答案已经揭晓。系统调用，是操作系统内核为应用提供的 API。可以理解为内核为应用提供服务，操作系统就位我们的上层应用程序提供了一系列“标准库”。比如我们常见的后端服务：APP 发起请求 request → 操作系统 Operating System 接收、处理并响应 → APP 接收 response。
+对于应用来说，系统调用可以实现超出自己能力以外的事情。
+那么 Go 语言中的系统调用是怎样的呢？在此之前，还需要提及 Go 语言调用规约。我们在做函数调用的时候没有使用寄存器，而是将参数都放在栈上。但在其他编程语言中做参数传递和函数调用都是用到了寄存器。举个例子：
+func hello() { x, y, z := 1, 3, 3, 3 a, b, c := multi(x, y) } func multi(x, y int) (a, b, c int) { r, s, t := 1, 2, 3 return x&#43;1, x&#43;2, x&#43;3 } 这段代码的调用规约如下：
+示例代码调用规约 这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2021-09-06T20:26:32+08:00">
+    <meta property="article:modified_time" content="2021-09-06T20:26:32+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——系统调用基础">
+  <meta name="twitter:description" content="编程语言和操作系统之间的桥梁，也就是我们所说的系统调用。今天来聊聊，系统调用的基础概念。
+什么是系统调用 我们在了解系统调用之前，需要对操作系统有个简单的了解。操作系统（operating system,OS）是资源的管理器，也是计算机系统的内核与基石，其管理的资源都是经过了抽象。而对计算机来说，资源是硬件信息：CPU、RAM 内存、I/O 设备，以及进一步抽象的软件资源，如进程。
+为什么说操作系统是对资源进行了抽象呢？因为操作不方便、操作不安全，我们平时接触到的不是直接的硬件，比如磁盘操作，不会去操作扇区（嵌入式系统除外）。而我们所面对的都是这些：
+磁盘抽象：文件夹 内存抽象：虚拟内存 CPU 抽象：时间片 有了操作系统，我们对计算机的调度还是不够的。说白了，操作系统也是一个应用程序，底层还是一堆代码和汇编指令。这时候，我们需要由硬件提供支持，在应用和操作系统之间进行一层或多层隔离。
+分级保护域 CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。
+Intel64 有四个特权级别，不过实际上只用到了其中两个 ring-0 和 ring-3。ring-1 和 ring-2 本来计划是为了驱动程序和 OS 服务用，不过流行的 OS 们都没有接受这个方案。
+说到这里，答案已经揭晓。系统调用，是操作系统内核为应用提供的 API。可以理解为内核为应用提供服务，操作系统就位我们的上层应用程序提供了一系列“标准库”。比如我们常见的后端服务：APP 发起请求 request → 操作系统 Operating System 接收、处理并响应 → APP 接收 response。
+对于应用来说，系统调用可以实现超出自己能力以外的事情。
+那么 Go 语言中的系统调用是怎样的呢？在此之前，还需要提及 Go 语言调用规约。我们在做函数调用的时候没有使用寄存器，而是将参数都放在栈上。但在其他编程语言中做参数传递和函数调用都是用到了寄存器。举个例子：
+func hello() { x, y, z := 1, 3, 3, 3 a, b, c := multi(x, y) } func multi(x, y int) (a, b, c int) { r, s, t := 1, 2, 3 return x&#43;1, x&#43;2, x&#43;3 } 这段代码的调用规约如下：
+示例代码调用规约 这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/day17-lang_and_sys/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.js"></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="http://localhost:1313/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/posts/">
+                        文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——系统调用基础</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-09-06T20:26:32&#43;08:00" itemprop="datePublished"> Sep 6, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>编程语言和操作系统之间的桥梁，也就是我们所说的系统调用。今天来聊聊，系统调用的基础概念。</p>
+<h1 id="什么是系统调用">什么是系统调用</h1>
+<p>我们在了解系统调用之前，需要对操作系统有个简单的了解。操作系统（operating system,OS）是<strong>资源的管理器</strong>，也是计算机系统的内核与基石，其管理的资源都是经过了抽象。而对计算机来说，资源是硬件信息：CPU、RAM 内存、I/O 设备，以及进一步抽象的软件资源，如进程。</p>
+<p>为什么说操作系统是对资源进行了抽象呢？因为操作不方便、操作不安全，我们平时接触到的不是直接的硬件，比如磁盘操作，不会去操作扇区（嵌入式系统除外）。而我们所面对的都是这些：</p>
+<ul>
+<li>磁盘抽象：文件夹</li>
+<li>内存抽象：虚拟内存</li>
+<li>CPU 抽象：时间片</li>
+</ul>
+<p>有了操作系统，我们对计算机的调度还是不够的。说白了，操作系统也是一个应用程序，底层还是一堆代码和汇编指令。这时候，我们需要由硬件提供支持，在应用和操作系统之间进行一层或多层隔离。</p>
+<p><img alt="image-20210906210117219" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109062101385.png"></p>
+<center>分级保护域</center>
+<p>CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。</p>
+<blockquote>
+<p>Intel64 有四个特权级别，不过实际上只用到了其中两个 ring-0 和 ring-3。ring-1 和 ring-2 本来计划是为了驱动程序和 OS 服务用，不过流行的 OS 们都没有接受这个方案。</p>
+</blockquote>
+<p>说到这里，答案已经揭晓。<strong>系统调用，是操作系统内核为应用提供的 API</strong>。可以理解为内核为应用提供服务，操作系统就位我们的上层应用程序提供了一系列“标准库”。比如我们常见的后端服务：APP 发起请求 request → 操作系统 Operating System 接收、处理并响应 →  APP 接收 response。</p>
+<blockquote>
+<p>对于应用来说，系统调用可以实现超出自己能力以外的事情。</p>
+</blockquote>
+<p>那么 Go 语言中的系统调用是怎样的呢？在此之前，还需要提及 <strong>Go 语言调用规约</strong>。我们在做函数调用的时候没有使用寄存器，而是将参数都放在栈上。但在其他编程语言中做参数传递和函数调用都是用到了寄存器。举个例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">hello</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">z</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="nf">multi</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">multi</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">r</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">t</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">x</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="nx">x</span><span class="o">+</span><span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>这段代码的调用规约如下：</p>
+<p><img alt="未命名文件 (5)" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109062141634.png"></p>
+<center>示例代码调用规约</center>
+<p>这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。</p>
+<p><img alt="CPU 与内存 (1)" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109062206995.png"></p>
+<center>CPU 与内存结构</center>
+<p>CPU 包括了：Control Unit 控制单元，ALU 算术逻辑单元，Registers 寄存器。这些都封装在 CPU 内部的，而内存一般是在外面。寄存器里面可以防止一些地址，通过地址找到位置。</p>
+<p>大概知道了寄存器的概念之后，我们再聊了解一下系统调用的调用规约。系统调用有一套自己的调用规约，需要使用寄存器。和 C 语言的调用规约相类似：</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center">arch</th>
+          <th style="text-align: center">syscall NR</th>
+          <th style="text-align: center">return</th>
+          <th style="text-align: center">arg0</th>
+          <th style="text-align: center">arg1</th>
+          <th style="text-align: center">arg2</th>
+          <th style="text-align: center">arg3</th>
+          <th style="text-align: center">arg4</th>
+          <th style="text-align: center">arg5</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">arm</td>
+          <td style="text-align: center">r7</td>
+          <td style="text-align: center">r0</td>
+          <td style="text-align: center">r0</td>
+          <td style="text-align: center">r1</td>
+          <td style="text-align: center">r2</td>
+          <td style="text-align: center">r3</td>
+          <td style="text-align: center">r4</td>
+          <td style="text-align: center">r5</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">arm64</td>
+          <td style="text-align: center">x8</td>
+          <td style="text-align: center">x0</td>
+          <td style="text-align: center">x0</td>
+          <td style="text-align: center">x1</td>
+          <td style="text-align: center">x2</td>
+          <td style="text-align: center">x3</td>
+          <td style="text-align: center">x4</td>
+          <td style="text-align: center">x5</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">x86</td>
+          <td style="text-align: center">eaX</td>
+          <td style="text-align: center">eaX</td>
+          <td style="text-align: center">ebx</td>
+          <td style="text-align: center">ecx</td>
+          <td style="text-align: center">edx</td>
+          <td style="text-align: center">esi</td>
+          <td style="text-align: center">edi</td>
+          <td style="text-align: center">ebp</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">x86_64</td>
+          <td style="text-align: center">rax</td>
+          <td style="text-align: center">rax</td>
+          <td style="text-align: center">rdi</td>
+          <td style="text-align: center">rsi</td>
+          <td style="text-align: center">rdx</td>
+          <td style="text-align: center">r10</td>
+          <td style="text-align: center">r8</td>
+          <td style="text-align: center">r9</td>
+      </tr>
+  </tbody>
+</table>
+<p>来源：https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86_64-64_bit</p>
+<p>我们大多都是在 x86_64 位平台去做开发、写代码，所以我们只需要看最后一行，看它对应的函数传递规则就好。我们每次做具体的系统调用时，都需要传参，arg0 是第一个参数，arg5 是第六个参数。也就是说做系统调用时只能传递 6 个参数。Linux 平台中有 300 多个系统调用，也不没有让传递参数超过 6 个。</p>
+<p>往 rax 寄存器中存放具体系统调用的编号，内核再通过计算 6 个参数就能知道我们调用的是哪个系统调用，最后把返回值也放在 rax 寄存器中。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>
