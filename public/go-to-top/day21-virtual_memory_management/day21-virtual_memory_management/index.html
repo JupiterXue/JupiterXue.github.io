@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,27 +18,27 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——进程与虚拟内存的分布">
   <meta property="og:description" content="没想到继续更文已经是一个月半以后了。立个小小的 flag，到年底把 Go 基础与浅层的内核过一遍。保持两天一更的节奏。还是继续接着上期说的内存管理。了解了内存管理抽象的基础概念之后，来看一下一些具体的实现。
 虚拟内存的分布 首先来看一下虚拟内存是如何布局的，这部分其实算是操作系统的内容。在《The Linux Programming Interface》这本书中提到了一张图，描述了 32 位操作系统大致的虚拟地址空间的分布是怎样的：
-图 1: 32 位操作系统虚拟内存地址分布 因为是 32 位操作系统，所以总的地址空间是 4 GB。可以看到上方是高地址，下方是低地址，所以可以看到以下几个特征：
+图 1: 32 位操作系统虚拟内存地址分布因为是 32 位操作系统，所以总的地址空间是 4 GB。可以看到上方是高地址，下方是低地址，所以可以看到以下几个特征：
 栈 Stack 是从高地址向低地址增长的。 堆 Heap 是从低地址向高地址增长的。 调整堆顶一般来说是调整的 Program break。 然后再来看看我们常用的 64 位系统中进程虚拟内存的分布是怎样的，摘自网络：
 图 2: 64 位操作系统虚拟内存地址分布 这张图可能不是很准确，感兴趣可以去官方文档，描述更加详细：https://www.kernel.org/doc/html/latest/x86/x86_64/mm.html 。
 可以看到 64 位操作系统可使用的虚拟内存空间是增加的，并且基本上都是以 TB 为单位。但通过对比功能可以发现，其实 64 位内存的整体布局和 32 位的内存布局大差不差。
 前面说到的都是单线程的情况，而在 Go 中我们会经常用到多线程，那么多线程的情况下，进程虚拟内存又是怎么分布的呢？一图就懂：
-图 3: 多进程下 32 位系统虚拟内存地址分布 相比单进程，可以看到栈的变化最大。主线程的栈还是从上往下增长，但是其他的线程会分布在中间，并且中间会穿插动态链接库 Shared libraries、共享内存 shared memory。
+图 3: 多进程下 32 位系统虚拟内存地址分布相比单进程，可以看到栈的变化最大。主线程的栈还是从上往下增长，但是其他的线程会分布在中间，并且中间会穿插动态链接库 Shared libraries、共享内存 shared memory。
 而堆空间没有什么变化，但也意味着它对其他线程来说都是公用的。所以线程要访问堆上的东西都一般是需要加锁的。
 OK，了解了虚拟内存地址分布情况，那么是谁来对内存进行分配呢？没错，有请下一位主角登场。
 内存分配器 内存分配器 Allocator，理论上分为两种：
@@ -57,12 +57,12 @@ OK，了解了虚拟内存地址分布情况，那么是谁来对内存进行分
   <meta name="twitter:title" content="Go 翻山越岭——进程与虚拟内存的分布">
   <meta name="twitter:description" content="没想到继续更文已经是一个月半以后了。立个小小的 flag，到年底把 Go 基础与浅层的内核过一遍。保持两天一更的节奏。还是继续接着上期说的内存管理。了解了内存管理抽象的基础概念之后，来看一下一些具体的实现。
 虚拟内存的分布 首先来看一下虚拟内存是如何布局的，这部分其实算是操作系统的内容。在《The Linux Programming Interface》这本书中提到了一张图，描述了 32 位操作系统大致的虚拟地址空间的分布是怎样的：
-图 1: 32 位操作系统虚拟内存地址分布 因为是 32 位操作系统，所以总的地址空间是 4 GB。可以看到上方是高地址，下方是低地址，所以可以看到以下几个特征：
+图 1: 32 位操作系统虚拟内存地址分布因为是 32 位操作系统，所以总的地址空间是 4 GB。可以看到上方是高地址，下方是低地址，所以可以看到以下几个特征：
 栈 Stack 是从高地址向低地址增长的。 堆 Heap 是从低地址向高地址增长的。 调整堆顶一般来说是调整的 Program break。 然后再来看看我们常用的 64 位系统中进程虚拟内存的分布是怎样的，摘自网络：
 图 2: 64 位操作系统虚拟内存地址分布 这张图可能不是很准确，感兴趣可以去官方文档，描述更加详细：https://www.kernel.org/doc/html/latest/x86/x86_64/mm.html 。
 可以看到 64 位操作系统可使用的虚拟内存空间是增加的，并且基本上都是以 TB 为单位。但通过对比功能可以发现，其实 64 位内存的整体布局和 32 位的内存布局大差不差。
 前面说到的都是单线程的情况，而在 Go 中我们会经常用到多线程，那么多线程的情况下，进程虚拟内存又是怎么分布的呢？一图就懂：
-图 3: 多进程下 32 位系统虚拟内存地址分布 相比单进程，可以看到栈的变化最大。主线程的栈还是从上往下增长，但是其他的线程会分布在中间，并且中间会穿插动态链接库 Shared libraries、共享内存 shared memory。
+图 3: 多进程下 32 位系统虚拟内存地址分布相比单进程，可以看到栈的变化最大。主线程的栈还是从上往下增长，但是其他的线程会分布在中间，并且中间会穿插动态链接库 Shared libraries、共享内存 shared memory。
 而堆空间没有什么变化，但也意味着它对其他线程来说都是公用的。所以线程要访问堆上的东西都一般是需要加锁的。
 OK，了解了虚拟内存地址分布情况，那么是谁来对内存进行分配呢？没错，有请下一位主角登场。
 内存分配器 内存分配器 Allocator，理论上分为两种：
@@ -71,37 +71,37 @@ OK，了解了虚拟内存地址分布情况，那么是谁来对内存进行分
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -122,42 +122,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -295,7 +295,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Jupiter 的个人博客</title>
-    <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Jupiter 的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Thu, 17 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>春不晚</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/not_too_late/</link>
+      <link>http://localhost:1313/posts/not_too_late/</link>
       <pubDate>Thu, 17 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/not_too_late/</guid>
+      <guid>http://localhost:1313/posts/not_too_late/</guid>
       
       <description>&lt;p&gt;姑娘一句春不晚，痴儿留在真江南。&lt;/p&gt;
 &lt;p&gt;江南曲落孤城，化作烟雨、与我对弹。&lt;/p&gt;
@@ -26,10 +26,10 @@
     
     <item>
       <title>投资与量化-任务2-什么是金融市场</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task2-basic_fina_concepts/</link>
+      <link>http://localhost:1313/posts/task2-basic_fina_concepts/</link>
       <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task2-basic_fina_concepts/</guid>
+      <guid>http://localhost:1313/posts/task2-basic_fina_concepts/</guid>
       
       <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
@@ -64,10 +64,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>投资与量化-任务1-什么是投资</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task1-what-invist/</link>
+      <link>http://localhost:1313/posts/task1-what-invist/</link>
       <pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task1-what-invist/</guid>
+      <guid>http://localhost:1313/posts/task1-what-invist/</guid>
       
       <description>&lt;p&gt;组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
 传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;

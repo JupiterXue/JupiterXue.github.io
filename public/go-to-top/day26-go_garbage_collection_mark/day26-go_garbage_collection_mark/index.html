@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,21 +18,21 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——标记流程">
   <meta property="og:description" content="Go 语言使用并发的三色标记（tricolor marking）算法作为其垃圾回收算法，并且在 Go 中的 GC 没有分代，没有压缩，没有对象移动。整个 GC 流程如图：
-图 1：GC 全流程 整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。
+图 1：GC 全流程整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。
 在触发之后会进入 runtime.gcStart 函数。因为很多内存分配器都会进来，但最终只有一个能够进去，所以它会抢一个全局锁。然后启动所有后端标记的 worker 并且把它和每个 P 绑定。每个 P 都会对应一个 BgMarkWorker，但不一定每个 worker 都能全部启动，其实是按比例启动的。所以在 cBgMarkStartWorkers 函数中初始化所有 worker 都会让它们进入一个休眠状态 goPark，它会在执行到 schedule 函数中的 finRunnableGCWorker 时之前休眠的 GC 标记线程唤醒，之后是从 G runing 状态变为 G waiting 状态。
 注意，在标记的时候会控制所有标记协程的 CPU，所以不能把所有的 P 上协程全部唤醒，如果全唤醒意味着 CPU 占用中标记就占用了了80% 到 90%，应用程序也就跑不起来了。
 gcDrain 是整个标记的主流程。其中，mark 标记根节点，gc work 全局和本地的平衡，scan 对象并进行标灰。整个清扫过程完成之后会，会有一个分布式完成算法进行判断，然后会进入 gcMarkDone 函数。
@@ -50,7 +50,7 @@ gcMarkDone 阶段会去把剩余的 write buffer 或 gc worker 里面的工作�
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Go 翻山越岭——标记流程">
   <meta name="twitter:description" content="Go 语言使用并发的三色标记（tricolor marking）算法作为其垃圾回收算法，并且在 Go 中的 GC 没有分代，没有压缩，没有对象移动。整个 GC 流程如图：
-图 1：GC 全流程 整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。
+图 1：GC 全流程整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。
 在触发之后会进入 runtime.gcStart 函数。因为很多内存分配器都会进来，但最终只有一个能够进去，所以它会抢一个全局锁。然后启动所有后端标记的 worker 并且把它和每个 P 绑定。每个 P 都会对应一个 BgMarkWorker，但不一定每个 worker 都能全部启动，其实是按比例启动的。所以在 cBgMarkStartWorkers 函数中初始化所有 worker 都会让它们进入一个休眠状态 goPark，它会在执行到 schedule 函数中的 finRunnableGCWorker 时之前休眠的 GC 标记线程唤醒，之后是从 G runing 状态变为 G waiting 状态。
 注意，在标记的时候会控制所有标记协程的 CPU，所以不能把所有的 P 上协程全部唤醒，如果全唤醒意味着 CPU 占用中标记就占用了了80% 到 90%，应用程序也就跑不起来了。
 gcDrain 是整个标记的主流程。其中，mark 标记根节点，gc work 全局和本地的平衡，scan 对象并进行标灰。整个清扫过程完成之后会，会有一个分布式完成算法进行判断，然后会进入 gcMarkDone 函数。
@@ -59,37 +59,37 @@ gcMarkDone 阶段会去把剩余的 write buffer 或 gc worker 里面的工作�
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -110,42 +110,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -281,7 +281,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

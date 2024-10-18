@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,22 +18,22 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day32-sync_structure_2/day32-sync_structure_2/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day32-sync_structure_2/day32-sync_structure_2/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day32-sync_structure_2/day32-sync_structure_2/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day32-sync_structure_2/day32-sync_structure_2/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——并发数据结构（2）">
   <meta property="og:description" content="本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。
 sync.Pool 上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：
-图 1：sync.Pool GC 时的逻辑 可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
+图 1：sync.Pool GC 时的逻辑可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
 一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。
 并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。
 semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：">
@@ -51,7 +51,7 @@ semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所
   <meta name="twitter:title" content="Go 翻山越岭——并发数据结构（2）">
   <meta name="twitter:description" content="本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。
 sync.Pool 上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：
-图 1：sync.Pool GC 时的逻辑 可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
+图 1：sync.Pool GC 时的逻辑可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
 一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。
 并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。
 semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：">
@@ -59,37 +59,37 @@ semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day32-sync_structure_2/day32-sync_structure_2/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day32-sync_structure_2/day32-sync_structure_2/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -110,42 +110,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -289,7 +289,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

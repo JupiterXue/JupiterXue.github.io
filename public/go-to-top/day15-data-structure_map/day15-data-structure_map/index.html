@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,24 +18,24 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day15-data-structure_map/day15-data-structure_map/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day15-data-structure_map/day15-data-structure_map/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day15-data-structure_map/day15-data-structure_map/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day15-data-structure_map/day15-data-structure_map/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——内置数据结构-Map">
   <meta property="og:description" content="Map 有时能够返回一个值，有时候能够返回多个值，这是 Map 的特权语法。今天继续从底层角度来聊聊 Go 语言内置数据结构，Map。
 Map Map 中大量类似但又冗余的函数，原因之一便是没有泛型。
 package main var m = make(map[int] int, 10) func main() { v1 := m[1] v2, ok := m[2] println(v1, v2, ok) } 利用之前提到的工具 go tool objdump 能够获得反汇编后的函数：
 make → runtime.makemap 10 → hint m[1] → runtime.mapaccess1_fast64 m[2] → runtime.mapaccess2_fast64 以上这些过程都是编译器帮我完成的，编译器判断赋值语句，如左边有一个值就翻译为 runtime.mapaccess1_fast64， 需要注意以下三点：
-当 hint 大小大于 8 时，采用的是 makemap 当 hint 小于 8 时，采用的是 makemap_small map 分配栈上时，不一定会调用 makemap Map 底层函数一览 为什么一个 Go 语言内置数据结构就有这么多情况，那如果 Go 的 20 来个内置数据结构都有这种判定，岂不是底层就有差不多 60 个不同判定结构？确实是这样的，map 中存在大量类似但又冗余的函数，但不至于把性能拉低很多。这种问题主要是原因之一是 Go 语言在 1.16 版本前没有泛型。可喜的是，在 Go 1.17 版本之后将会引入泛型，大家感兴趣已经可以自己去尝试了。">
+当 hint 大小大于 8 时，采用的是 makemap 当 hint 小于 8 时，采用的是 makemap_small map 分配栈上时，不一定会调用 makemap Map 底层函数一览为什么一个 Go 语言内置数据结构就有这么多情况，那如果 Go 的 20 来个内置数据结构都有这种判定，岂不是底层就有差不多 60 个不同判定结构？确实是这样的，map 中存在大量类似但又冗余的函数，但不至于把性能拉低很多。这种问题主要是原因之一是 Go 语言在 1.16 版本前没有泛型。可喜的是，在 Go 1.17 版本之后将会引入泛型，大家感兴趣已经可以自己去尝试了。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="go-to-top">
@@ -52,42 +52,42 @@ make → runtime.makemap 10 → hint m[1] → runtime.mapaccess1_fast64 m[2] →
 Map Map 中大量类似但又冗余的函数，原因之一便是没有泛型。
 package main var m = make(map[int] int, 10) func main() { v1 := m[1] v2, ok := m[2] println(v1, v2, ok) } 利用之前提到的工具 go tool objdump 能够获得反汇编后的函数：
 make → runtime.makemap 10 → hint m[1] → runtime.mapaccess1_fast64 m[2] → runtime.mapaccess2_fast64 以上这些过程都是编译器帮我完成的，编译器判断赋值语句，如左边有一个值就翻译为 runtime.mapaccess1_fast64， 需要注意以下三点：
-当 hint 大小大于 8 时，采用的是 makemap 当 hint 小于 8 时，采用的是 makemap_small map 分配栈上时，不一定会调用 makemap Map 底层函数一览 为什么一个 Go 语言内置数据结构就有这么多情况，那如果 Go 的 20 来个内置数据结构都有这种判定，岂不是底层就有差不多 60 个不同判定结构？确实是这样的，map 中存在大量类似但又冗余的函数，但不至于把性能拉低很多。这种问题主要是原因之一是 Go 语言在 1.16 版本前没有泛型。可喜的是，在 Go 1.17 版本之后将会引入泛型，大家感兴趣已经可以自己去尝试了。">
+当 hint 大小大于 8 时，采用的是 makemap 当 hint 小于 8 时，采用的是 makemap_small map 分配栈上时，不一定会调用 makemap Map 底层函数一览为什么一个 Go 语言内置数据结构就有这么多情况，那如果 Go 的 20 来个内置数据结构都有这种判定，岂不是底层就有差不多 60 个不同判定结构？确实是这样的，map 中存在大量类似但又冗余的函数，但不至于把性能拉低很多。这种问题主要是原因之一是 Go 语言在 1.16 版本前没有泛型。可喜的是，在 Go 1.17 版本之后将会引入泛型，大家感兴趣已经可以自己去尝试了。">
 
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day15-data-structure_map/day15-data-structure_map/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day15-data-structure_map/day15-data-structure_map/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -108,42 +108,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -382,7 +382,7 @@ buckets 中，顺便再多搬运⼀个 bucket</li>
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

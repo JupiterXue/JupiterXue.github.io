@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,23 +18,23 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day39-memory_model_2/day39-memory_model_2/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day39-memory_model_2/day39-memory_model_2/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day39-memory_model_2/day39-memory_model_2/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day39-memory_model_2/day39-memory_model_2/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——并发模型（2）">
   <meta property="og:description" content="上期文章说到 Go 语言中，单变量的原子的读或写操作，CPU 的多核心使用了 mesi 协议来确保正确性，也就足够了。但是 mesi 协议还存在一些缺陷：如果对某个变量进行先读，然后修改，再写，这样的多步操作，mesi 协议是无法解决的。因此我们需要除了读和写之外的指令，能够保证这种一系列操作的原子性。
 内存重排 mesi 能够保证单变量全局顺序的正确性，但其他多变量的全局顺序其实是保证不了的。在 Go 语言的并发编程中，有个叫做内存重排，指的是内存的读/写指令重排。为什么会用到内存重排呢？一些硬件或者编译器会对程序进行一些指令优化，优化后的结果可能会导致程序编码时的顺序与代码编译后的先后顺序不一致。因此，内存重排就专门为其适配，提升程序执行效率，减少一些IO操作。
 一般我们可以使用工具 litmus 来验证内存重排，具体暂时不演示了，网上有很多文章。它会模拟本机上一些多线程的读写指令，来对其结果做一些判断。这部分内容不难，刚毕业的学生在面试的时候也会遇到面试官问其中的一些汇编指令是什么意思。其中涉及到的汇编源码，其实我们可以简化为以下的伪代码
-Litmus 测试观察内存重排的伪代码 关键来了，我们在写并发代码的时候，如何考虑内存重排呢？对大多数程序员来说，不用考虑这个，既然知道在并发的时候诸如以上的操作都可能有内存重排，那么需要保证其顺序性的时候，直接在两遍加上互斥锁就 OK 了。而如果还要考虑更高的性能，就需要使用一些工具。
+Litmus 测试观察内存重排的伪代码关键来了，我们在写并发代码的时候，如何考虑内存重排呢？对大多数程序员来说，不用考虑这个，既然知道在并发的时候诸如以上的操作都可能有内存重排，那么需要保证其顺序性的时候，直接在两遍加上互斥锁就 OK 了。而如果还要考虑更高的性能，就需要使用一些工具。
 Memory barrier 如果我们要阻止内存重排的发生，只能使用 Memory barrier。首先，它和内存回收 GC 中的 write barrier 和 read barrier 不是一回事。网上一些文章中会把它们混淆起来，因为它们看起来都有个 barrier。虽然看起来都有 barrier，但其实完全不是一回事。
 在并发编程中 ，Memory barrier 是为了防止各种类型的读写重排而专门设计出的工具。比如说 atomic load，在其他语言中都需要加条件，诸如 require、flag 线性一致。
 在 GC 中的 write/read barrier 其实是指在堆上的指针修改之前，插入的一小段的代码。
@@ -55,7 +55,7 @@ False sharing 上期文章我们说到了 CPU 采取的是分层存储结构，L
   <meta name="twitter:description" content="上期文章说到 Go 语言中，单变量的原子的读或写操作，CPU 的多核心使用了 mesi 协议来确保正确性，也就足够了。但是 mesi 协议还存在一些缺陷：如果对某个变量进行先读，然后修改，再写，这样的多步操作，mesi 协议是无法解决的。因此我们需要除了读和写之外的指令，能够保证这种一系列操作的原子性。
 内存重排 mesi 能够保证单变量全局顺序的正确性，但其他多变量的全局顺序其实是保证不了的。在 Go 语言的并发编程中，有个叫做内存重排，指的是内存的读/写指令重排。为什么会用到内存重排呢？一些硬件或者编译器会对程序进行一些指令优化，优化后的结果可能会导致程序编码时的顺序与代码编译后的先后顺序不一致。因此，内存重排就专门为其适配，提升程序执行效率，减少一些IO操作。
 一般我们可以使用工具 litmus 来验证内存重排，具体暂时不演示了，网上有很多文章。它会模拟本机上一些多线程的读写指令，来对其结果做一些判断。这部分内容不难，刚毕业的学生在面试的时候也会遇到面试官问其中的一些汇编指令是什么意思。其中涉及到的汇编源码，其实我们可以简化为以下的伪代码
-Litmus 测试观察内存重排的伪代码 关键来了，我们在写并发代码的时候，如何考虑内存重排呢？对大多数程序员来说，不用考虑这个，既然知道在并发的时候诸如以上的操作都可能有内存重排，那么需要保证其顺序性的时候，直接在两遍加上互斥锁就 OK 了。而如果还要考虑更高的性能，就需要使用一些工具。
+Litmus 测试观察内存重排的伪代码关键来了，我们在写并发代码的时候，如何考虑内存重排呢？对大多数程序员来说，不用考虑这个，既然知道在并发的时候诸如以上的操作都可能有内存重排，那么需要保证其顺序性的时候，直接在两遍加上互斥锁就 OK 了。而如果还要考虑更高的性能，就需要使用一些工具。
 Memory barrier 如果我们要阻止内存重排的发生，只能使用 Memory barrier。首先，它和内存回收 GC 中的 write barrier 和 read barrier 不是一回事。网上一些文章中会把它们混淆起来，因为它们看起来都有个 barrier。虽然看起来都有 barrier，但其实完全不是一回事。
 在并发编程中 ，Memory barrier 是为了防止各种类型的读写重排而专门设计出的工具。比如说 atomic load，在其他语言中都需要加条件，诸如 require、flag 线性一致。
 在 GC 中的 write/read barrier 其实是指在堆上的指针修改之前，插入的一小段的代码。
@@ -65,37 +65,37 @@ False sharing 上期文章我们说到了 CPU 采取的是分层存储结构，L
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day39-memory_model_2/day39-memory_model_2/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day39-memory_model_2/day39-memory_model_2/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -116,42 +116,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -280,7 +280,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

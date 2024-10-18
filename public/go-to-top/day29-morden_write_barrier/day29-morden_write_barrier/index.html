@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,22 +18,22 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——现代化标记丢失解决方案">
   <meta property="og:description" content="在 Go 语言 GC 中，为避免对象丢失，可以在所有指针操作中加 Dijkstra barrier，而 Go 官方设计者为了降低 Go 运行环境中的成本，不希望栈上的操作频率很高，所以限制了 Go 不能在栈上操作指针时加 barrier。因此 Dijkstra barrier 和 Yuasa barrier 都失效了。
 因为 Go 语言不在栈上去加一个 writebarrier，所以任何一个 barrier 单独拿出来都没办法解决 Go 语言 GC 标记的正确性问题。为了解决这个问题，机智的语言设计者就把 Dijkstra barrier 和 Yuasa barrier 结合起来，做出了集大成者——Hybrid barrier，并且写了一个提案 preposal。网上有很多博客会去解析 writebarrier 的源码，其实就是这张图中的，中和两种算法的集合体。
-图 1：混合屏障 Hybrid barrier 这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
+图 1：混合屏障 Hybrid barrier这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
 这个算法虽然集成了两种算法思想，但两个算法所遇到的问题正好被有效避免了。虽然作者写个提案 preposal，但后来因为没有时间就没有去实现。后来他们还发现，如果要检查栈的颜色的工作话还需要做一些同步操作，而这个 stack check 动作维护成本太高，所以暂时放弃了，至今也没实现。
 但我们亲自去看 Go 语言源码可以发现，它不是内部实现，代码片段如下：
 // slot is the destination in Go code. // ptr is the value that goes into the slot in Go code. func RealityWB(slot *unsafe.Pointer, ptr unsafe.Pointer) { shade(*slot) shade(ptr) *slot = ptr } 可以看到，Go 源码中其实是没有任何 if 判断。如果发送了任何堆上指针的变化，那么一定要把原来的对象和新指向的对象都标灰。然后再执行赋值操作。">
@@ -51,7 +51,7 @@
   <meta name="twitter:title" content="Go 翻山越岭——现代化标记丢失解决方案">
   <meta name="twitter:description" content="在 Go 语言 GC 中，为避免对象丢失，可以在所有指针操作中加 Dijkstra barrier，而 Go 官方设计者为了降低 Go 运行环境中的成本，不希望栈上的操作频率很高，所以限制了 Go 不能在栈上操作指针时加 barrier。因此 Dijkstra barrier 和 Yuasa barrier 都失效了。
 因为 Go 语言不在栈上去加一个 writebarrier，所以任何一个 barrier 单独拿出来都没办法解决 Go 语言 GC 标记的正确性问题。为了解决这个问题，机智的语言设计者就把 Dijkstra barrier 和 Yuasa barrier 结合起来，做出了集大成者——Hybrid barrier，并且写了一个提案 preposal。网上有很多博客会去解析 writebarrier 的源码，其实就是这张图中的，中和两种算法的集合体。
-图 1：混合屏障 Hybrid barrier 这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
+图 1：混合屏障 Hybrid barrier这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
 这个算法虽然集成了两种算法思想，但两个算法所遇到的问题正好被有效避免了。虽然作者写个提案 preposal，但后来因为没有时间就没有去实现。后来他们还发现，如果要检查栈的颜色的工作话还需要做一些同步操作，而这个 stack check 动作维护成本太高，所以暂时放弃了，至今也没实现。
 但我们亲自去看 Go 语言源码可以发现，它不是内部实现，代码片段如下：
 // slot is the destination in Go code. // ptr is the value that goes into the slot in Go code. func RealityWB(slot *unsafe.Pointer, ptr unsafe.Pointer) { shade(*slot) shade(ptr) *slot = ptr } 可以看到，Go 源码中其实是没有任何 if 判断。如果发送了任何堆上指针的变化，那么一定要把原来的对象和新指向的对象都标灰。然后再执行赋值操作。">
@@ -59,37 +59,37 @@
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -110,42 +110,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -269,7 +269,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

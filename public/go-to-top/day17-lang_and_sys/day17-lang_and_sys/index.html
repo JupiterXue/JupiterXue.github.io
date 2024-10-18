@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,30 +18,30 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day17-lang_and_sys/day17-lang_and_sys/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day17-lang_and_sys/day17-lang_and_sys/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day17-lang_and_sys/day17-lang_and_sys/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day17-lang_and_sys/day17-lang_and_sys/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——系统调用基础">
   <meta property="og:description" content="编程语言和操作系统之间的桥梁，也就是我们所说的系统调用。今天来聊聊，系统调用的基础概念。
 什么是系统调用 我们在了解系统调用之前，需要对操作系统有个简单的了解。操作系统（operating system,OS）是资源的管理器，也是计算机系统的内核与基石，其管理的资源都是经过了抽象。而对计算机来说，资源是硬件信息：CPU、RAM 内存、I/O 设备，以及进一步抽象的软件资源，如进程。
 为什么说操作系统是对资源进行了抽象呢？因为操作不方便、操作不安全，我们平时接触到的不是直接的硬件，比如磁盘操作，不会去操作扇区（嵌入式系统除外）。而我们所面对的都是这些：
 磁盘抽象：文件夹 内存抽象：虚拟内存 CPU 抽象：时间片 有了操作系统，我们对计算机的调度还是不够的。说白了，操作系统也是一个应用程序，底层还是一堆代码和汇编指令。这时候，我们需要由硬件提供支持，在应用和操作系统之间进行一层或多层隔离。
-分级保护域 CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。
+分级保护域CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。
 Intel64 有四个特权级别，不过实际上只用到了其中两个 ring-0 和 ring-3。ring-1 和 ring-2 本来计划是为了驱动程序和 OS 服务用，不过流行的 OS 们都没有接受这个方案。
 说到这里，答案已经揭晓。系统调用，是操作系统内核为应用提供的 API。可以理解为内核为应用提供服务，操作系统就位我们的上层应用程序提供了一系列“标准库”。比如我们常见的后端服务：APP 发起请求 request → 操作系统 Operating System 接收、处理并响应 → APP 接收 response。
 对于应用来说，系统调用可以实现超出自己能力以外的事情。
 那么 Go 语言中的系统调用是怎样的呢？在此之前，还需要提及 Go 语言调用规约。我们在做函数调用的时候没有使用寄存器，而是将参数都放在栈上。但在其他编程语言中做参数传递和函数调用都是用到了寄存器。举个例子：
 func hello() { x, y, z := 1, 3, 3, 3 a, b, c := multi(x, y) } func multi(x, y int) (a, b, c int) { r, s, t := 1, 2, 3 return x&#43;1, x&#43;2, x&#43;3 } 这段代码的调用规约如下：
-示例代码调用规约 这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。">
+示例代码调用规约这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="go-to-top">
@@ -58,48 +58,48 @@ func hello() { x, y, z := 1, 3, 3, 3 a, b, c := multi(x, y) } func multi(x, y in
 什么是系统调用 我们在了解系统调用之前，需要对操作系统有个简单的了解。操作系统（operating system,OS）是资源的管理器，也是计算机系统的内核与基石，其管理的资源都是经过了抽象。而对计算机来说，资源是硬件信息：CPU、RAM 内存、I/O 设备，以及进一步抽象的软件资源，如进程。
 为什么说操作系统是对资源进行了抽象呢？因为操作不方便、操作不安全，我们平时接触到的不是直接的硬件，比如磁盘操作，不会去操作扇区（嵌入式系统除外）。而我们所面对的都是这些：
 磁盘抽象：文件夹 内存抽象：虚拟内存 CPU 抽象：时间片 有了操作系统，我们对计算机的调度还是不够的。说白了，操作系统也是一个应用程序，底层还是一堆代码和汇编指令。这时候，我们需要由硬件提供支持，在应用和操作系统之间进行一层或多层隔离。
-分级保护域 CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。
+分级保护域CPU 已经为操作系统提供了特殊的安全支持——分级保护域（protection ring）。操作系统内核运行在特殊模式下，即图中的 ring-0 ，而应用运行在 ring-3，但权限被严格限制。因此，在代码中我们没办法直接去调用系统资源，就需要操作系统帮助我们去调用，并把相应的操作抽象成 API 来供我们使用。
 Intel64 有四个特权级别，不过实际上只用到了其中两个 ring-0 和 ring-3。ring-1 和 ring-2 本来计划是为了驱动程序和 OS 服务用，不过流行的 OS 们都没有接受这个方案。
 说到这里，答案已经揭晓。系统调用，是操作系统内核为应用提供的 API。可以理解为内核为应用提供服务，操作系统就位我们的上层应用程序提供了一系列“标准库”。比如我们常见的后端服务：APP 发起请求 request → 操作系统 Operating System 接收、处理并响应 → APP 接收 response。
 对于应用来说，系统调用可以实现超出自己能力以外的事情。
 那么 Go 语言中的系统调用是怎样的呢？在此之前，还需要提及 Go 语言调用规约。我们在做函数调用的时候没有使用寄存器，而是将参数都放在栈上。但在其他编程语言中做参数传递和函数调用都是用到了寄存器。举个例子：
 func hello() { x, y, z := 1, 3, 3, 3 a, b, c := multi(x, y) } func multi(x, y int) (a, b, c int) { r, s, t := 1, 2, 3 return x&#43;1, x&#43;2, x&#43;3 } 这段代码的调用规约如下：
-示例代码调用规约 这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。">
+示例代码调用规约这里也说明一下什么是寄存器。寄存器，是CPU 内部的特殊存储单元。一般是用二极管做的，价格比较高，数量比较少。又因为寄存器少，所以有具体的名字。">
 
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day17-lang_and_sys/day17-lang_and_sys/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day17-lang_and_sys/day17-lang_and_sys/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -120,42 +120,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -357,7 +357,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

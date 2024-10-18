@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,22 +18,22 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day31-sync_structure/day31-sync_structure/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day31-sync_structure/day31-sync_structure/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day31-sync_structure/day31-sync_structure/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day31-sync_structure/day31-sync_structure/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——并发数据结构">
   <meta property="og:description" content="我们之所以使用 Go 语言，其中一个很大的原因是它原生支持高并发，通过 Goroutine 和 Channel 完美实现。并且 Go 的并发是属于一种 CSP 并发编程模式的实现。如果我们想很好利用到这个特性，知其然知其所以然，是学习阶段最好的成果，在生产环境中遇到问题才能有的放矢。下面就从它的一些基础数据结构开始讲起。
 并发内置数据结构 sync.Once 在 Go 语言的并发结构中，比较简单的是 sync.Once。可以在源码 sync/once.go 中看到代码并不多，但注释很多，还有部分我用省略号隐去了。
-图 1：once.go 源码 sync.Once 只有一个方法，DO。不过其中有一些要点，如果 done 被人修改了，那么就需要做一个初始化；如果是非零就可以直接返回了。也就是说 o.Do 需要保证：
+图 1：once.go 源码sync.Once 只有一个方法，DO。不过其中有一些要点，如果 done 被人修改了，那么就需要做一个初始化；如果是非零就可以直接返回了。也就是说 o.Do 需要保证：
 初始化方法必须且只能被调用一次。 Do 返回后，初始化一定已经执行完成。 以上代码虽然非常短，但我们在开发的时候还是会遇到一些问题。这时还得找官方，为什么一定要有 atomic 操作，为什么 doSlow 函数中一定要用 defer 来处理锁。官方对这些“看似”很基础的问题感到烦，于是就写了非常多的注释，让读者自己去搞懂这些问题（从图中看到）。
 这里的功能对于业务层开发的 Gopher 来说比较简单：有个全局资源，只能够初始化一次，需要初始化完成之后去执行一些操作，不过初始化的入口可能会被很多地方调用到。这种情况很常见，一方面是因为我们在做网络编程的时候要处理连接，如果多次 close 连接会出现诡异的错误。所以有很多网络程序中的 Connection 对象再加个 Once 对象，来保证关闭只会执行一次。
 sync.Pool 这个结构用的场合非常非常多，不过主要在两种场景使用：
@@ -52,7 +52,7 @@ sync.Pool 这个结构用的场合非常非常多，不过主要在两种场景�
   <meta name="twitter:title" content="Go 翻山越岭——并发数据结构">
   <meta name="twitter:description" content="我们之所以使用 Go 语言，其中一个很大的原因是它原生支持高并发，通过 Goroutine 和 Channel 完美实现。并且 Go 的并发是属于一种 CSP 并发编程模式的实现。如果我们想很好利用到这个特性，知其然知其所以然，是学习阶段最好的成果，在生产环境中遇到问题才能有的放矢。下面就从它的一些基础数据结构开始讲起。
 并发内置数据结构 sync.Once 在 Go 语言的并发结构中，比较简单的是 sync.Once。可以在源码 sync/once.go 中看到代码并不多，但注释很多，还有部分我用省略号隐去了。
-图 1：once.go 源码 sync.Once 只有一个方法，DO。不过其中有一些要点，如果 done 被人修改了，那么就需要做一个初始化；如果是非零就可以直接返回了。也就是说 o.Do 需要保证：
+图 1：once.go 源码sync.Once 只有一个方法，DO。不过其中有一些要点，如果 done 被人修改了，那么就需要做一个初始化；如果是非零就可以直接返回了。也就是说 o.Do 需要保证：
 初始化方法必须且只能被调用一次。 Do 返回后，初始化一定已经执行完成。 以上代码虽然非常短，但我们在开发的时候还是会遇到一些问题。这时还得找官方，为什么一定要有 atomic 操作，为什么 doSlow 函数中一定要用 defer 来处理锁。官方对这些“看似”很基础的问题感到烦，于是就写了非常多的注释，让读者自己去搞懂这些问题（从图中看到）。
 这里的功能对于业务层开发的 Gopher 来说比较简单：有个全局资源，只能够初始化一次，需要初始化完成之后去执行一些操作，不过初始化的入口可能会被很多地方调用到。这种情况很常见，一方面是因为我们在做网络编程的时候要处理连接，如果多次 close 连接会出现诡异的错误。所以有很多网络程序中的 Connection 对象再加个 Once 对象，来保证关闭只会执行一次。
 sync.Pool 这个结构用的场合非常非常多，不过主要在两种场景使用：
@@ -61,37 +61,37 @@ sync.Pool 这个结构用的场合非常非常多，不过主要在两种场景�
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day31-sync_structure/day31-sync_structure/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day31-sync_structure/day31-sync_structure/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -112,42 +112,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -311,7 +311,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

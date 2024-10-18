@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,24 +18,24 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——Go 内存管理（2）">
   <meta property="og:description" content="Go 语言在内存管理中申请使用稀疏堆时，使用系统调用 mmap ，因此可以分配出不连续的地址（而不是通过系统调用 brk 来调整虚拟空间里堆的 program break 来分配连续内存地址）。在使用稀疏堆时，整体的堆内存怎样增长的呢？
-图 1：稀疏堆内存增长过程 较大的内存块 arenas 其实是个大的指针数组，每个指针就是 mheap arena 结构，它会指向具体的 64 MB 的内存，在当前的 mheap 结构中还会维护最后一个起始位置和结束地址。一旦分配内存的时候真实结束地址超过了 mheap 结束地址时，说明还需要从操作系统要更多虚拟内存，这时还是执行 mmap 再分配一个 64 MB 的地址空间，并且维护好当前的数据结构，把原来的 n 变为 n&#43;1 相当于增加了一个元素。
+图 1：稀疏堆内存增长过程较大的内存块 arenas 其实是个大的指针数组，每个指针就是 mheap arena 结构，它会指向具体的 64 MB 的内存，在当前的 mheap 结构中还会维护最后一个起始位置和结束地址。一旦分配内存的时候真实结束地址超过了 mheap 结束地址时，说明还需要从操作系统要更多虚拟内存，这时还是执行 mmap 再分配一个 64 MB 的地址空间，并且维护好当前的数据结构，把原来的 n 变为 n&#43;1 相当于增加了一个元素。
 在 Go 语言中除了从操作系统申请内存的方式以外，在分配时还要区分内存大小，有三种分配大小分类：
 Tiny：size &lt; 16 bytes &amp;&amp; has no pointer(noscan) Small: has pointer(scan) || (size &gt;= 16 bytes &amp;&amp; size &lt;= 32KB) Large: size &gt; 32KB 并且，内存分配器在 Go 语言中为了做一些优化，维护了一种多级结构：
-mcache → mcentral → mheap mcache：与 P 绑定，本地内存分配操作，不需要加锁。 mcentral：中心分配缓存，分配时需要上锁，不同 spanClass 使用不同的锁。 mheap：全局唯一，从 OS 申请内存，并修改器内存定义结构时，需要加锁，是个全局锁 在距离应用代码最近的 P 的位置，每个 P 都绑定了 mcache 结构，这个结构会有大小相应的缓存。本地分配内存时会优先从 mcache 中找，如果找不到就要从全局的缓存中去找，如果还是没有相应的内存块可以用的话，就需要去全局唯一的 mheap 请求，从操作系统重新划分一部分内存出来。不过 mheap 还有 area 结构，如果 area 还没有用完的话还是会从 area 里面去切分，如果用完了就会去操作系统中去申请。">
+mcache → mcentral → mheapmcache：与 P 绑定，本地内存分配操作，不需要加锁。 mcentral：中心分配缓存，分配时需要上锁，不同 spanClass 使用不同的锁。 mheap：全局唯一，从 OS 申请内存，并修改器内存定义结构时，需要加锁，是个全局锁 在距离应用代码最近的 P 的位置，每个 P 都绑定了 mcache 结构，这个结构会有大小相应的缓存。本地分配内存时会优先从 mcache 中找，如果找不到就要从全局的缓存中去找，如果还是没有相应的内存块可以用的话，就需要去全局唯一的 mheap 请求，从操作系统重新划分一部分内存出来。不过 mheap 还有 area 结构，如果 area 还没有用完的话还是会从 area 里面去切分，如果用完了就会去操作系统中去申请。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="go-to-top">
@@ -49,45 +49,45 @@ mcache → mcentral → mheap mcache：与 P 绑定，本地内存分配操作�
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Go 翻山越岭——Go 内存管理（2）">
   <meta name="twitter:description" content="Go 语言在内存管理中申请使用稀疏堆时，使用系统调用 mmap ，因此可以分配出不连续的地址（而不是通过系统调用 brk 来调整虚拟空间里堆的 program break 来分配连续内存地址）。在使用稀疏堆时，整体的堆内存怎样增长的呢？
-图 1：稀疏堆内存增长过程 较大的内存块 arenas 其实是个大的指针数组，每个指针就是 mheap arena 结构，它会指向具体的 64 MB 的内存，在当前的 mheap 结构中还会维护最后一个起始位置和结束地址。一旦分配内存的时候真实结束地址超过了 mheap 结束地址时，说明还需要从操作系统要更多虚拟内存，这时还是执行 mmap 再分配一个 64 MB 的地址空间，并且维护好当前的数据结构，把原来的 n 变为 n&#43;1 相当于增加了一个元素。
+图 1：稀疏堆内存增长过程较大的内存块 arenas 其实是个大的指针数组，每个指针就是 mheap arena 结构，它会指向具体的 64 MB 的内存，在当前的 mheap 结构中还会维护最后一个起始位置和结束地址。一旦分配内存的时候真实结束地址超过了 mheap 结束地址时，说明还需要从操作系统要更多虚拟内存，这时还是执行 mmap 再分配一个 64 MB 的地址空间，并且维护好当前的数据结构，把原来的 n 变为 n&#43;1 相当于增加了一个元素。
 在 Go 语言中除了从操作系统申请内存的方式以外，在分配时还要区分内存大小，有三种分配大小分类：
 Tiny：size &lt; 16 bytes &amp;&amp; has no pointer(noscan) Small: has pointer(scan) || (size &gt;= 16 bytes &amp;&amp; size &lt;= 32KB) Large: size &gt; 32KB 并且，内存分配器在 Go 语言中为了做一些优化，维护了一种多级结构：
-mcache → mcentral → mheap mcache：与 P 绑定，本地内存分配操作，不需要加锁。 mcentral：中心分配缓存，分配时需要上锁，不同 spanClass 使用不同的锁。 mheap：全局唯一，从 OS 申请内存，并修改器内存定义结构时，需要加锁，是个全局锁 在距离应用代码最近的 P 的位置，每个 P 都绑定了 mcache 结构，这个结构会有大小相应的缓存。本地分配内存时会优先从 mcache 中找，如果找不到就要从全局的缓存中去找，如果还是没有相应的内存块可以用的话，就需要去全局唯一的 mheap 请求，从操作系统重新划分一部分内存出来。不过 mheap 还有 area 结构，如果 area 还没有用完的话还是会从 area 里面去切分，如果用完了就会去操作系统中去申请。">
+mcache → mcentral → mheapmcache：与 P 绑定，本地内存分配操作，不需要加锁。 mcentral：中心分配缓存，分配时需要上锁，不同 spanClass 使用不同的锁。 mheap：全局唯一，从 OS 申请内存，并修改器内存定义结构时，需要加锁，是个全局锁 在距离应用代码最近的 P 的位置，每个 P 都绑定了 mcache 结构，这个结构会有大小相应的缓存。本地分配内存时会优先从 mcache 中找，如果找不到就要从全局的缓存中去找，如果还是没有相应的内存块可以用的话，就需要去全局唯一的 mheap 请求，从操作系统重新划分一部分内存出来。不过 mheap 还有 area 结构，如果 area 还没有用完的话还是会从 area 里面去切分，如果用完了就会去操作系统中去申请。">
 
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -108,42 +108,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -304,7 +304,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

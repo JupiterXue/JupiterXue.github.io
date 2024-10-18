@@ -1,6 +1,6 @@
 title = "Jupiter 的个人博客"
 #baseURL = 'https://hba.sid.one/'
-baseURL = 'https://github.com/JupiterXue/JupiterXue.github.io/'
+baseURL = 'https://JupiterXue.github.io/'
 
 
 # This is what goes in <html lang="">

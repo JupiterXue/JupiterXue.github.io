@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/JupiterXue/JupiterXue.github.io/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=JupiterXue/JupiterXue.github.io/livereload" data-no-instant defer></script><meta charset="utf-8">
+<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -18,25 +18,25 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day38-memory_model/day38-memory_model/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day38-memory_model/day38-memory_model/" title="中文" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.136.0">
+<meta name="generator" content="Hugo 0.135.0">
 
     
-    <meta property="og:url" content="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day38-memory_model/day38-memory_model/">
+    <meta property="og:url" content="http://localhost:1313/go-to-top/day38-memory_model/day38-memory_model/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——内存模型">
   <meta property="og:description" content="今天聊一聊 Go 语言中的内存模型，这部分内容在对于利用 sync 库在进行应用开发中用处不大，不过我们在面试过程中可能会遇到，这里做个记录。
 我们日常的开发中，只要知道使用显示同步就可以保证正确性。也就是说只要发生了并发的情况，那么一定要显示地使用同步手段。显示同步手段，通常是指 channel 或者锁。并且，能够用 channel 和锁的情况下，基本上，只要没有 race 出现，就能够保障程序的正确性。
 但我们在开发中有时候会给别人提供偏底层的库，那么需要对底层有了解才能做得出来。因此就遇到了 Memory Model 内存模型。
 Memory Model 在具体了解之前，我们先要了解目前的 CPU 架构。现代的 CPU 内部的存储其实都是分级的，比如以下就是个多核 CPU 的典型架构图：
-现代计算机的多级存储结构 在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
-lscpu 命令结果 L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
+现代计算机的多级存储结构在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
+lscpu 命令结果L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
 L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 的大小为 64 bytes。这就是我们为什么在程序中经常会看到，有些数据结构会在其最后不足的情况下补足为 64 字节或 128 字节，都是有可能发生的。我们在 Linux 中也可以再动动手去做些实践尝试一下这个命令：getconf LEVEL1_DCACHE_LINESIZE，可以看到 Data cache 的 cache line 长度，也就是 64 个字节。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
@@ -54,44 +54,44 @@ L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 
 我们日常的开发中，只要知道使用显示同步就可以保证正确性。也就是说只要发生了并发的情况，那么一定要显示地使用同步手段。显示同步手段，通常是指 channel 或者锁。并且，能够用 channel 和锁的情况下，基本上，只要没有 race 出现，就能够保障程序的正确性。
 但我们在开发中有时候会给别人提供偏底层的库，那么需要对底层有了解才能做得出来。因此就遇到了 Memory Model 内存模型。
 Memory Model 在具体了解之前，我们先要了解目前的 CPU 架构。现代的 CPU 内部的存储其实都是分级的，比如以下就是个多核 CPU 的典型架构图：
-现代计算机的多级存储结构 在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
-lscpu 命令结果 L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
+现代计算机的多级存储结构在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
+lscpu 命令结果L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
 L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 的大小为 64 bytes。这就是我们为什么在程序中经常会看到，有些数据结构会在其最后不足的情况下补足为 64 字节或 128 字节，都是有可能发生的。我们在 Linux 中也可以再动动手去做些实践尝试一下这个命令：getconf LEVEL1_DCACHE_LINESIZE，可以看到 Data cache 的 cache line 长度，也就是 64 个字节。">
 
 
     
 
-    <link rel="canonical" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day38-memory_model/day38-memory_model/">
-    <link href="/JupiterXue/JupiterXue.github.io/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/JupiterXue/JupiterXue.github.io/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:1313/go-to-top/day38-memory_model/day38-memory_model/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
     
-    <link rel="apple-touch-icon" sizes="180x180" href="/JupiterXue/JupiterXue.github.io/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/JupiterXue/JupiterXue.github.io/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/JupiterXue/JupiterXue.github.io/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/JupiterXue/JupiterXue.github.io/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/JupiterXue/JupiterXue.github.io/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
 
 
 
 
-<link rel="manifest" href="http://localhost:1313/JupiterXue/JupiterXue.github.io/site.webmanifest">
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
 
-<meta name="msapplication-config" content="/JupiterXue/JupiterXue.github.io/browserconfig.xml">
+<meta name="msapplication-config" content="/browserconfig.xml">
 <meta name="msapplication-TileColor" content="#2d89ef">
 <meta name="theme-color" content="#434648">
 
     
-    <link rel="icon" type="image/svg+xml" href="/JupiterXue/JupiterXue.github.io/icons/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
     </head>
 <body data-theme = "light" class="notransition">
 
-<script src="/JupiterXue/JupiterXue.github.io/js/theme.js"></script>
+<script src="/js/theme.js"></script>
 
 <div class="navbar" role="navigation">
     <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/JupiterXue/JupiterXue.github.io/" class="logo">
+        <a href="http://localhost:1313/" class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
 stroke-linejoin="round" class="feather feather-home">
@@ -112,42 +112,42 @@ stroke-linejoin="round" class="feather feather-home">
                 
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/">
+                    <a class="menu-link " href="/">
                         主页
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/poetry/">
+                    <a class="menu-link " href="/poetry/">
                         诗词
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/quant-whale-notes/">
+                    <a class="menu-link " href="/quant-whale-notes/">
                         量化
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link active" href="/JupiterXue/JupiterXue.github.io/go-to-top/">
+                    <a class="menu-link active" href="/go-to-top/">
                         Go系列
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/arch/">
+                    <a class="menu-link " href="/arch/">
                         归档文章
                     </a>
                     
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/JupiterXue/JupiterXue.github.io/pages/about/">
+                    <a class="menu-link " href="/pages/about/">
                         关于我
                     </a>
                     
@@ -229,7 +229,7 @@ stroke-linejoin="round" class="feather feather-home">
 <table>
   <thead>
       <tr>
-          <th></th>
+          <th style="text-align: left"></th>
           <th style="text-align: center">p0</th>
           <th style="text-align: center">p1</th>
           <th style="text-align: center">p2</th>
@@ -238,42 +238,42 @@ stroke-linejoin="round" class="feather feather-home">
   </thead>
   <tbody>
       <tr>
-          <td>Initial state</td>
+          <td style="text-align: left">Initial state</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td>p0 reads X</td>
+          <td style="text-align: left">p0 reads X</td>
           <td style="text-align: center">E</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td>p1 reads X</td>
+          <td style="text-align: left">p1 reads X</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td>p2 reads X</td>
+          <td style="text-align: left">p2 reads X</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td>p3 writes X</td>
+          <td style="text-align: left">p3 writes X</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">M</td>
       </tr>
       <tr>
-          <td>p0 readx X</td>
+          <td style="text-align: left">p0 readx X</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
@@ -354,7 +354,7 @@ stroke-linejoin="round" class="feather feather-home">
 
 
     
-    <script async src="http://localhost:1313/JupiterXue/JupiterXue.github.io/js/main.js" ></script>
+    <script async src="http://localhost:1313/js/main.js" ></script>
 
     
 

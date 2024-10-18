@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jupiter 的个人博客</title>
-    <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/</link>
+    <link>http://localhost:1313/</link>
     <description>Recent content on Jupiter 的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Thu, 17 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/JupiterXue/JupiterXue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 17 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>春不晚</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/poetry/not_too_late/</link>
+      <link>http://localhost:1313/poetry/not_too_late/</link>
       <pubDate>Thu, 17 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/poetry/not_too_late/</guid>
+      <guid>http://localhost:1313/poetry/not_too_late/</guid>
       
       <description>&lt;p&gt;姑娘一句春不晚，痴儿留在真江南。&lt;/p&gt;
 &lt;p&gt;江南曲落孤城，化作烟雨、与我对弹。&lt;/p&gt;
@@ -26,10 +26,10 @@
     
     <item>
       <title>春不晚</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/not_too_late/</link>
+      <link>http://localhost:1313/posts/not_too_late/</link>
       <pubDate>Thu, 17 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/not_too_late/</guid>
+      <guid>http://localhost:1313/posts/not_too_late/</guid>
       
       <description>&lt;p&gt;姑娘一句春不晚，痴儿留在真江南。&lt;/p&gt;
 &lt;p&gt;江南曲落孤城，化作烟雨、与我对弹。&lt;/p&gt;
@@ -43,10 +43,10 @@
     
     <item>
       <title>临江仙</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/poetry/river_to_god/</link>
+      <link>http://localhost:1313/poetry/river_to_god/</link>
       <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/poetry/river_to_god/</guid>
+      <guid>http://localhost:1313/poetry/river_to_god/</guid>
       
       <description>&lt;p&gt;浊水倾波三万里，愀然独坐孤峰。 龙潜狮随后飙风。无情皆竖子，有泪亦英雄。&lt;/p&gt;
 &lt;p&gt;长剑倚天星斗烂，古今过眼成空。乾坤俯仰任穷通。半轮沧海上，一苇大江东。&lt;/p&gt;
@@ -58,10 +58,10 @@
     
     <item>
       <title>投资与量化-任务2-什么是金融市场</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task2-basic_fina_concepts/</link>
+      <link>http://localhost:1313/posts/task2-basic_fina_concepts/</link>
       <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task2-basic_fina_concepts/</guid>
+      <guid>http://localhost:1313/posts/task2-basic_fina_concepts/</guid>
       
       <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
@@ -96,10 +96,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>投资与量化-任务2-什么是金融市场</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/</link>
+      <link>http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/</link>
       <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/</guid>
+      <guid>http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/</guid>
       
       <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
@@ -134,10 +134,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>关于我</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/pages/about/</link>
+      <link>http://localhost:1313/pages/about/</link>
       <pubDate>Tue, 15 Oct 2024 21:51:42 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/pages/about/</guid>
+      <guid>http://localhost:1313/pages/about/</guid>
       
       <description>&lt;p&gt;技能栈，小公司后端研发，自我定位——&lt;strong&gt;全栈工程师&lt;/strong&gt; 🦄&lt;/p&gt;
 &lt;blockquote&gt;
@@ -156,10 +156,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>投资与量化-任务1-什么是投资</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task1-what-invist/</link>
+      <link>http://localhost:1313/posts/task1-what-invist/</link>
       <pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/posts/task1-what-invist/</guid>
+      <guid>http://localhost:1313/posts/task1-what-invist/</guid>
       
       <description>&lt;p&gt;组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
 传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
@@ -177,10 +177,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>投资与量化-任务1-什么是投资</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/quant-whale-notes/task1-what-invist/</link>
+      <link>http://localhost:1313/quant-whale-notes/task1-what-invist/</link>
       <pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/quant-whale-notes/task1-what-invist/</guid>
+      <guid>http://localhost:1313/quant-whale-notes/task1-what-invist/</guid>
       
       <description>&lt;p&gt;组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
 传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
@@ -198,10 +198,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Table of content</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/table-of-content/</link>
+      <link>http://localhost:1313/arch/table-of-content/</link>
       <pubDate>Tue, 02 May 2023 10:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/table-of-content/</guid>
+      <guid>http://localhost:1313/arch/table-of-content/</guid>
       
       <description>&lt;h2 id=&#34;table-of-content&#34;&gt;Table of content&lt;/h2&gt;
 &lt;p&gt;This theme supports displaying table of content (ToC) in blog posts.&lt;/p&gt;
@@ -222,10 +222,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Math Typesetting - use Mathematical notation in blog posts</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/math-typesetting/</link>
+      <link>http://localhost:1313/arch/math-typesetting/</link>
       <pubDate>Sat, 01 Apr 2023 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/math-typesetting/</guid>
+      <guid>http://localhost:1313/arch/math-typesetting/</guid>
       
       <description>&lt;p&gt;Mathematical notation in a Hugo project can be enabled by using
 &lt;a href=&#34;https://github.com/hugo-sid/hugo-blog-awesome/blob/main/layouts/partials/helpers/katex.html&#34;&gt;third party JavaScript libraries&lt;/a&gt;.&lt;/p&gt;</description>
@@ -234,10 +234,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Markdown Syntax Guide</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/markdown-syntax/</link>
+      <link>http://localhost:1313/arch/markdown-syntax/</link>
       <pubDate>Sat, 11 Feb 2023 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/markdown-syntax/</guid>
+      <guid>http://localhost:1313/arch/markdown-syntax/</guid>
       
       <description>&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;</description>
       
@@ -245,10 +245,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Rich Content</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/rich-content/</link>
+      <link>http://localhost:1313/arch/rich-content/</link>
       <pubDate>Thu, 09 Feb 2023 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/rich-content/</guid>
+      <guid>http://localhost:1313/arch/rich-content/</guid>
       
       <description>&lt;p&gt;Hugo ships with several &lt;a href=&#34;https://gohugo.io/content-management/shortcodes/#use-hugos-built-in-shortcodes&#34;&gt;Built-in Shortcodes&lt;/a&gt; for rich content, along with a &lt;a href=&#34;https://gohugo.io/about/hugo-and-gdpr/&#34;&gt;Privacy Config&lt;/a&gt; and a set of Simple Shortcodes that enable static and no-JS versions of various social media embeds.&lt;/p&gt;</description>
       
@@ -256,10 +256,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Placeholder Text</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/placeholder-text/</link>
+      <link>http://localhost:1313/arch/placeholder-text/</link>
       <pubDate>Tue, 07 Feb 2023 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/placeholder-text/</guid>
+      <guid>http://localhost:1313/arch/placeholder-text/</guid>
       
       <description>&lt;p&gt;Lorem est tota propiore conpellat pectoribus de pectora summo.&lt;/p&gt;</description>
       
@@ -267,10 +267,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Emoji Support</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/emoji-support/</link>
+      <link>http://localhost:1313/arch/emoji-support/</link>
       <pubDate>Wed, 01 Feb 2023 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/arch/emoji-support/</guid>
+      <guid>http://localhost:1313/arch/emoji-support/</guid>
       
       <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
       
@@ -278,10 +278,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——web 框架原理（4）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/</link>
+      <link>http://localhost:1313/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/</link>
       <pubDate>Tue, 28 Dec 2021 22:15:36 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/</guid>
+      <guid>http://localhost:1313/go-to-top/day45-web_design_and_project_4/day45-web_design_and_project_4/</guid>
       
       <description>&lt;p&gt;这周尝试连续更技术文。上期说到，Validator 组件能够将复杂的字段校验工作完全自动化完成，只需使用到 go-playground 中的 validator 包就能实现这一功能。今天继续聊聊其他组件。&lt;/p&gt;
 &lt;h1 id=&#34;request-binder&#34;&gt;Request Binder&lt;/h1&gt;
@@ -331,10 +331,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——web 框架原理（3）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/</link>
+      <link>http://localhost:1313/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/</link>
       <pubDate>Tue, 28 Dec 2021 22:15:02 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/</guid>
+      <guid>http://localhost:1313/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/</guid>
       
       <description>&lt;p&gt;没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。&lt;/p&gt;
 &lt;h1 id=&#34;validator&#34;&gt;Validator&lt;/h1&gt;
@@ -397,10 +397,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——web 框架原理（2）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day43-web_design_and_project_2/day43-web_design_and_project_2/</link>
+      <link>http://localhost:1313/go-to-top/day43-web_design_and_project_2/day43-web_design_and_project_2/</link>
       <pubDate>Mon, 27 Dec 2021 22:11:54 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day43-web_design_and_project_2/day43-web_design_and_project_2/</guid>
+      <guid>http://localhost:1313/go-to-top/day43-web_design_and_project_2/day43-web_design_and_project_2/</guid>
       
       <description>&lt;p&gt;上期我们说到了 Middleware 可实现洋葱模式，将一些前置或后置的自定义代码插入到业务逻辑之前，并且便于修改。这期文章继续来聊聊常见 Web 框架中的组件。&lt;/p&gt;
 &lt;h1 id=&#34;router&#34;&gt;Router&lt;/h1&gt;
@@ -435,10 +435,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——web 框架原理</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day42-web_design_and_project/day42-web_design_and_project/</link>
+      <link>http://localhost:1313/go-to-top/day42-web_design_and_project/day42-web_design_and_project/</link>
       <pubDate>Fri, 24 Dec 2021 19:14:59 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day42-web_design_and_project/day42-web_design_and_project/</guid>
+      <guid>http://localhost:1313/go-to-top/day42-web_design_and_project/day42-web_design_and_project/</guid>
       
       <description>&lt;p&gt;今天来讨论一下流行、常见的具有 RESTful API 风格的 web 框架中的原理，涵盖了 gin、go-chi 和 ego 的一些组件。我们会发现，它们框架中的组件，或多或少会有以下几个设计：middleware、router、validator、request binder、sql binder，。或许名称不都叫这个，但其实现的逻辑大概是差不多的。下面就来具体讲解它们的实现。&lt;/p&gt;
 &lt;h2 id=&#34;middleware&#34;&gt;Middleware&lt;/h2&gt;
@@ -483,10 +483,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>杂谈——软件开发如何选择优秀的框架？</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day41-how_to_choose_structure/day41-how_to_choose_structure/</link>
+      <link>http://localhost:1313/go-to-top/day41-how_to_choose_structure/day41-how_to_choose_structure/</link>
       <pubDate>Wed, 22 Dec 2021 20:58:12 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day41-how_to_choose_structure/day41-how_to_choose_structure/</guid>
+      <guid>http://localhost:1313/go-to-top/day41-how_to_choose_structure/day41-how_to_choose_structure/</guid>
       
       <description>&lt;p&gt;在编程当中，当我们掌握了编程语言的基础知识、经过一段时间编程练习之后会发现三个问题：&lt;/p&gt;
 &lt;ul&gt;
@@ -524,10 +524,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——并发模型（3）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day40-memory_model_3/day40-memory_model_3/</link>
+      <link>http://localhost:1313/go-to-top/day40-memory_model_3/day40-memory_model_3/</link>
       <pubDate>Fri, 17 Dec 2021 07:24:03 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day40-memory_model_3/day40-memory_model_3/</guid>
+      <guid>http://localhost:1313/go-to-top/day40-memory_model_3/day40-memory_model_3/</guid>
       
       <description>&lt;p&gt;在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。&lt;/p&gt;
 &lt;h2 id=&#34;goroutine&#34;&gt;Goroutine&lt;/h2&gt;
@@ -551,10 +551,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——并发模型（2）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day39-memory_model_2/day39-memory_model_2/</link>
+      <link>http://localhost:1313/go-to-top/day39-memory_model_2/day39-memory_model_2/</link>
       <pubDate>Wed, 15 Dec 2021 10:45:03 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day39-memory_model_2/day39-memory_model_2/</guid>
+      <guid>http://localhost:1313/go-to-top/day39-memory_model_2/day39-memory_model_2/</guid>
       
       <description>&lt;p&gt;上期文章说到 Go 语言中，单变量的原子的读或写操作，CPU 的多核心使用了 mesi 协议来确保正确性，也就足够了。但是 mesi 协议还存在一些缺陷：如果对某个变量进行先读，然后修改，再写，这样的多步操作，mesi 协议是无法解决的。因此我们需要除了读和写之外的指令，能够保证这种一系列操作的原子性。&lt;/p&gt;
 &lt;h2 id=&#34;内存重排&#34;&gt;内存重排&lt;/h2&gt;
@@ -576,10 +576,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——内存模型</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day38-memory_model/day38-memory_model/</link>
+      <link>http://localhost:1313/go-to-top/day38-memory_model/day38-memory_model/</link>
       <pubDate>Mon, 13 Dec 2021 20:06:42 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day38-memory_model/day38-memory_model/</guid>
+      <guid>http://localhost:1313/go-to-top/day38-memory_model/day38-memory_model/</guid>
       
       <description>&lt;p&gt;今天聊一聊 Go 语言中的内存模型，这部分内容在对于利用 sync 库在进行应用开发中用处不大，不过我们在面试过程中可能会遇到，这里做个记录。&lt;/p&gt;
 &lt;p&gt;我们日常的开发中，&lt;strong&gt;只要知道使用显示同步就可以保证正确性&lt;/strong&gt;。也就是说只要发生了并发的情况，那么一定要显示地使用同步手段。显示同步手段，通常是指 channel 或者锁。并且，能够用 channel 和锁的情况下，基本上，只要没有 race 出现，就能够保障程序的正确性。&lt;/p&gt;
@@ -598,10 +598,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——常见并发 bug（3）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day37-normal_sync_bug_3/day37-normal_sync_bug_3/</link>
+      <link>http://localhost:1313/go-to-top/day37-normal_sync_bug_3/day37-normal_sync_bug_3/</link>
       <pubDate>Fri, 10 Dec 2021 21:18:46 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day37-normal_sync_bug_3/day37-normal_sync_bug_3/</guid>
+      <guid>http://localhost:1313/go-to-top/day37-normal_sync_bug_3/day37-normal_sync_bug_3/</guid>
       
       <description>&lt;p&gt;&lt;img alt=&#34;img&#34; src=&#34;https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112102120452.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。&lt;/p&gt;
@@ -643,10 +643,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——常见并发 bug（2）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/</link>
+      <link>http://localhost:1313/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/</link>
       <pubDate>Wed, 08 Dec 2021 16:20:11 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/</guid>
+      <guid>http://localhost:1313/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/</guid>
       
       <description>&lt;p&gt;上期文章说到了一些常见并发 bug 的场景，本期文章继续聊聊 Go 语言中常见的一些 bug，继续写 bug（当然不是），并通过代码案例来讲解。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;img&#34; src=&#34;https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112081853217.png&#34;&gt;&lt;/p&gt;
@@ -686,10 +686,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——常见并发 bug</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day35-normal_sync_bug/day35-normal_sync_bug/</link>
+      <link>http://localhost:1313/go-to-top/day35-normal_sync_bug/day35-normal_sync_bug/</link>
       <pubDate>Mon, 06 Dec 2021 22:30:43 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day35-normal_sync_bug/day35-normal_sync_bug/</guid>
+      <guid>http://localhost:1313/go-to-top/day35-normal_sync_bug/day35-normal_sync_bug/</guid>
       
       <description>&lt;p&gt;这期文章来聊一聊 Go 语言中常见的并发 bug 有哪些，并不是说要写 bug，而是在出现这些情况的时候，有相应的解决方案。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;img&#34; src=&#34;https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112062349044.png&#34;&gt;&lt;/p&gt;
@@ -728,10 +728,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——并发编程模式</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/</link>
+      <link>http://localhost:1313/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/</link>
       <pubDate>Fri, 03 Dec 2021 20:32:49 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/</guid>
+      <guid>http://localhost:1313/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/</guid>
       
       <description>&lt;p&gt;通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 &amp;ldquo;Do not communicate by sharing memory; instead, share memory by communicating.&amp;rdquo;&lt;/p&gt;
 &lt;p&gt;这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。&lt;/p&gt;
@@ -753,10 +753,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——并发数据结构（3）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day33-sync_structure_3/day33-sync_structure_3/</link>
+      <link>http://localhost:1313/go-to-top/day33-sync_structure_3/day33-sync_structure_3/</link>
       <pubDate>Wed, 01 Dec 2021 13:46:40 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day33-sync_structure_3/day33-sync_structure_3/</guid>
+      <guid>http://localhost:1313/go-to-top/day33-sync_structure_3/day33-sync_structure_3/</guid>
       
       <description>&lt;p&gt;一个优质的程序、优秀的设计不是凭空产生的，而是经过由简至精，不断迭代产生出来的。在上期文章中，我们了解了 Go 语言中的信号量 semaphore 和互斥锁 sync.Mutex，在此基础上我们还可以实现更加复杂的锁。&lt;/p&gt;
 &lt;h2 id=&#34;syncrwmutex&#34;&gt;sync.RWMutex&lt;/h2&gt;
@@ -771,10 +771,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——并发数据结构（2）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day32-sync_structure_2/day32-sync_structure_2/</link>
+      <link>http://localhost:1313/go-to-top/day32-sync_structure_2/day32-sync_structure_2/</link>
       <pubDate>Mon, 29 Nov 2021 22:39:57 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day32-sync_structure_2/day32-sync_structure_2/</guid>
+      <guid>http://localhost:1313/go-to-top/day32-sync_structure_2/day32-sync_structure_2/</guid>
       
       <description>&lt;p&gt;本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。&lt;/p&gt;
 &lt;h2 id=&#34;syncpool&#34;&gt;sync.Pool&lt;/h2&gt;
@@ -791,10 +791,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——并发数据结构</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day31-sync_structure/day31-sync_structure/</link>
+      <link>http://localhost:1313/go-to-top/day31-sync_structure/day31-sync_structure/</link>
       <pubDate>Thu, 25 Nov 2021 23:22:55 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day31-sync_structure/day31-sync_structure/</guid>
+      <guid>http://localhost:1313/go-to-top/day31-sync_structure/day31-sync_structure/</guid>
       
       <description>&lt;p&gt;我们之所以使用 Go 语言，其中一个很大的原因是它原生支持高并发，通过 Goroutine 和 Channel 完美实现。并且 Go 的并发是属于一种 CSP 并发编程模式的实现。如果我们想很好利用到这个特性，&lt;strong&gt;知其然知其所以然，是学习阶段最好的成果&lt;/strong&gt;，在生产环境中遇到问题才能有的放矢。下面就从它的一些基础数据结构开始讲起。&lt;/p&gt;
 &lt;h1 id=&#34;并发内置数据结构&#34;&gt;并发内置数据结构&lt;/h1&gt;
@@ -821,10 +821,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——GC 补充与总结</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day30-gc_lean_and_summary/day30-gc_lean_and_summary/</link>
+      <link>http://localhost:1313/go-to-top/day30-gc_lean_and_summary/day30-gc_lean_and_summary/</link>
       <pubDate>Wed, 24 Nov 2021 21:33:37 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day30-gc_lean_and_summary/day30-gc_lean_and_summary/</guid>
+      <guid>http://localhost:1313/go-to-top/day30-gc_lean_and_summary/day30-gc_lean_and_summary/</guid>
       
       <description>&lt;p&gt;最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。&lt;/p&gt;
 &lt;h2 id=&#34;gc-补充&#34;&gt;GC 补充&lt;/h2&gt;
@@ -877,10 +877,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——现代化标记丢失解决方案</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/</link>
+      <link>http://localhost:1313/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/</link>
       <pubDate>Mon, 22 Nov 2021 11:49:45 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/</guid>
+      <guid>http://localhost:1313/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/</guid>
       
       <description>&lt;p&gt;在 Go 语言 GC 中，为避免对象丢失，可以在所有指针操作中加 Dijkstra barrier，而 Go 官方设计者为了降低 Go 运行环境中的成本，不希望栈上的操作频率很高，所以限制了 Go 不能在栈上操作指针时加 barrier。因此 Dijkstra barrier 和 Yuasa barrier 都失效了。&lt;/p&gt;
 &lt;p&gt;因为 Go 语言不在栈上去加一个 writebarrier，所以任何一个 barrier 单独拿出来都没办法解决 Go 语言 GC 标记的正确性问题。为了解决这个问题，机智的语言设计者就把 Dijkstra barrier 和 Yuasa barrier 结合起来，做出了集大成者——Hybrid barrier，并且写了一个提案 preposal。网上有很多博客会去解析 writebarrier 的源码，其实就是这张图中的，中和两种算法的集合体。&lt;/p&gt;
@@ -902,10 +902,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——GC 标记丢失解决初步方案</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day28-mark-lost-solutions/day28-mark-lost-solutions/</link>
+      <link>http://localhost:1313/go-to-top/day28-mark-lost-solutions/day28-mark-lost-solutions/</link>
       <pubDate>Fri, 19 Nov 2021 21:31:07 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day28-mark-lost-solutions/day28-mark-lost-solutions/</guid>
+      <guid>http://localhost:1313/go-to-top/day28-mark-lost-solutions/day28-mark-lost-solutions/</guid>
       
       <description>&lt;p&gt;Go 语言采用三色标记算法来实现垃圾回收，但标记过程中存在对象漏标情况，最终导致变量被意外回收掉。为了解决这个问题我们需要一个理论基础——强弱三色性。&lt;/p&gt;
 &lt;h1 id=&#34;强弱三色性&#34;&gt;强弱三色性&lt;/h1&gt;
@@ -927,10 +927,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——三色标记</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day27-three_color_mark/day27-three_color_mark/</link>
+      <link>http://localhost:1313/go-to-top/day27-three_color_mark/day27-three_color_mark/</link>
       <pubDate>Wed, 17 Nov 2021 15:16:20 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day27-three_color_mark/day27-three_color_mark/</guid>
+      <guid>http://localhost:1313/go-to-top/day27-three_color_mark/day27-three_color_mark/</guid>
       
       <description>&lt;p&gt;上期文章说了很多关于标记的概念、流程，而标记的具体实现今天就来聊一聊。&lt;/p&gt;
 &lt;p&gt;在了解标记之前我们需要了解&lt;strong&gt;三色抽象&lt;/strong&gt;。在 Go 语言的 MarkSweep 算法中它会把对象分成三类：&lt;/p&gt;
@@ -954,10 +954,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——标记流程</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/</link>
+      <link>http://localhost:1313/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/</link>
       <pubDate>Mon, 15 Nov 2021 09:07:46 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/</guid>
+      <guid>http://localhost:1313/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/</guid>
       
       <description>&lt;p&gt;&lt;strong&gt;Go 语言使用并发的三色标记（tricolor marking）算法作为其垃圾回收算法&lt;/strong&gt;，并且在 Go 中的 GC 没有分代，没有压缩，没有对象移动。整个 GC 流程如图：&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;gc&#34; src=&#34;https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111152027238.png&#34;&gt;&lt;/p&gt;
@@ -972,10 +972,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——Go 语言垃圾回收流程</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day25-go_garbage_collection/day25-go_garbage_collection/</link>
+      <link>http://localhost:1313/go-to-top/day25-go_garbage_collection/day25-go_garbage_collection/</link>
       <pubDate>Thu, 11 Nov 2021 23:26:35 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day25-go_garbage_collection/day25-go_garbage_collection/</guid>
+      <guid>http://localhost:1313/go-to-top/day25-go_garbage_collection/day25-go_garbage_collection/</guid>
       
       <description>&lt;p&gt;&lt;strong&gt;Go 语言的垃圾回收机制采用的是标记清扫&lt;/strong&gt;。这种方法的特点在于：标记清扫完成之后，有些内存没办法被使用的，所以标记清扫很大的问题就是有很多内存碎片。我们在使用标记清扫算法的时候，需要内存分配算法能够一定程度上应对这种碎片问题，之前分析过分级分配的分配器可以在一定程度上应对这个问题。这也是为什么 Go 语言可以使用标记清扫算法，因为它使用了 tcmalloc，在一定程度上能够缓解碎片问题（但也没有解决）。&lt;/p&gt;
 &lt;p&gt;老版本 Go 语言中，标记清扫大致是以下流程：&lt;/p&gt;
@@ -999,10 +999,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——垃圾回收基础</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day24-garbage_collection_base/day24-garbage_collection_base/</link>
+      <link>http://localhost:1313/go-to-top/day24-garbage_collection_base/day24-garbage_collection_base/</link>
       <pubDate>Wed, 10 Nov 2021 15:18:35 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day24-garbage_collection_base/day24-garbage_collection_base/</guid>
+      <guid>http://localhost:1313/go-to-top/day24-garbage_collection_base/day24-garbage_collection_base/</guid>
       
       <description>&lt;p&gt;之前说的内存回收可以用这张全局图来解释，总共 6 个 level 的分配结构，把这几个链路都梳理弄清楚就能有个清晰理解。&lt;/p&gt;
 &lt;p&gt;垃圾回收的理解更为难，需要一些算法基础，否则在看这部分知识的时候很可能完全看不懂。&lt;/p&gt;
@@ -1015,10 +1015,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——Go 内存管理（2）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/</link>
+      <link>http://localhost:1313/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/</link>
       <pubDate>Sat, 06 Nov 2021 16:55:34 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/</guid>
+      <guid>http://localhost:1313/go-to-top/day23-go_memory_management_2/day23-go_memory_management_2/</guid>
       
       <description>&lt;p&gt;Go 语言在内存管理中申请使用稀疏堆时，使用系统调用 mmap ，因此可以分配出不连续的地址（而不是通过系统调用 brk 来调整虚拟空间里堆的 program break 来分配连续内存地址）。在使用稀疏堆时，整体的堆内存怎样增长的呢？&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;堆内存增长过程&#34; src=&#34;https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111071005412.png&#34;&gt;&lt;/p&gt;
@@ -1043,10 +1043,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——Go内存管理（丢失）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day22-go_memory_management/day22-go_memory_management/</link>
+      <link>http://localhost:1313/go-to-top/day22-go_memory_management/day22-go_memory_management/</link>
       <pubDate>Wed, 03 Nov 2021 07:20:48 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day22-go_memory_management/day22-go_memory_management/</guid>
+      <guid>http://localhost:1313/go-to-top/day22-go_memory_management/day22-go_memory_management/</guid>
       
       <description></description>
       
@@ -1054,10 +1054,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——进程与虚拟内存的分布</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/</link>
+      <link>http://localhost:1313/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/</link>
       <pubDate>Tue, 02 Nov 2021 22:19:25 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/</guid>
+      <guid>http://localhost:1313/go-to-top/day21-virtual_memory_management/day21-virtual_memory_management/</guid>
       
       <description>&lt;p&gt;没想到继续更文已经是一个月半以后了。立个小小的 flag，到年底把 Go 基础与浅层的内核过一遍。保持两天一更的节奏。还是继续接着上期说的内存管理。了解了内存管理抽象的基础概念之后，来看一下一些具体的实现。&lt;/p&gt;
 &lt;h1 id=&#34;虚拟内存的分布&#34;&gt;虚拟内存的分布&lt;/h1&gt;
@@ -1093,10 +1093,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——内存管理</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day20-memory_management/day20-memory_management/</link>
+      <link>http://localhost:1313/go-to-top/day20-memory_management/day20-memory_management/</link>
       <pubDate>Sun, 12 Sep 2021 10:01:17 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day20-memory_management/day20-memory_management/</guid>
+      <guid>http://localhost:1313/go-to-top/day20-memory_management/day20-memory_management/</guid>
       
       <description>&lt;p&gt;&lt;strong&gt;发生内存泄露时，要知道内存如何进行分配，垃圾回收要找出哪些对象有用，哪些对象无用。尤其当系统到达高并发瓶颈时，更需要垃圾回收这一角色做好风险把控，否则就是大型灾难现场&lt;/strong&gt;。今天就来聊聊内存管理与垃圾回收。&lt;/p&gt;
 &lt;h1 id=&#34;背景介绍&#34;&gt;背景介绍&lt;/h1&gt;
@@ -1144,10 +1144,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>GO 翻山越岭——系统调用调试工具</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/</link>
+      <link>http://localhost:1313/go-to-top/day19-tools_and_sys/day19-tools_and_sys/</link>
       <pubDate>Thu, 09 Sep 2021 22:43:41 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/</guid>
+      <guid>http://localhost:1313/go-to-top/day19-tools_and_sys/day19-tools_and_sys/</guid>
       
       <description>&lt;p&gt;&lt;strong&gt;了解系统调用就能在业务发生问题时有更多招数，见招拆招&lt;/strong&gt;。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。&lt;/p&gt;
 &lt;h1 id=&#34;观察系统调用工具&#34;&gt;观察系统调用工具&lt;/h1&gt;
@@ -1167,10 +1167,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>GO 翻山越岭——Go 常见系统调用</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day18-go_and_sys/day18-go_and_sys/</link>
+      <link>http://localhost:1313/go-to-top/day18-go_and_sys/day18-go_and_sys/</link>
       <pubDate>Tue, 07 Sep 2021 07:28:31 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day18-go_and_sys/day18-go_and_sys/</guid>
+      <guid>http://localhost:1313/go-to-top/day18-go_and_sys/day18-go_and_sys/</guid>
       
       <description>&lt;p&gt;系统调用，是操作系统内核为应用提供的 API。今天继续来讲一个系统调用案例和 Go 中常见系统调用&lt;/p&gt;
 &lt;table&gt;
@@ -1220,10 +1220,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——系统调用基础</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day17-lang_and_sys/day17-lang_and_sys/</link>
+      <link>http://localhost:1313/go-to-top/day17-lang_and_sys/day17-lang_and_sys/</link>
       <pubDate>Mon, 06 Sep 2021 20:26:32 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day17-lang_and_sys/day17-lang_and_sys/</guid>
+      <guid>http://localhost:1313/go-to-top/day17-lang_and_sys/day17-lang_and_sys/</guid>
       
       <description>&lt;p&gt;编程语言和操作系统之间的桥梁，也就是我们所说的系统调用。今天来聊聊，系统调用的基础概念。&lt;/p&gt;
 &lt;h1 id=&#34;什么是系统调用&#34;&gt;什么是系统调用&lt;/h1&gt;
@@ -1265,10 +1265,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——内置数据结构-Context</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day16-data-structure_context/day16-data-structure_context/</link>
+      <link>http://localhost:1313/go-to-top/day16-data-structure_context/day16-data-structure_context/</link>
       <pubDate>Sun, 05 Sep 2021 15:48:38 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day16-data-structure_context/day16-data-structure_context/</guid>
+      <guid>http://localhost:1313/go-to-top/day16-data-structure_context/day16-data-structure_context/</guid>
       
       <description>&lt;p&gt;Go 语言在 1.16 版本之后加入了新的内置数据结构 Context，虽然在代码中使用都比较简单，但语言内部还是做了许多区分，今天来分析一下 Context。&lt;/p&gt;
 &lt;h1 id=&#34;context&#34;&gt;Context&lt;/h1&gt;
@@ -1307,10 +1307,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——内置数据结构-Map</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day15-data-structure_map/day15-data-structure_map/</link>
+      <link>http://localhost:1313/go-to-top/day15-data-structure_map/day15-data-structure_map/</link>
       <pubDate>Thu, 02 Sep 2021 23:23:12 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day15-data-structure_map/day15-data-structure_map/</guid>
+      <guid>http://localhost:1313/go-to-top/day15-data-structure_map/day15-data-structure_map/</guid>
       
       <description>&lt;p&gt;Map 有时能够返回一个值，有时候能够返回多个值，这是 &lt;strong&gt;Map 的特权语法&lt;/strong&gt;。今天继续从底层角度来聊聊 Go 语言内置数据结构，Map。&lt;/p&gt;
 &lt;h1 id=&#34;map&#34;&gt;Map&lt;/h1&gt;
@@ -1345,10 +1345,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——内置数据结构-Timer</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day14-data-structure_timer/day14-data-structure_timer/</link>
+      <link>http://localhost:1313/go-to-top/day14-data-structure_timer/day14-data-structure_timer/</link>
       <pubDate>Mon, 30 Aug 2021 23:13:54 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day14-data-structure_timer/day14-data-structure_timer/</guid>
+      <guid>http://localhost:1313/go-to-top/day14-data-structure_timer/day14-data-structure_timer/</guid>
       
       <description>&lt;p&gt;上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。&lt;/p&gt;
 &lt;h1 id=&#34;timer&#34;&gt;Timer&lt;/h1&gt;
@@ -1363,10 +1363,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——内置数据结构-Channel</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day13-data-structure_channel/day13-data-structure_channel/</link>
+      <link>http://localhost:1313/go-to-top/day13-data-structure_channel/day13-data-structure_channel/</link>
       <pubDate>Sun, 29 Aug 2021 14:47:52 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day13-data-structure_channel/day13-data-structure_channel/</guid>
+      <guid>http://localhost:1313/go-to-top/day13-data-structure_channel/day13-data-structure_channel/</guid>
       
       <description>&lt;p&gt;&lt;strong&gt;内置数据结构是一门编程语言的基础核心&lt;/strong&gt;，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。&lt;/p&gt;
 &lt;p&gt;首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：&lt;/p&gt;
@@ -1429,10 +1429,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——编译器应用（3）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day12-parser_app/day12-parser_app/</link>
+      <link>http://localhost:1313/go-to-top/day12-parser_app/day12-parser_app/</link>
       <pubDate>Sat, 28 Aug 2021 15:14:37 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day12-parser_app/day12-parser_app/</guid>
+      <guid>http://localhost:1313/go-to-top/day12-parser_app/day12-parser_app/</guid>
       
       <description>&lt;p&gt;上期说到两种复杂的 Parser场景，通过借鉴业界成熟的技术方案，能够大大节约我们自己的时间。今天再来谈谈最后一个 Parser 应用场景和 Parser 总结。&lt;/p&gt;
 &lt;h1 id=&#34;客户定制需求&#34;&gt;客户定制需求&lt;/h1&gt;
@@ -1462,59 +1462,11 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     </item>
     
     <item>
-      <title>Go 翻山越岭——编译器应用（2）</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day11-parser_app/day11-parser_app/</link>
-      <pubDate>Fri, 27 Aug 2021 21:04:42 +0800</pubDate>
-      
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day11-parser_app/day11-parser_app/</guid>
-      
-      <description>&lt;p&gt;之前说到几个 Parser 的应用场景，一个比较直观的是：在 Beego 源代码中了解了业界做得比较好的注释转 json 的工具 swagger。其实我们也可以模仿 swagger 的思路，在一个代码中去定义一些特殊的注释，从另外一个代码中把这些注释扫描出来。今天再来谈一谈 Parser 的一个更复杂的业务场景。&lt;/p&gt;
-&lt;h1 id=&#34;小插曲&#34;&gt;小插曲&lt;/h1&gt;
-&lt;p&gt;不久前，图灵社区出版了一本书叫做活文档（living documentation），讲的就是我们可以把一些业务上相关的一些信息放在关键函数的注释中。书中主要提到的一个技巧是，注解。而在 Go 语言中不支持注解，但我们可以退而求其次，在注释中写这些信息，通过类似 swagger 的工具将注释都扫描出来，然后当成普通的字符串，按照一些匹配规则做一些匹配，然后做一些相应的内容。&lt;/p&gt;
-&lt;p&gt;但其实这种解析注释的思想，不仅仅是转json，只要我们敢想还可以做些不一样的东西。&lt;/p&gt;
-&lt;h1 id=&#34;转设计结构&#34;&gt;转设计结构&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;场景6，公司非常看好 gRPC，尤其在上 K8s 之后 gPRC 显得更云原生些，我们想从 Thrift 切换到 gRPC，但是之前的项目都是 Thrift，怎么办？&lt;/p&gt;
-&lt;p&gt;（1）之前的项目已经有几千甚至上万的 Thrift 服务、已经有单独的仓库去管理 Thrift IDL&lt;/p&gt;
-&lt;p&gt;（2）想提供 gRPC 接口&lt;/p&gt;
-&lt;p&gt;（3）目前的解决方案是手动把 Thrift IDL 按照 pb 文件的格式模仿抄写一遍，但效率太低。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;我们已经有了大量的 Thrif 文件，如下，文件名 a.thrift&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;namespace&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;php&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;shared&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;ShareStruct&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i32&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;string&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;service&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SharedService&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;SharedStruct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getStruct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i32&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;想要转到这样的 gPRC 结构，文件名 b.proto&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;syntax&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;proto3&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;SearchRequest&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int32&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;key&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;SearchResponse&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int32&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;key&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;string&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;value&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;service&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;SharedService&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nx&#34;&gt;rpc&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getStruct&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;SearchRequest&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;returns&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;SearchResponse&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;从 Thrift 转 gRPC ，需要写 pb 文件。而从代码结构上来看，Thrift 和 gRPC 结构很相似。我们如果不懂编译原理，但业务又在紧急转型，就得硬着头皮去人肉翻译的工作。而大公司的项目一般来说代码量都是几万到十万行，那么 Thrift 文件也不会少于几百行。人肉硬翻译下去的话自己就会非常痛苦。&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
       <title>Go 翻山越岭——解释器</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day10-parser/day10-parser/</link>
+      <link>http://localhost:1313/go-to-top/day10-parser/day10-parser/</link>
       <pubDate>Sun, 22 Aug 2021 22:51:00 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day10-parser/day10-parser/</guid>
+      <guid>http://localhost:1313/go-to-top/day10-parser/day10-parser/</guid>
       
       <description>&lt;p&gt;上期文章遗留了一个问题“三个 panic 在 runtime 代码的具体哪个位置输出”，如果通过汇编调试工具找出来。今天来动手实践，并且尝试解决另一个业务问题。&lt;/p&gt;
 &lt;h1 id=&#34;问题回顾&#34;&gt;问题回顾&lt;/h1&gt;
@@ -1563,10 +1515,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——语法分析实现</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day9-parsing_implementation/day9-parsing_implementation/</link>
+      <link>http://localhost:1313/go-to-top/day9-parsing_implementation/day9-parsing_implementation/</link>
       <pubDate>Sun, 22 Aug 2021 08:34:33 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day9-parsing_implementation/day9-parsing_implementation/</guid>
+      <guid>http://localhost:1313/go-to-top/day9-parsing_implementation/day9-parsing_implementation/</guid>
       
       <description>&lt;p&gt;之前的文章提到：Go 程序编译和链接涉及到工具 go tool compile 、go tool objdump 和 SSA func  build 将源代码转化成静态单赋值形式的中间代码。这些工具都可以直接上手玩一玩，即便对编译原理的理论不熟悉，在实践后还是会逐步明白的，Go 的工程化在这方面做得挺不错。今天来讲一讲“GO 语言语法分析的具体实现”&lt;/p&gt;
 &lt;h1 id=&#34;调试工具回顾&#34;&gt;调试工具回顾&lt;/h1&gt;
@@ -1587,10 +1539,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——反编译</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day8-disassembly/day8-disassembly/</link>
+      <link>http://localhost:1313/go-to-top/day8-disassembly/day8-disassembly/</link>
       <pubDate>Sat, 21 Aug 2021 15:25:05 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day8-disassembly/day8-disassembly/</guid>
+      <guid>http://localhost:1313/go-to-top/day8-disassembly/day8-disassembly/</guid>
       
       <description>&lt;p&gt;Go 语言常用的两个查看汇编代码的工具是 &lt;strong&gt;go tool compile 和 go tool objdump&lt;/strong&gt;。上期文章说到通过 go tool compile -S 可以查看实现相同功能，两个不同的代码在性能上有什么区别，可从反编译出的汇编代码看出，二者的性能一样。今天再来聊一聊另外一个工具的使用。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1627,10 +1579,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——编译与反编译</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day7-assembly/day7-assembly/</link>
+      <link>http://localhost:1313/go-to-top/day7-assembly/day7-assembly/</link>
       <pubDate>Thu, 19 Aug 2021 23:02:38 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day7-assembly/day7-assembly/</guid>
+      <guid>http://localhost:1313/go-to-top/day7-assembly/day7-assembly/</guid>
       
       <description>&lt;p&gt;Go 程序，从源代码到可执行文件，通常要经过两个步骤：编译 → 链接，而&lt;strong&gt;最重要的就是进行虚拟地址重定位（Relocation）&lt;/strong&gt;。上期我们了解了GO语言编译过程包括六个细致的编译步骤，而链接是最后的编译过程。知道了整个流程后，今天再来聊一聊 Go 程序在完成编译后，我们还可以通过哪些工具知道一些信息——编译与反编译。&lt;/p&gt;
 &lt;p&gt;重定位(relocation)是指把符号引用与符号定义链接到一起的过程。当程序调用一个函数时，将从当前运行的指令地址处跳转到一个新的指令地址处去执行。我们平时在编写程序时，只需指明所要调用的函数名即可，对编译器来说就是指明了符号引用。然后在重定位过程中，动态链接器会把函数名与函数实际所在的地址（符号定义）联系到一起，进而使得程序能够知道应该跳转到哪里去。&lt;/p&gt;
@@ -1664,10 +1616,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——编译原理基础</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day6-parse/day6-parse/</link>
+      <link>http://localhost:1313/go-to-top/day6-parse/day6-parse/</link>
       <pubDate>Sun, 15 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day6-parse/day6-parse/</guid>
+      <guid>http://localhost:1313/go-to-top/day6-parse/day6-parse/</guid>
       
       <description>&lt;p&gt;上回我们说到 &lt;strong&gt;8 个常见 Go 业务场景&lt;/strong&gt;，并且可以通过探究 Go 语法背后的秘密就能去解决的问题，在我们开始动手之前，先打好“Go 语言中编译原理的基础”&lt;/p&gt;
 &lt;h1 id=&#34;回顾&#34;&gt;回顾&lt;/h1&gt;
@@ -1707,10 +1659,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——常见业务问题</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day5-problem/day5-problem/</link>
+      <link>http://localhost:1313/go-to-top/day5-problem/day5-problem/</link>
       <pubDate>Sat, 14 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day5-problem/day5-problem/</guid>
+      <guid>http://localhost:1313/go-to-top/day5-problem/day5-problem/</guid>
       
       <description>&lt;p&gt;上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。&lt;/p&gt;
 &lt;h1 id=&#34;常见业务场景&#34;&gt;常见业务场景&lt;/h1&gt;
@@ -1758,10 +1710,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——调试2</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day4-run/day4-run/</link>
+      <link>http://localhost:1313/go-to-top/day4-run/day4-run/</link>
       <pubDate>Wed, 11 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day4-run/day4-run/</guid>
+      <guid>http://localhost:1313/go-to-top/day4-run/day4-run/</guid>
       
       <description>&lt;p&gt;上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”&lt;/p&gt;
 &lt;p&gt;[toc]&lt;/p&gt;
@@ -1794,10 +1746,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——调试1</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day3-run/day3-run/</link>
+      <link>http://localhost:1313/go-to-top/day3-run/day3-run/</link>
       <pubDate>Mon, 09 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day3-run/day3-run/</guid>
+      <guid>http://localhost:1313/go-to-top/day3-run/day3-run/</guid>
       
       <description>&lt;p&gt;今天来动手实践看看，Go 的底层是如何运作、如何进行调度的，通过调试一段简单的代码，我将带你体验 Go 语言如何接触底层的知识。不会很复杂的，跟着我一步步走肯定都能理解。&lt;/p&gt;
 &lt;p&gt;既然要进行代码实践操作，首先要考虑的就是Go语言编译器（也就是Go）、Go 编程环境以及 Go 代码的调试环境，这里我们需要用到的版本：&lt;/p&gt;
@@ -1842,10 +1794,10 @@ $$ PV = \frac{2}{0.02} = 100 \text{元} $$
     
     <item>
       <title>Go 翻山越岭——调度-day2</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day2-scheduler/day2-scheduler/</link>
+      <link>http://localhost:1313/go-to-top/day2-scheduler/day2-scheduler/</link>
       <pubDate>Thu, 05 Aug 2021 14:45:19 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day2-scheduler/day2-scheduler/</guid>
+      <guid>http://localhost:1313/go-to-top/day2-scheduler/day2-scheduler/</guid>
       
       <description>&lt;p&gt;上回说到 &lt;a href=&#34;https://mp.weixin.qq.com/s?__biz=Mzg3MjYzMzQzMQ==&amp;mid=2247483687&amp;idx=1&amp;sn=a357de9b46d3dbf466b9f52f6e2f413a&amp;scene=21#wechat_redirect&#34;&gt;Go 的调度流程本质上是⼀个⽣产-消费流程&lt;/a&gt;，今天来讲一讲“调度组件与调度循环”，再来回顾一下两个生动的动画 goroutine 的⽣产端, goroutine 的消费端。&lt;/p&gt;
 &lt;p&gt;当 goroutine 处于生产端时，M 执行调度循环时，必须与一个 P 绑定。并且我们常说的 Work stealing 就是说的 runqsteal -&amp;gt; runqgrab 这个流程。&lt;/p&gt;
@@ -1876,10 +1828,10 @@ var ch = make(chan int)
     
     <item>
       <title>Go 翻山越岭——调度-day1</title>
-      <link>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day1-scheduler/day1-scheduler/</link>
+      <link>http://localhost:1313/go-to-top/day1-scheduler/day1-scheduler/</link>
       <pubDate>Tue, 03 Aug 2021 09:38:51 +0800</pubDate>
       
-      <guid>http://localhost:1313/JupiterXue/JupiterXue.github.io/go-to-top/day1-scheduler/day1-scheduler/</guid>
+      <guid>http://localhost:1313/go-to-top/day1-scheduler/day1-scheduler/</guid>
       
       <description>&lt;h3 id=&#34;前言&#34;&gt;前言&lt;/h3&gt;
 &lt;p&gt;Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。&lt;/p&gt;
