@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——内置数据结构-Channel | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——内置数据结构-Channel | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Channel | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——内置数据结构-Channel | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——内置数据结构-Channel | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/go-to-top/day13-data-structure_channel/day13-data-structure_channel/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.136.2">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day13-data-structure_channel/day13-data-structure_channel/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——内置数据结构-Channel">
+  <meta property="og:description" content="内置数据结构是一门编程语言的基础核心，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。
+首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：
+既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。
+Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：
+图上省略了：
+select dafault 的情况。 逻辑执行时碰到 ch 已 close 的情况。 从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：
+图上也省略了：
+select default 的情况。 逻辑执行时碰到 ch 已经 close 的情况。 对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。
+我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：
+// chansend 源码 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool { if c ==nil { if !block { return false } gopark(nil, nil, waitReasonChanSendNilChan, traceEvGoStop, 2) throw(&#34;unreachable&#34;) } lock.(&amp;c.lock) } // chanrecv 源码 func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool) { if c ==nil { if !block { return false } gopark(nil, nil, waitReasonChanReceiveNilChan, traceEvGoStop, 2) throw(&#34;unreachable&#34;) } lock.(&amp;c.lock) } // closechan 源码 func closechan(c *hchan) { if c == nil { panic(plainError(&#34;close of nil channel&#34;)) } lock(&amp;c.lock) } 虽然我们在用户态完全看不到，但我们可以从底层源码看到这个明显的加锁操作，并且这个加锁的操作基本上都是在函数开始加锁，函数结束解锁，除了 goready() 要放在锁外面，其他也没有什么特殊的，这便是达成并发安全的条件之一。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-08-29T14:47:52+08:00">
+    <meta property="article:modified_time" content="2021-08-29T14:47:52+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Channel">
+  <meta name="twitter:description" content="内置数据结构是一门编程语言的基础核心，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。
+首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：
+既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。
+Channel 之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：
+图上省略了：
+select dafault 的情况。 逻辑执行时碰到 ch 已 close 的情况。 从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：
+图上也省略了：
+select default 的情况。 逻辑执行时碰到 ch 已经 close 的情况。 对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。
+我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：
+// chansend 源码 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool { if c ==nil { if !block { return false } gopark(nil, nil, waitReasonChanSendNilChan, traceEvGoStop, 2) throw(&#34;unreachable&#34;) } lock.(&amp;c.lock) } // chanrecv 源码 func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool) { if c ==nil { if !block { return false } gopark(nil, nil, waitReasonChanReceiveNilChan, traceEvGoStop, 2) throw(&#34;unreachable&#34;) } lock.(&amp;c.lock) } // closechan 源码 func closechan(c *hchan) { if c == nil { panic(plainError(&#34;close of nil channel&#34;)) } lock(&amp;c.lock) } 虽然我们在用户态完全看不到，但我们可以从底层源码看到这个明显的加锁操作，并且这个加锁的操作基本上都是在函数开始加锁，函数结束解锁，除了 goready() 要放在锁外面，其他也没有什么特殊的，这便是达成并发安全的条件之一。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/go-to-top/day13-data-structure_channel/day13-data-structure_channel/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——内置数据结构-Channel</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-08-29T14:47:52&#43;08:00" itemprop="datePublished"> Aug 29, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p><strong>内置数据结构是一门编程语言的基础核心</strong>，了解基本语法就能够让我们进行简单的开发。今天开始，就来系统地研究 Go 语言内置数据结构。</p>
+<p>首先，先来看看所有的Go 语言所有内置数据结构都有哪些，如下图所示，列出了思维导图：</p>
+<p><img alt="未命名文件" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291453518.png"></p>
+<p>既然是系统地研究，这里就需要用到暴力破解的思想——把每个数据结构都遍历吃透。</p>
+<h1 id="channel">Channel</h1>
+<p>之前的文章中提到了通过反汇编调试工具来查看 Go 语言的源码。还提到了三种情况会导致 panic 的关键函数 chansend、chanrecv，下面来进行源码逻辑分析。忽略一些细节实现，来看看 chansend 的流程图：</p>
+<p><img alt="chansend 流程图" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291706892.png"></p>
+<p>图上省略了：</p>
+<ol>
+<li>select dafault 的情况。</li>
+<li>逻辑执行时碰到 ch 已 close 的情况。</li>
+</ol>
+<p>从流程图，能够清晰地看到 在 chansend 的内置函数中，Go 语言是如何处理我们发送的数据。紧接着我们再来看看 chanrecv 的流程图：</p>
+<p><img alt="chanrecv 流程图" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291706194.png"></p>
+<p>图上也省略了：</p>
+<ol>
+<li>select default 的情况。</li>
+<li>逻辑执行时碰到 ch 已经 close 的情况。</li>
+</ol>
+<p>对比发现，两个流程差不多，因此 channel 的发送和接收的逻辑都是差不多的，都要判断是否为空，是否阻塞，然后看缓存情况，一个明显不一样的特征是 chansend 要判断满，chanrecv 要判断空。</p>
+<p>我们常说Go 语言中 channel 是并发安全的，什么意思呢？从上面的流程可以发现：chansend、chanrecv、closechan 都是要加锁的。即便如此，从代码层面我们还是看不到这些锁，那我们能否通过代码来看，“并发安全”具体而言是什么意思呢？下面罗列了三者的源码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// chansend 源码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">chansend</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">,</span> <span class="nx">ep</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">block</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">callerpc</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">c</span> <span class="o">==</span><span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">!</span><span class="nx">block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">gopark</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">waitReasonChanSendNilChan</span><span class="p">,</span> <span class="nx">traceEvGoStop</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;unreachable&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nx">lock</span><span class="p">.(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// chanrecv 源码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">chanrecv</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">,</span> <span class="nx">ep</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">block</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">(</span><span class="nx">selected</span><span class="p">,</span> <span class="nx">received</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">c</span> <span class="o">==</span><span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">!</span><span class="nx">block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">gopark</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">waitReasonChanReceiveNilChan</span><span class="p">,</span> <span class="nx">traceEvGoStop</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">throw</span><span class="p">(</span><span class="s">&#34;unreachable&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nx">lock</span><span class="p">.(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// closechan 源码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">closechan</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">c</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">panic</span><span class="p">(</span><span class="nf">plainError</span><span class="p">(</span><span class="s">&#34;close of nil channel&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>虽然我们在用户态完全看不到，但我们可以从底层源码看到这个明显的加锁操作，并且这个加锁的操作基本上都是在函数开始加锁，函数结束解锁，除了 goready() 要放在锁外面，其他也没有什么特殊的，这便是达成并发安全的条件之一。</p>
+<p>第二个并发安全的条件就是挂起和唤醒。刚刚提到了两个关键的函数 gopark 和 goready，这里我们可以记住两三个结论：</p>
+<ul>
+<li>Sender 挂起，一定是由 receiver（或 close）唤醒</li>
+<li>Receiver 挂起，一定是由 sender（或 close）唤醒</li>
+<li>结对操作。只要有用到 gopark，那么代码中一定有另外一个地方在执行 goready</li>
+</ul>
+<p>在之前的文章中提到，可接管的阻塞，均是由 gopark 挂起，每一个 gopark 都会对应一个唤醒方。</p>
+<p>以上第一二点，在代码中如何体现呢？比如 Sender 挂起，也就是 chansend 中的流程，当 buffer 满了需要执行一个 gopark，把 goroutine 和线程解绑，让 goroutine 进入 sendq 的等待队列。之后在 chanrecv 或 chanclose 的时候，检查等待队列，把 goroutine 从等待队列弹出，再用 goready 把它唤醒，并且 close 操作会把所有 goroutine 唤醒。Receiver 流程和 Sender 是相对的，代码都非常对称，就不逐一赘述。</p>
+<p>基于以上第三点，这里总结一下与 gopark 对应的 goready 位置：</p>
+<ul>
+<li>channel send → channel recv/close</li>
+<li>Lock → Unlock</li>
+<li>Read → Read Ready，epoll_wait 返回了该 fd 事件时</li>
+<li>Timer → checkTimers，检查到期唤醒</li>
+</ul>
+<p>具体找的方法，可以在 Goland 中双击 shfit 搜索 runtime 中 chan.go 源码，如图所示：</p>
+<p><img alt="image-20210829165005782" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108291658456.png"></p>
+<p>当我们知道了“与 gopark 对应的 goready 位置”，在自己看 channel 源码的时候就能够抓大放小、有的放矢。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

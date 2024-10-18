@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——内置数据结构-Timer | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——内置数据结构-Timer | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Timer | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——内置数据结构-Timer | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——内置数据结构-Timer | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/go-to-top/day14-data-structure_timer/day14-data-structure_timer/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.136.2">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day14-data-structure_timer/day14-data-structure_timer/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——内置数据结构-Timer">
+  <meta property="og:description" content="上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。
+Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。
+从这张图可以看到**，最早的 Timer 就是一个四叉堆**。我们平时写算法的时候二叉堆见得比较多，那是不是理解这个更困难？不是的，我们着重看 Timer 的结构和演进。像最早的 time.Sleep 或者 time.After 这两个函数，实际上我们创建了两个 Timer 类，这个 Timer 会最终加到我们的 runtime 维护的四叉堆里面。这个四叉堆其实是很好理解的，其实是有个基准的。
+堆顶要放什么元素，元素如何排列？都是以触发时间为准。也就是说离当前时间最近的，一定是在堆顶的。如果来了一个新的 Timer ，它是在这个时间之后，它就会继续往堆下面走。如果比堆顶小就会涉及到对当前四叉堆的调整了，这个和写二叉堆调整算法很类似。
+最老的 Timer 实现全局只有一个四叉堆，这个四叉堆专门启用一个叫做 timerproc 的 goroutine。这个 goroutine 的逻辑也不复杂，就是用一个 for 循环。这个 for 循环会不断地检查堆顶元素是不是已经到期了，如果到期了就会触发，在触发的同时会逐渐地调整堆，直到把所有需要触发的 Timer 都触发完毕为止，继续去休眠。
+但这种单一的四叉堆会有一个问题。当前 Go 程序所有的 goroutine 在执行 Timer 相关操作的时候都需要去抢占操作这个堆的全局锁，而其实这个锁都是写锁。如果并发量很高，那么就会导致程序整体的吞吐量下降。全局锁对于任何程序来说，性能影响都比较大，这个问题导致了 go 程序在多核处理器上性能不佳，有人专门提了一个 issues：https://github.com/golang/go/issues/15133。（就 python 来说， 虽然 python 支持多进程，也支持多线程。但因为 GIL 全局解释器锁的存在，python 的多线程程序在同一时间只有一个线程在运行。所以多线程 Python 程序只是并发，而不是并行）">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-08-30T23:13:54+08:00">
+    <meta property="article:modified_time" content="2021-08-30T23:13:54+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Timer">
+  <meta name="twitter:description" content="上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。
+Timer Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。
+从这张图可以看到**，最早的 Timer 就是一个四叉堆**。我们平时写算法的时候二叉堆见得比较多，那是不是理解这个更困难？不是的，我们着重看 Timer 的结构和演进。像最早的 time.Sleep 或者 time.After 这两个函数，实际上我们创建了两个 Timer 类，这个 Timer 会最终加到我们的 runtime 维护的四叉堆里面。这个四叉堆其实是很好理解的，其实是有个基准的。
+堆顶要放什么元素，元素如何排列？都是以触发时间为准。也就是说离当前时间最近的，一定是在堆顶的。如果来了一个新的 Timer ，它是在这个时间之后，它就会继续往堆下面走。如果比堆顶小就会涉及到对当前四叉堆的调整了，这个和写二叉堆调整算法很类似。
+最老的 Timer 实现全局只有一个四叉堆，这个四叉堆专门启用一个叫做 timerproc 的 goroutine。这个 goroutine 的逻辑也不复杂，就是用一个 for 循环。这个 for 循环会不断地检查堆顶元素是不是已经到期了，如果到期了就会触发，在触发的同时会逐渐地调整堆，直到把所有需要触发的 Timer 都触发完毕为止，继续去休眠。
+但这种单一的四叉堆会有一个问题。当前 Go 程序所有的 goroutine 在执行 Timer 相关操作的时候都需要去抢占操作这个堆的全局锁，而其实这个锁都是写锁。如果并发量很高，那么就会导致程序整体的吞吐量下降。全局锁对于任何程序来说，性能影响都比较大，这个问题导致了 go 程序在多核处理器上性能不佳，有人专门提了一个 issues：https://github.com/golang/go/issues/15133。（就 python 来说， 虽然 python 支持多进程，也支持多线程。但因为 GIL 全局解释器锁的存在，python 的多线程程序在同一时间只有一个线程在运行。所以多线程 Python 程序只是并发，而不是并行）">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/go-to-top/day14-data-structure_timer/day14-data-structure_timer/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——内置数据结构-Timer</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-08-30T23:13:54&#43;08:00" itemprop="datePublished"> Aug 30, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>上期 Go 文章说道了 Go 内置数据结构，从底层源码角度简单地描述了 channel。今天继续分析其他的内置数据结构 Timer。</p>
+<h1 id="timer">Timer</h1>
+<p>Timer 在 golang 1.14 版本以前比较简单，整个 Timer.go 文件中代码 才 700 行左右。整个代码就是一个数据结构和许多 goroutine。但 golang 到了 1.14 版本以后，由于官方的升级维护就变得非常复杂。所以这里笔者简单讲一下 Timer 的迭代历史，状态机制不会涉及到。</p>
+<p><img alt="未命名文件 (1)" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302359026.png"></p>
+<p>从这张图可以看到**，最早的 Timer 就是一个四叉堆**。我们平时写算法的时候二叉堆见得比较多，那是不是理解这个更困难？不是的，我们着重看 Timer 的结构和演进。像最早的 time.Sleep 或者 time.After 这两个函数，实际上我们创建了两个 Timer 类，这个 Timer 会最终加到我们的 runtime 维护的四叉堆里面。这个四叉堆其实是很好理解的，其实是有个基准的。</p>
+<p>堆顶要放什么元素，元素如何排列？都是以触发时间为准。也就是说离当前时间最近的，一定是在堆顶的。如果来了一个新的 Timer ，它是在这个时间之后，它就会继续往堆下面走。如果比堆顶小就会涉及到对当前四叉堆的调整了，这个和写二叉堆调整算法很类似。</p>
+<p>最老的 Timer 实现全局只有一个四叉堆，这个四叉堆专门启用一个叫做 timerproc 的 goroutine。这个 goroutine 的逻辑也不复杂，就是用一个 for 循环。这个 for 循环会不断地检查堆顶元素是不是已经到期了，如果到期了就会触发，在触发的同时会逐渐地调整堆，直到把所有需要触发的 Timer 都触发完毕为止，继续去休眠。</p>
+<p>但这种单一的四叉堆会有一个问题。当前 Go 程序所有的 goroutine 在执行 Timer 相关操作的时候都需要去抢占操作这个堆的全局锁，而其实这个锁都是写锁。如果并发量很高，那么就会导致程序整体的吞吐量下降。全局锁对于任何程序来说，性能影响都比较大，这个问题导致了 go 程序在多核处理器上性能不佳，有人专门提了一个 issues：https://github.com/golang/go/issues/15133。（就 python 来说， 虽然 python 支持多进程，也支持多线程。但因为 GIL 全局解释器锁的存在，python 的多线程程序在同一时间只有一个线程在运行。所以多线程 Python 程序只是并发，而不是并行）</p>
+<p>在有人提出了性能问题之后，官方就对这个问题去做了优化。官方的思路是这样的：既然一个堆和一把锁是有性能问题的，是否可以尝试将单个四叉堆扩展为多个四叉堆呢，尽量把并发性能提升。也就是说降低锁的粒度，也可以说是分片锁。来看一下图就能快速理解：</p>
+<p><img alt="未命名文件 (2)" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302358793.png"></p>
+<p>官方写死了一些东西，最多只有 64 个四叉堆。但一般不会有这么多。比如 GOMAXPROCS = 8，那么 P 结构有 8 个，每个 P 在执行调度循环的时候会绑定一个线程 M ，线程上正在执行 G。因此，每个 P 下面都会关联到一个 timer 的 G 。</p>
+<p>但这种结构又会出现一个问题，社区中还有人提出问题：Go 程序在执行密集计算任务时会导致 timer 唤醒延迟。因此官方又做了改进，从这个版本往后，TImer 极其复杂了。</p>
+<p>因此总结一下 Timer 1.14 的变化情况：</p>
+<ul>
+<li>调整：
+<ul>
+<li>Timer headp 和 GMP 中的 P 绑定</li>
+<li>去除唤醒 goroutine：timerproc</li>
+</ul>
+</li>
+<li>检查：
+<ul>
+<li>检查 timer 到期在特殊函数 checkTimer 中进行</li>
+<li>检查 timer 操作移至调度循环中进行</li>
+</ul>
+</li>
+<li>工作窃取：
+<ul>
+<li>在 work-stealing 中，会从其他 P 那里偷 timer</li>
+</ul>
+</li>
+<li>兜底：
+<ul>
+<li>runtime.sysmon 中会为 timer 未被触发（timeSleepUntil）兜底，启动新线程</li>
+</ul>
+</li>
+</ul>
+<p>这里悄悄透露一下两个找源码的地方：</p>
+<p><img alt="image-20210830235814283" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302358352.png"></p>
+<p>偷 timer</p>
+<p><img alt="image-20210830235827727" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202108302358770.png"></p>
+<p>runtime.sysmon 兜底</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

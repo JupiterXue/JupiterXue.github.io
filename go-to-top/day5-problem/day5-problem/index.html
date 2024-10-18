@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——常见业务问题 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——常见业务问题 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——常见业务问题 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——常见业务问题 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——常见业务问题 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/go-to-top/day5-problem/day5-problem/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.136.2">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day5-problem/day5-problem/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——常见业务问题">
+  <meta property="og:description" content="上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
+场景1，这两段代码运行速度怎样？第一个比第二个快？
+// 代码1 package main type person struct { age int } func main() { var a = &amp;person{111} fmt.Println(a) } // 对比代码2 package main type person struct { age int } func main() { var b = person {111} var a = &amp;b fmt.Println(a) } 场景2，类型转换的原理是怎样的？
+package main func main() { var a = &#34;hello&#34; var b = []byte(a) println(b) } 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
+场景4，有一个中台服务，划分了许多用户等级，具体规则如下：（以下场景都没遇到过，不过可以来做分析）
+初级会员，发帖数 &gt; 10
+中级会员，充值 &gt; 1000 RMB
+高级会员，发帖数 &gt; 100 ，充值 &gt; 10000 RMB
+如果其中项目数量 = 几百，那么每个项目都应该有自己的会员规则吗？也就是说，我们需要单独定制这么几百个代码吗？">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-08-14T09:38:51+08:00">
+    <meta property="article:modified_time" content="2021-08-14T09:38:51+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——常见业务问题">
+  <meta name="twitter:description" content="上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。
+常见业务场景 你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。
+场景1，这两段代码运行速度怎样？第一个比第二个快？
+// 代码1 package main type person struct { age int } func main() { var a = &amp;person{111} fmt.Println(a) } // 对比代码2 package main type person struct { age int } func main() { var b = person {111} var a = &amp;b fmt.Println(a) } 场景2，类型转换的原理是怎样的？
+package main func main() { var a = &#34;hello&#34; var b = []byte(a) println(b) } 场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？
+场景4，有一个中台服务，划分了许多用户等级，具体规则如下：（以下场景都没遇到过，不过可以来做分析）
+初级会员，发帖数 &gt; 10
+中级会员，充值 &gt; 1000 RMB
+高级会员，发帖数 &gt; 100 ，充值 &gt; 10000 RMB
+如果其中项目数量 = 几百，那么每个项目都应该有自己的会员规则吗？也就是说，我们需要单独定制这么几百个代码吗？">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/go-to-top/day5-problem/day5-problem/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——常见业务问题</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-08-14T09:38:51&#43;08:00" itemprop="datePublished"> Aug 14, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>上回说到通过工具 readelf 和 dlv 调试 Go 语言程序，为什么需要这么做调试代码呢？我单纯地想写个代码，不行吗，常见业务不都是代码实现没有听谁说过要进行底层调试啊。关于业务，写代码当然可以，而当我们面临性能问题时，就需要涉及算法与数据结构。糟糕，你一说到算法我就心虚。如果你算法基础薄一点，没关系，东方不亮西方亮，算法走不通，我们走查看修改底层代码做起，仅需要细心和逻辑推理就能解决部分问题。因此，今天的主题是“探究 Go 语法背后的秘密”。</p>
+<h1 id="常见业务场景">常见业务场景</h1>
+<p>你说写业务不用关心底层，OK，那我们今天先讲原理，直接上业务场景。</p>
+<p>场景1，这两段代码运行速度怎样？第一个比第二个快？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 代码1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">person</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">age</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">a</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">person</span><span class="p">{</span><span class="mi">111</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 对比代码2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">person</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">age</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">person</span> <span class="p">{</span><span class="mi">111</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">a</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">b</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>场景2，类型转换的原理是怎样的？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">a</span> <span class="p">=</span> <span class="s">&#34;hello&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">b</span> <span class="p">=</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">println</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>场景3，怎么找到 make 和 new 这种 Go 语言自带数据结构的具体实现？</p>
+<p>场景4，有一个中台服务，划分了许多用户等级，具体规则如下：（以下场景都没遇到过，不过可以来做分析）</p>
+<p>初级会员，发帖数 &gt; 10</p>
+<p>中级会员，充值 &gt; 1000 RMB</p>
+<p>高级会员，发帖数 &gt; 100 ，充值 &gt; 10000 RMB</p>
+<p>如果其中项目数量 = 几百，那么每个项目都应该有自己的会员规则吗？也就是说，我们需要单独定制这么几百个代码吗？</p>
+<p>场景5，有一个数据查询服务的需求，我们想要做成一个统一的流程，目标是想简化部门的数据获取需求：</p>
+<p>（1）由用户提供查询条件，但用户分散在不同领域或部门，并且没有统一标准，并且会经常变。</p>
+<p>（2）需要用到代理去查询不同模块的数据</p>
+<p>（3）外部模块没有统一的数据获取规范</p>
+<p>如果每次用户修改了数据并提出了需求，我们就一定要写一遍代码吗？（小剧透：所以我们需要去做一套中间数据获取层）</p>
+<p>场景6，公司非常看好 gRPC，尤其在上 K8s 之后 gPRC 显得更云原生些，我们想从 Thrift 切换到 gRPC，但是之前的项目都是 Thrift，怎么办？</p>
+<p>（1）之前的项目已经有几千甚至上万的 Thrift 服务、已经有单独的仓库去管理 Thrift IDL</p>
+<p>（2）想提供 gRPC 接口</p>
+<p>（3）目前的解决方案是手动把 Thrift IDL 按照 pb 文件的格式模仿抄写一遍，但效率太低。</p>
+<p>场景7，我是个 DBA，了解 MySQL 的索引机制，了解哪些数据表是数据量比较大的核心表，我也可以将用户代码中的 SQL 都提前出来，不过我希望在上线的时候能够自动做一些工作，比如做一个拦截器，提醒用户要给表加索引才能添加数据（这个问题在我们实际线上会经常遇到，一旦发生还是比较蠢的）。</p>
+<p>（1）我是 SQL 专家</p>
+<p>（2）我知道怎么获取到表的索引
+（3）我可以把用户代码里的SQL扫描出来</p>
+<p>场景8，我们公司是做 ToB 的服务，我们的软件会先编译完再卖出去，比如我们公司是用 Go 开发的，假如我们是卖 gRPC 服务的，而用户想要在此基础上做一些定制，他们也有自己的开发人员，比如说实现内部的 RPC 协议。用户想定制，而我们想不给他们源代码并且能够支持他们的定制需求，这就需要些技术手段来解决。（特别是 Go 语言的生态还不是很完善，并且每个方案都有自己的缺陷）</p>
+<p>总共罗列了 <strong>8 个业务场景</strong>，我们可以通过探究 Go 语法背后的秘密就能去解决的问题，有没有哪个场景是你所遇到的？下回我将进行一一细致地讲解。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pages on Jupiter 的个人博客</title>
+    <link>https://JupiterXue.github.io/pages/</link>
+    <description>Recent content in Pages on Jupiter 的个人博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-ch</language>
+    <lastBuildDate>Tue, 15 Oct 2024 21:51:42 +0000</lastBuildDate><atom:link href="https://JupiterXue.github.io/pages/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>关于我</title>
+      <link>https://JupiterXue.github.io/pages/about/</link>
+      <pubDate>Tue, 15 Oct 2024 21:51:42 +0000</pubDate>
+      
+      <guid>https://JupiterXue.github.io/pages/about/</guid>
+      
+      <description>&lt;p&gt;技能栈，小公司后端研发，自我定位——&lt;strong&gt;全栈工程师&lt;/strong&gt; 🦄&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;语言：Golang 🐹、Python 🐍、JavaScript、Emacs Lisp&lt;/p&gt;
+&lt;p&gt;前端：Vue、Element-UI&lt;/p&gt;
+&lt;p&gt;后端：爬虫 🕷、FastApi、Ethereum 以太坊&lt;/p&gt;
+&lt;p&gt;数据库：MySQL、Redis、ElasticSearch&lt;/p&gt;
+&lt;p&gt;运维：Docker&lt;/p&gt;
+&lt;p&gt;监控：Promethues、Grafana&lt;/p&gt;
+&lt;p&gt;大数据：Hadoop、Hive、Hbase&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;欢迎更多交流&lt;/p&gt;
+&lt;p&gt;Github 👨‍👦‍👦地址: &lt;a href=&#34;https://github.com/JupiterXue&#34;&gt;Jupiter&lt;/a&gt; ，邮件📧：&lt;a href=&#34;mailto:JupiterXue97@gmail.com&#34;&gt;JupiterXue97@gmail.com&lt;/a&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+  </channel>
+</rss>
