@@ -1,129 +1,75 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Quant on Jupiter 的个人博客</title>
-    <link>http://localhost:1313/tags/quant/</link>
-    <description>Recent content in Quant on Jupiter 的个人博客</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-ch</language>
-    <lastBuildDate>Wed, 16 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/quant/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>投资与量化-任务2-什么是金融市场</title>
-      <link>http://localhost:1313/posts/task2-basic_fina_concepts/</link>
-      <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/posts/task2-basic_fina_concepts/</guid>
-      
-      <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;利率计算公式：
-$$ PV = \frac{CF}{(1+i)^n} $$&lt;br&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Quant on Jupiter 的个人博客</title><link>https://JupiterXue.github.io/tags/quant/</link><description>Recent content in Quant on Jupiter 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-ch</language><lastBuildDate>Wed, 16 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://JupiterXue.github.io/tags/quant/index.xml" rel="self" type="application/rss+xml"/><item><title>投资与量化-任务2-什么是金融市场</title><link>https://JupiterXue.github.io/posts/task2-basic_fina_concepts/</link><pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate><guid>https://JupiterXue.github.io/posts/task2-basic_fina_concepts/</guid><description>&lt;p>传送门：&lt;a href="https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5">第二章-金融市场基础&lt;/a>&lt;/p>
+&lt;h3 id="思考">思考&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>利率计算公式：
+$$ PV = \frac{CF}{(1+i)^n} $$&lt;br>
 通过极限推导可以得到：
 $$ PV = \frac{CF}{r} $$
-可以称之为&lt;strong&gt;万物皆有价的公式&lt;/strong&gt;。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出：
+可以称之为&lt;strong>万物皆有价的公式&lt;/strong>。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出：
 $$ PV = \frac{2}{0.02} = 100 \text{元} $$
-即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>投资与量化-任务2-什么是金融市场</title>
-      <link>http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/</link>
-      <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/quant-whale-notes/task2-basic_fina_concepts/</guid>
-      
-      <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;利率计算公式：
-$$ PV = \frac{CF}{(1+i)^n} $$&lt;br&gt;
+即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>投资与量化-任务2-什么是金融市场</title><link>https://JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/</link><pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate><guid>https://JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/</guid><description>&lt;p>传送门：&lt;a href="https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5">第二章-金融市场基础&lt;/a>&lt;/p>
+&lt;h3 id="思考">思考&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>利率计算公式：
+$$ PV = \frac{CF}{(1+i)^n} $$&lt;br>
 通过极限推导可以得到：
 $$ PV = \frac{CF}{r} $$
-可以称之为&lt;strong&gt;万物皆有价的公式&lt;/strong&gt;。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出：
+可以称之为&lt;strong>万物皆有价的公式&lt;/strong>。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出：
 $$ PV = \frac{2}{0.02} = 100 \text{元} $$
-即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>投资与量化-任务1-什么是投资</title>
-      <link>http://localhost:1313/posts/task1-what-invist/</link>
-      <pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/posts/task1-what-invist/</guid>
-      
-      <description>&lt;p&gt;组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
-传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;量化主要风险在于策略失效，更大挑战在于无法预测策略什么时间失效。其实不仅是量化，所有能够“盈利”的交易策略的主要风险都是如此。个人认为，相比主观交易，量化（使用量化策略的人）更倾向于墨守成规，尤其是在回测、模拟盘显示出良好的可盈利性后，但这是交易的大忌，用相同的思考方式和行为方式，必然会在黑天鹅事件出现后产生重大亏损。相反，用量化回测来验证自己的交易策略，发现策略失效边界是一个很好的思路。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;模拟盘交易一般需要半年到一年成熟，更多是指策略优化需要半年到一年才能更好地参与实盘。实盘交易有效性在3-5年，更多是指策略大概2、3年就可能会失效。一句话，优化无止境。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>投资与量化-任务1-什么是投资</title>
-      <link>http://localhost:1313/quant-whale-notes/task1-what-invist/</link>
-      <pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/quant-whale-notes/task1-what-invist/</guid>
-      
-      <description>&lt;p&gt;组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
-传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84&#34;&gt;第二章-金融市场基础&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;思考&#34;&gt;思考&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;量化主要风险在于策略失效，更大挑战在于无法预测策略什么时间失效。其实不仅是量化，所有能够“盈利”的交易策略的主要风险都是如此。个人认为，相比主观交易，量化（使用量化策略的人）更倾向于墨守成规，尤其是在回测、模拟盘显示出良好的可盈利性后，但这是交易的大忌，用相同的思考方式和行为方式，必然会在黑天鹅事件出现后产生重大亏损。相反，用量化回测来验证自己的交易策略，发现策略失效边界是一个很好的思路。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;模拟盘交易一般需要半年到一年成熟，更多是指策略优化需要半年到一年才能更好地参与实盘。实盘交易有效性在3-5年，更多是指策略大概2、3年就可能会失效。一句话，优化无止境。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;</description>
-      
-    </item>
-    
-  </channel>
-</rss>
+即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>投资与量化-任务1-什么是投资</title><link>https://JupiterXue.github.io/posts/task1-what-invist/</link><pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate><guid>https://JupiterXue.github.io/posts/task1-what-invist/</guid><description>&lt;p>组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
+传送门：&lt;a href="https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84">第二章-金融市场基础&lt;/a>&lt;/p>
+&lt;h3 id="思考">思考&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>量化主要风险在于策略失效，更大挑战在于无法预测策略什么时间失效。其实不仅是量化，所有能够“盈利”的交易策略的主要风险都是如此。个人认为，相比主观交易，量化（使用量化策略的人）更倾向于墨守成规，尤其是在回测、模拟盘显示出良好的可盈利性后，但这是交易的大忌，用相同的思考方式和行为方式，必然会在黑天鹅事件出现后产生重大亏损。相反，用量化回测来验证自己的交易策略，发现策略失效边界是一个很好的思路。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>模拟盘交易一般需要半年到一年成熟，更多是指策略优化需要半年到一年才能更好地参与实盘。实盘交易有效性在3-5年，更多是指策略大概2、3年就可能会失效。一句话，优化无止境。&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>投资与量化-任务1-什么是投资</title><link>https://JupiterXue.github.io/quant-whale-notes/task1-what-invist/</link><pubDate>Tue, 15 Oct 2024 00:00:00 +0000</pubDate><guid>https://JupiterXue.github.io/quant-whale-notes/task1-what-invist/</guid><description>&lt;p>组队开始学习开源量化课程，第一章投资与量化，第一个打卡任务是了解什么是投资。
+传送门：&lt;a href="https://datawhalechina.github.io/whale-quant/#/./ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84">第二章-金融市场基础&lt;/a>&lt;/p>
+&lt;h3 id="思考">思考&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>量化主要风险在于策略失效，更大挑战在于无法预测策略什么时间失效。其实不仅是量化，所有能够“盈利”的交易策略的主要风险都是如此。个人认为，相比主观交易，量化（使用量化策略的人）更倾向于墨守成规，尤其是在回测、模拟盘显示出良好的可盈利性后，但这是交易的大忌，用相同的思考方式和行为方式，必然会在黑天鹅事件出现后产生重大亏损。相反，用量化回测来验证自己的交易策略，发现策略失效边界是一个很好的思路。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>模拟盘交易一般需要半年到一年成熟，更多是指策略优化需要半年到一年才能更好地参与实盘。实盘交易有效性在3-5年，更多是指策略大概2、3年就可能会失效。一句话，优化无止境。&lt;/p>
+&lt;/li>
+&lt;/ol></description></item></channel></rss>

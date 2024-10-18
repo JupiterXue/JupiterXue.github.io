@@ -1,43 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Poetries on Jupiter 的个人博客</title>
-    <link>http://localhost:1313/poetry/</link>
-    <description>Recent content in Poetries on Jupiter 的个人博客</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-ch</language>
-    <lastBuildDate>Thu, 17 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/poetry/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>春不晚</title>
-      <link>http://localhost:1313/poetry/not_too_late/</link>
-      <pubDate>Thu, 17 Oct 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/poetry/not_too_late/</guid>
-      
-      <description>&lt;p&gt;姑娘一句春不晚，痴儿留在真江南。&lt;/p&gt;
-&lt;p&gt;江南曲落孤城，化作烟雨、与我对弹。&lt;/p&gt;
-&lt;p&gt;姑娘一句冬不寒，痴儿踏过万重山。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;——傲寒同学&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;星河斗转纵横，锻成雄心壮志永存。&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>临江仙</title>
-      <link>http://localhost:1313/poetry/river_to_god/</link>
-      <pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/poetry/river_to_god/</guid>
-      
-      <description>&lt;p&gt;浊水倾波三万里，愀然独坐孤峰。 龙潜狮随后飙风。无情皆竖子，有泪亦英雄。&lt;/p&gt;
-&lt;p&gt;长剑倚天星斗烂，古今过眼成空。乾坤俯仰任穷通。半轮沧海上，一苇大江东。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;——缠中说禅&lt;/p&gt;
-&lt;/blockquote&gt;</description>
-      
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Poetries on Jupiter 的个人博客</title><link>https://JupiterXue.github.io/poetry/</link><description>Recent content in Poetries on Jupiter 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-ch</language><lastBuildDate>Thu, 17 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://JupiterXue.github.io/poetry/index.xml" rel="self" type="application/rss+xml"/><item><title>春不晚</title><link>https://JupiterXue.github.io/poetry/not_too_late/</link><pubDate>Thu, 17 Oct 2024 00:00:00 +0000</pubDate><guid>https://JupiterXue.github.io/poetry/not_too_late/</guid><description>&lt;p>姑娘一句春不晚，痴儿留在真江南。&lt;/p>
+&lt;p>江南曲落孤城，化作烟雨、与我对弹。&lt;/p>
+&lt;p>姑娘一句冬不寒，痴儿踏过万重山。&lt;/p>
+&lt;blockquote>
+&lt;p>——傲寒同学&lt;/p>
+&lt;/blockquote>
+&lt;p>星河斗转纵横，锻成雄心壮志永存。&lt;/p></description></item><item><title>临江仙</title><link>https://JupiterXue.github.io/poetry/river_to_god/</link><pubDate>Wed, 16 Oct 2024 00:00:00 +0000</pubDate><guid>https://JupiterXue.github.io/poetry/river_to_god/</guid><description>&lt;p>浊水倾波三万里，愀然独坐孤峰。 龙潜狮随后飙风。无情皆竖子，有泪亦英雄。&lt;/p>
+&lt;p>长剑倚天星斗烂，古今过眼成空。乾坤俯仰任穷通。半轮沧海上，一苇大江东。&lt;/p>
+&lt;blockquote>
+&lt;p>——缠中说禅&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

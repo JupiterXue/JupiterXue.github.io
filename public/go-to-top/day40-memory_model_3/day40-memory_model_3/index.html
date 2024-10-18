@@ -1,37 +1,5 @@
-<!DOCTYPE html>
-<html lang="zh-ch"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
-<meta http-equiv="content-type" content="text/html">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title itemprop="name">Go 翻山越岭——并发模型（3） | Jupiter 的个人博客</title>
-<meta property="og:title" content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客" />
-<meta name="twitter:title" content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客" />
-<meta itemprop="name" content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客" />
-<meta name="application-name" content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客" />
-<meta property="og:site_name" content="Jupiter `s blog" />
-
-<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
-<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
-<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
-<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
-
-<meta property="og:locale" content="zh-ch" />
-<meta name="language" content="zh-ch" />
-
-  <link rel="alternate" hreflang="zh-cn" href="http://localhost:1313/go-to-top/day40-memory_model_3/day40-memory_model_3/" title="中文" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.135.0">
-
-    
-    <meta property="og:url" content="http://localhost:1313/go-to-top/day40-memory_model_3/day40-memory_model_3/">
-  <meta property="og:site_name" content="Jupiter 的个人博客">
-  <meta property="og:title" content="Go 翻山越岭——并发模型（3）">
-  <meta property="og:description" content="在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
+<!doctype html><html lang=zh-ch><head><meta charset=utf-8><meta http-equiv=content-type content="text/html"><meta name=viewport content="width=device-width,initial-scale=1"><title itemprop=name>Go 翻山越岭——并发模型（3） | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客"><meta name=twitter:title content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客"><meta itemprop=name content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客"><meta name=application-name content="Go 翻山越岭——并发模型（3） | Jupiter 的个人博客"><meta property="og:site_name" content="Jupiter `s blog"><meta name=description content="Minimal Hugo blog theme with light and dark mode support"><meta itemprop=description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support"><meta name=twitter:description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:locale" content="zh-ch"><meta name=language content="zh-ch"><link rel=alternate hreflang=zh-cn href=https://JupiterXue.github.io/go-to-top/day40-memory_model_3/day40-memory_model_3/ title=中文><meta name=generator content="Hugo 0.135.0"><meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day40-memory_model_3/day40-memory_model_3/"><meta property="og:site_name" content="Jupiter 的个人博客"><meta property="og:title" content="Go 翻山越岭——并发模型（3）"><meta property="og:description" content="在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
 Goroutine 在 Go 语言中，同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系。比如我在一个 goroutine 里执行了一个很简单的函数：
 func printA() { a = 1 println(a) } 只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。
 另一个特征是说：编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。
@@ -39,20 +7,7 @@ func printA() { a = 1 println(a) } 只要在其他 goroutine 中没有对这个 
 上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。
 Happen-before 在官方的并发模型文档中，Happen-before 说的是什么呢？
 第一个特征：Init 函数一定在 main.main 之前执行：
-A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。">
-  <meta property="og:locale" content="zh_ch">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="go-to-top">
-    <meta property="article:published_time" content="2021-12-17T07:24:03+08:00">
-    <meta property="article:modified_time" content="2021-12-17T07:24:03+08:00">
-    <meta property="article:tag" content="Go">
-
-
-    
-    
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Go 翻山越岭——并发模型（3）">
-  <meta name="twitter:description" content="在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
+A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。"><meta property="og:locale" content="zh_ch"><meta property="og:type" content="article"><meta property="article:section" content="go-to-top"><meta property="article:published_time" content="2021-12-17T07:24:03+08:00"><meta property="article:modified_time" content="2021-12-17T07:24:03+08:00"><meta property="article:tag" content="Go"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go 翻山越岭——并发模型（3）"><meta name=twitter:description content="在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。
 Goroutine 在 Go 语言中，同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系。比如我在一个 goroutine 里执行了一个很简单的函数：
 func printA() { a = 1 println(a) } 只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。
 另一个特征是说：编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。
@@ -60,310 +15,52 @@ func printA() { a = 1 println(a) } 只要在其他 goroutine 中没有对这个 
 上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。
 Happen-before 在官方的并发模型文档中，Happen-before 说的是什么呢？
 第一个特征：Init 函数一定在 main.main 之前执行：
-A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。">
-
-
-    
-
-    <link rel="canonical" href="http://localhost:1313/go-to-top/day40-memory_model_3/day40-memory_model_3/">
-    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
-    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
-
-    
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
-    <link rel="shortcut icon" href="/favicon.ico">
-
-
-
-
-<link rel="manifest" href="http://localhost:1313/site.webmanifest">
-
-<meta name="msapplication-config" content="/browserconfig.xml">
-<meta name="msapplication-TileColor" content="#2d89ef">
-<meta name="theme-color" content="#434648">
-
-    
-    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
-
-    </head>
-<body data-theme = "light" class="notransition">
-
-<script src="/js/theme.js"></script>
-
-<div class="navbar" role="navigation">
-    <nav class="menu" aria-label="Main Navigation">
-        <a href="http://localhost:1313/" class="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
-viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-stroke-linejoin="round" class="feather feather-home">
-<title>主页</title>
-<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-<polyline points="9 22 9 12 15 12 15 22"></polyline>
-</svg>
-        </a>
-        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
-        <label for="menu-trigger">
-            <span class="menu-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
-            </span>
-        </label>
-
-        <div class="trigger">
-            <ul class="trigger-container">
-                
-                
-                <li>
-                    <a class="menu-link " href="/">
-                        主页
-                    </a>
-                    
-                </li>
-                
-                <li>
-                    <a class="menu-link " href="/poetry/">
-                        诗词
-                    </a>
-                    
-                </li>
-                
-                <li>
-                    <a class="menu-link " href="/quant-whale-notes/">
-                        量化
-                    </a>
-                    
-                </li>
-                
-                <li>
-                    <a class="menu-link active" href="/go-to-top/">
-                        Go系列
-                    </a>
-                    
-                </li>
-                
-                <li>
-                    <a class="menu-link " href="/arch/">
-                        归档文章
-                    </a>
-                    
-                </li>
-                
-                <li>
-                    <a class="menu-link " href="/pages/about/">
-                        关于我
-                    </a>
-                    
-                </li>
-                
-                <li class="menu-separator">
-                    <span>|</span>
-                </li>
-                
-                
-            </ul>
-            <a id="mode" href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
-<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
-<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
-            </a>
-        </div>
-    </nav>
-</div>
-
-<div class="wrapper post">
-    <main class="page-content" aria-label="Content">
-        <article>
-            <header class="header">
-                <h1 class="header-title">Go 翻山越岭——并发模型（3）</h1>
-                
-                
-                
-                <div class="post-meta">
-                    <time datetime="2021-12-17T07:24:03&#43;08:00" itemprop="datePublished"> Dec 17, 2021 </time>
-                </div>
-                
-            </header>
-            
-    
-    <details class="toc" ZgotmplZ>
-        <summary><b>目录</b></summary>
-        <nav id="TableOfContents">
-  <ul>
-    <li><a href="#goroutine">Goroutine</a></li>
-    <li><a href="#happen-before">Happen-before</a></li>
-    <li><a href="#小结">小结</a></li>
-  </ul>
-</nav>
-    </details>
-            <div class="page-content">
-                <p>在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。</p>
-<h2 id="goroutine">Goroutine</h2>
-<p>在 Go 语言中，<strong>同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系</strong>。比如我在一个 goroutine 里执行了一个很简单的函数：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">printA</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">a</span> <span class="p">=</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。</p>
-<p>另一个特征是说：<strong>编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑</strong>。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。</p>
-<p>最后个特征，<strong>不同的 goroutine 观察到的共享变量的修改顺序可能不一样</strong>。其实也就是我们在上期文章中提到的内存重排。在 Go 语言中，我们说到同步的时候是指在 goroutine 之间发生的操作，其实在其他语言中是和线程的概念和操作是一样的。说到底，goroutine 在运行的时候就是在线程上去执行的。</p>
-<p>上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。</p>
-<p><img alt="image-20211217075309734" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112170753914.png"></p>
-<h2 id="happen-before">Happen-before</h2>
-<p>在官方的并发模型文档中，Happen-before 说的是什么呢？</p>
-<p>第一个特征：Init 函数一定在 main.main 之前执行：</p>
-<blockquote>
-<p>A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。</p>
-</blockquote>
-<p>这句话有点像废话文学？记得我上次导入包的时候，还是上一次。其实我们如果能够看到初始化代码的话，基本上能够知道什么时候去调用哪些模块的函数。</p>
-<p>第二个特征，Goroutine 的创建：</p>
-<blockquote>
-<p>Goroutine 的创建（creation）一定先入 goroutine 的执行（execution）</p>
-</blockquote>
-<p>这句话也是很好理解的，如果我们的 goroutine 创建到一半的时候就开始执行了，那么其中的状态就没办法保证了。</p>
-<p>第三个特征，Goroutine 的结束：</p>
-<blockquote>
-<p>在没有显式同步的情况下，goroutine 的结束没有任何保证，可能被执行，也可能不被执行</p>
-</blockquote>
-<p>这里的意思是说，比如我们写了一个 main 函数，最后打印了一个 “Hello World”，不过在打印函数 println 之前，又写了一个 go func 目的是想打印一个别的字符串。显然，go func 中的代码没有被执行，整个进程还退出了。如果想要这个 go func 一定被执行到，那么就需要显式地去执行诸如 wg.Add, wg.Wait 之类的东西。这个特征也是比较符合人的直觉的。</p>
-<p>第四个特征，Channel 收/发：</p>
-<blockquote>
-<p>A send on a channel happens before the corresponding receive from that channel completes.</p>
-</blockquote>
-<p>有点像玩文字游戏了呢。也就是说，如果我向 channel 发送值的时候，这个操作一定是在 channel 接收操作之前完成的。这里有一段代码例子：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">c</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="kt">string</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">a</span> <span class="p">=</span> <span class="s">&#34;hello, world&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">c</span> <span class="o">&lt;-</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">go</span> <span class="nf">f</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="o">&lt;-</span> <span class="nx">c</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接收前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。</p>
-<p>在实际代码中，我们不仅可以用 channel 来保证先后顺序性，还可以通过加锁的方式来实现。这里有个比较难的思考题，为什么我们可以通过互斥量来实现锁？因为互斥量里面也是自己的 state，和用户定义的 state 没什么关系。lock 中的变量又为什么没有被内存重排呢？这个问题还需要再深入学习才能了解了，这就作者也还在研究中。</p>
-<p>如果 f 函数中，c 不是一个 channel 而是一个变量，进行了变量赋值，那么就可能发生内存重排。这是因为 channel 操作是同步的，这个官方给出的约束告诉我们用了 channel 就不会发生内存重排。</p>
-<p>第五个特征，Channel 收/发：</p>
-<blockquote>
-<p>The closing of a channel happens before a receive that returns a zero value because the channel is closed.</p>
-</blockquote>
-<p>也是有的像句绕口令，其实案例代码改动不大：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">c</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="kt">string</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">a</span> <span class="p">=</span> <span class="s">&#34;hello, world&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">close</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>  <span class="c1">// modified
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">go</span> <span class="nf">f</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="o">&lt;-</span> <span class="nx">c</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>这里可以看到其实只是把 f 函数中向 channel c 发送值变为了关闭 channel c 。最终得到的结果其实是一样的，因为关闭操作里面是有唤醒操作的。在之前的分析文章中，我们看过 channel 的源码就知道，关闭 channel 操作的时候会把所有阻塞在</p>
-<p>第六个特征，依然是Channel 收/发：</p>
-<blockquote>
-<p>A receive from an unbuffered channel happens before the send on that channel completes.</p>
-</blockquote>
-<p>同样的拗口+微调代码</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">c</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>   <span class="c1">// modified
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">a</span> <span class="kt">string</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">a</span> <span class="p">=</span> <span class="s">&#34;hello, world&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="o">&lt;-</span><span class="nx">c</span>  <span class="c1">// modified
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">go</span> <span class="nf">f</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">c</span> <span class="o">&lt;-</span> <span class="mi">0</span>   <span class="c1">// modified
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nb">print</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>这里是说没有 buffer 的channel，receive 操作先于 send 操作执行完成，那么这里也可以保证打印出 “hello，world”</p>
-<p>第七个特征，Lock：</p>
-<blockquote>
-<p>For any sync.Mutex or sync.RWMutex variable I and n&lt;m, call n of I.Unlock() happens before call m of I.Lock() returns.</p>
-</blockquote>
-<p>这里的意思说是 Unlock 一定是先于 Lock 函数返回前执行完。也是很符合直觉的东西，但从文字表达上看起来有点拗口。</p>
-<p>最后，第八个特征，Once：</p>
-<blockquote>
-<p>A single call of f() from once.Do(f) happens (returns) before any call of once.Do(f) returns.</p>
-</blockquote>
-<p>在 once.Do 返回之前一定能够保证我的函数初始化执行完了。当然如果发生了 panic ，它也当成是执行完成了。</p>
-<h2 id="小结">小结</h2>
-<p>说了那么多，Happen-before 到底是什么呢？</p>
-<p>本质上其实是在用户不了解底层的 False sharing、内存重排，不知道 memory barrier 的概念和具体实现的前提下，依然能够按照官方所提供的 happen-before 的文档来编写正确的并发程序，并且有个文档可以参考。</p>
-<p>对于我们处于应用层开发的程序员，自己一个人直接去看底层的 memory barrier  的话，基本上是看不懂的。</p>
-<p>还有一些更深入的底层知识，待笔者去深入了解后再来分析，先做个标记，</p>
-<p>如：acquire、release、sequential consistency、Lock-Free、Wait-free 等等。</p>
-
-            </div>
-        </article></main>
-</div>
-<footer class="footer">
-    <span class="footer_item"> </span>
-    &nbsp;
-
-    <div class="footer_social-icons">
-<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
-    title="Github">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-    stroke-linecap="round" stroke-linejoin="round">
-    <path
-        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-    </path>
-</svg>
-</a>
-<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
-    title="Qq">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-    stroke-linecap="round" stroke-linejoin="round">
-    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
-        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
-    </path>
-</svg>
-</a>
-</div>
-    <small class="footer_copyright">
-        © 2024 JupiterXue.
-        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
-    </small>
-</footer><a href="#" title="回到顶部" id="totop">
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
-    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
-</svg>
-
-</a>
-
-
-    
-
-
-
-
-    
-    
-        
-    
-
-    
-    
-        
-    
-
-
-
-    
-    <script async src="http://localhost:1313/js/main.js" ></script>
-
-    
-
-</body>
-</html>
+A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。"><link rel=canonical href=https://JupiterXue.github.io/go-to-top/day40-memory_model_3/day40-memory_model_3/><link href=/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css rel=stylesheet><link href=/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css rel=stylesheet><link rel=apple-touch-icon sizes=180x180 href=/icons/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/icons/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/icons/favicon-16x16.png><link rel=mask-icon href=/icons/safari-pinned-tab.svg><link rel="shortcut icon" href=/favicon.ico><link rel=manifest href=https://JupiterXue.github.io/site.webmanifest><meta name=msapplication-config content="/browserconfig.xml"><meta name=msapplication-TileColor content="#2d89ef"><meta name=theme-color content="#434648"><link rel=icon type=image/svg+xml href=/icons/favicon.svg></head><body data-theme=light class=notransition><script src=/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script><div class=navbar role=navigation><nav class=menu aria-label="Main Navigation"><a href=https://JupiterXue.github.io/ class=logo><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><title>主页</title><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+</a><input type=checkbox id=menu-trigger class=menu-trigger>
+<label for=menu-trigger><span class=menu-icon><svg width="25" height="25" stroke="currentcolor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7H3.40726"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M.5 12.5V1.5c0-.552285.447715-1 1-1h11C13.0523.5 13.5.947715 13.5 1.5v11C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C.947715 13.5.5 13.0523.5 12.5z"/></svg></span></label><div class=trigger><ul class=trigger-container><li><a class=menu-link href=/>主页</a></li><li><a class=menu-link href=/poetry/>诗词</a></li><li><a class=menu-link href=/quant-whale-notes/>量化</a></li><li><a class="menu-link active" href=/go-to-top/>Go系列</a></li><li><a class=menu-link href=/arch/>归档文章</a></li><li><a class=menu-link href=/pages/about/>关于我</a></li><li class=menu-separator><span>|</span></li></ul><a id=mode href=#><svg class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg><svg class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg></a></div></nav></div><div class="wrapper post"><main class=page-content aria-label=Content><article><header class=header><h1 class=header-title>Go 翻山越岭——并发模型（3）</h1><div class=post-meta><time datetime=2021-12-17T07:24:03+08:00 itemprop=datePublished>Dec 17, 2021</time></div></header><details class=toc zgotmplz><summary><b>目录</b></summary><nav id=TableOfContents><ul><li><a href=#goroutine>Goroutine</a></li><li><a href=#happen-before>Happen-before</a></li><li><a href=#小结>小结</a></li></ul></nav></details><div class=page-content><p>在 Go 语言的内存模型文档中会专门对 Happen-before 进行描述，网上也有很多分析文章对这个概念进行了阐述，但存在一些场景的误区。那么 Happen-before 到底是什么？有什么特征？在此之前我们先来回顾一下 goroutine 的三个基本特征。</p><h2 id=goroutine>Goroutine</h2><p>在 Go 语言中，<strong>同一个 goroutine 内的逻辑有依赖的语句执行，满足顺序关系</strong>。比如我在一个 goroutine 里执行了一个很简单的函数：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>printA</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>a</span> <span class=p>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>    <span class=nb>println</span><span class=p>(</span><span class=nx>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>只要在其他 goroutine 中没有对这个 a 做修改，那么我们预期和实际的程序运行结果一定是 1，不会是 a=0 的情况。这个过程是个基本的逻辑保证，如果说保证不了的话，相当于我们的代码结果没有办法去做预测了。所以从直觉上我们就能理解这句话。</p><p>另一个特征是说：<strong>编译器/CPU 可能对同一个 goroutine 中的语句执行进行打乱，以提高性能，但不能破坏其应用原有的逻辑</strong>。比如有两个线程，分别会修改 x 和 y 变量的值，第一个线程中修改了 x 的值，并且载入了变量 y。虽然没有修改 y，但提前预加载提高了性能。</p><p>最后个特征，<strong>不同的 goroutine 观察到的共享变量的修改顺序可能不一样</strong>。其实也就是我们在上期文章中提到的内存重排。在 Go 语言中，我们说到同步的时候是指在 goroutine 之间发生的操作，其实在其他语言中是和线程的概念和操作是一样的。说到底，goroutine 在运行的时候就是在线程上去执行的。</p><p>上期文章我们还知道了可以通过使用 Litmus 工具测试和观察内存重排，不仅如此，我们在用 Go 语言进行并发编程的时候，如果写的代码不够严谨，在线上产生错误的可能性有 1/100w，那在找 bug 的时候真的是很要命的。</p><p><img alt=image-20211217075309734 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112170753914.png></p><h2 id=happen-before>Happen-before</h2><p>在官方的并发模型文档中，Happen-before 说的是什么呢？</p><p>第一个特征：Init 函数一定在 main.main 之前执行：</p><blockquote><p>A pkg importt B pkg，那么 B pkg 的 init 函数一定在 A pkg 的 init 函数之前执行。</p></blockquote><p>这句话有点像废话文学？记得我上次导入包的时候，还是上一次。其实我们如果能够看到初始化代码的话，基本上能够知道什么时候去调用哪些模块的函数。</p><p>第二个特征，Goroutine 的创建：</p><blockquote><p>Goroutine 的创建（creation）一定先入 goroutine 的执行（execution）</p></blockquote><p>这句话也是很好理解的，如果我们的 goroutine 创建到一半的时候就开始执行了，那么其中的状态就没办法保证了。</p><p>第三个特征，Goroutine 的结束：</p><blockquote><p>在没有显式同步的情况下，goroutine 的结束没有任何保证，可能被执行，也可能不被执行</p></blockquote><p>这里的意思是说，比如我们写了一个 main 函数，最后打印了一个 “Hello World”，不过在打印函数 println 之前，又写了一个 go func 目的是想打印一个别的字符串。显然，go func 中的代码没有被执行，整个进程还退出了。如果想要这个 go func 一定被执行到，那么就需要显式地去执行诸如 wg.Add, wg.Wait 之类的东西。这个特征也是比较符合人的直觉的。</p><p>第四个特征，Channel 收/发：</p><blockquote><p>A send on a channel happens before the corresponding receive from that channel completes.</p></blockquote><p>有点像玩文字游戏了呢。也就是说，如果我向 channel 发送值的时候，这个操作一定是在 channel 接收操作之前完成的。这里有一段代码例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>var</span> <span class=nx>c</span> <span class=p>=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>chan</span> <span class=kt>int</span><span class=p>,</span> <span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>a</span> <span class=kt>string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>f</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>a</span> <span class=p>=</span> <span class=s>&#34;hello, world&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nx>c</span> <span class=o>&lt;-</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>go</span> <span class=nf>f</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;-</span> <span class=nx>c</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=nx>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>在 main 主函数中启动一个 f 函数的 goroutine。在这个 goroutine 中，对全局变量 a 赋予一个值，再向 channel c 发送了 0 值，然后在 main 函数中接收这个值。也就是说 channel c 的接收一定是在 channel c 发送完成之后才接收到的。channel 在接收前发送了，说明先进入了 f 函数，并且 a 也被赋予了值。因此最终，print 一定能够打印出 “hello, world” 而不是别的内容。</p><p>在实际代码中，我们不仅可以用 channel 来保证先后顺序性，还可以通过加锁的方式来实现。这里有个比较难的思考题，为什么我们可以通过互斥量来实现锁？因为互斥量里面也是自己的 state，和用户定义的 state 没什么关系。lock 中的变量又为什么没有被内存重排呢？这个问题还需要再深入学习才能了解了，这就作者也还在研究中。</p><p>如果 f 函数中，c 不是一个 channel 而是一个变量，进行了变量赋值，那么就可能发生内存重排。这是因为 channel 操作是同步的，这个官方给出的约束告诉我们用了 channel 就不会发生内存重排。</p><p>第五个特征，Channel 收/发：</p><blockquote><p>The closing of a channel happens before a receive that returns a zero value because the channel is closed.</p></blockquote><p>也是有的像句绕口令，其实案例代码改动不大：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>var</span> <span class=nx>c</span> <span class=p>=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>chan</span> <span class=kt>int</span><span class=p>,</span> <span class=mi>10</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>a</span> <span class=kt>string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>f</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>a</span> <span class=p>=</span> <span class=s>&#34;hello, world&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nb>close</span><span class=p>(</span><span class=nx>c</span><span class=p>)</span>  <span class=c1>// modified
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>go</span> <span class=nf>f</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;-</span> <span class=nx>c</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=nx>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>这里可以看到其实只是把 f 函数中向 channel c 发送值变为了关闭 channel c 。最终得到的结果其实是一样的，因为关闭操作里面是有唤醒操作的。在之前的分析文章中，我们看过 channel 的源码就知道，关闭 channel 操作的时候会把所有阻塞在</p><p>第六个特征，依然是Channel 收/发：</p><blockquote><p>A receive from an unbuffered channel happens before the send on that channel completes.</p></blockquote><p>同样的拗口+微调代码</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>var</span> <span class=nx>c</span> <span class=p>=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>chan</span> <span class=kt>int</span><span class=p>)</span>   <span class=c1>// modified
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>var</span> <span class=nx>a</span> <span class=kt>string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>f</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>a</span> <span class=p>=</span> <span class=s>&#34;hello, world&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>&lt;-</span><span class=nx>c</span>  <span class=c1>// modified
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>go</span> <span class=nf>f</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=nx>c</span> <span class=o>&lt;-</span> <span class=mi>0</span>   <span class=c1>// modified
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nb>print</span><span class=p>(</span><span class=nx>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>这里是说没有 buffer 的channel，receive 操作先于 send 操作执行完成，那么这里也可以保证打印出 “hello，world”</p><p>第七个特征，Lock：</p><blockquote><p>For any sync.Mutex or sync.RWMutex variable I and n&lt;m, call n of I.Unlock() happens before call m of I.Lock() returns.</p></blockquote><p>这里的意思说是 Unlock 一定是先于 Lock 函数返回前执行完。也是很符合直觉的东西，但从文字表达上看起来有点拗口。</p><p>最后，第八个特征，Once：</p><blockquote><p>A single call of f() from once.Do(f) happens (returns) before any call of once.Do(f) returns.</p></blockquote><p>在 once.Do 返回之前一定能够保证我的函数初始化执行完了。当然如果发生了 panic ，它也当成是执行完成了。</p><h2 id=小结>小结</h2><p>说了那么多，Happen-before 到底是什么呢？</p><p>本质上其实是在用户不了解底层的 False sharing、内存重排，不知道 memory barrier 的概念和具体实现的前提下，依然能够按照官方所提供的 happen-before 的文档来编写正确的并发程序，并且有个文档可以参考。</p><p>对于我们处于应用层开发的程序员，自己一个人直接去看底层的 memory barrier 的话，基本上是看不懂的。</p><p>还有一些更深入的底层知识，待笔者去深入了解后再来分析，先做个标记，</p><p>如：acquire、release、sequential consistency、Lock-Free、Wait-free 等等。</p></div></article></main></div><footer class=footer><span class=footer_item></span>&nbsp;<div class=footer_social-icons><a href=https://github.com/JupiterXue target=_blank rel="noopener noreferrer me" title=Github><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</a><a href=839769325@qq.com target=_blank rel="noopener noreferrer me" title=Qq><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path transform="scale(0.04) translate(75 40)" stroke-width="50" d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741.0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792.0.0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z"/></svg></a></div><small class=footer_copyright>© 2024 JupiterXue.
+Powered by <a href=https://github.com/hugo-sid/hugo-blog-awesome target=_blank rel=noopener>Hugo blog awesome</a>.</small></footer><a href=# title=回到顶部 id=totop><svg width="48" height="48" fill="currentcolor" stroke="currentcolor" viewBox="0 96 960 960"><path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197z"/></svg>
+</a><script src=https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30+lSNuSkl4QXuNyy8="></script></body></html>
