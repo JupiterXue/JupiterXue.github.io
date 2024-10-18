@@ -3,6 +3,8 @@ Win
 - 通过 choco 安装 hugo扩展版
 choco install hugo-extended
 - 配置文件是 config.toml
+- 本地运行正常，部署到 github pages 时，出现找不到 theme 资源问题，本地执行：
+hugo --gc --minify --cleanDestinationDir
 
 
 将每个文件放进对应文件夹命令：

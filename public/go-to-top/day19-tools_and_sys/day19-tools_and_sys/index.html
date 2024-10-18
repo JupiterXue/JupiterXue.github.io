@@ -1,21 +1,307 @@
-<!doctype html><html lang=zh-ch><head><meta charset=utf-8><meta http-equiv=content-type content="text/html"><meta name=viewport content="width=device-width,initial-scale=1"><title itemprop=name>GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客</title>
-<meta property="og:title" content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客"><meta name=twitter:title content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客"><meta itemprop=name content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客"><meta name=application-name content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客"><meta property="og:site_name" content="Jupiter `s blog"><meta name=description content="Minimal Hugo blog theme with light and dark mode support"><meta itemprop=description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support"><meta name=twitter:description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:locale" content="zh-ch"><meta name=language content="zh-ch"><link rel=alternate hreflang=zh-cn href=https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/ title=中文><meta name=generator content="Hugo 0.135.0"><meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/"><meta property="og:site_name" content="Jupiter 的个人博客"><meta property="og:title" content="GO 翻山越岭——系统调用调试工具"><meta property="og:description" content="了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客</title>
+<meta property="og:title" content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客" />
+<meta itemprop="name" content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客" />
+<meta name="application-name" content="GO 翻山越岭——系统调用调试工具 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="GO 翻山越岭——系统调用调试工具">
+  <meta property="og:description" content="了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
 观察系统调用工具 在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss
 案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：
-系统调用示例使用 strace 指令 + 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
+系统调用示例使用 strace 指令 &#43; 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
 案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：
-查看nginx 系统调用我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 + -f 参数 + nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
+查看nginx 系统调用我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 &#43; -f 参数 &#43; nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
 注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn’t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/
-案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。"><meta property="og:locale" content="zh_ch"><meta property="og:type" content="article"><meta property="article:section" content="go-to-top"><meta property="article:published_time" content="2021-09-09T22:43:41+08:00"><meta property="article:modified_time" content="2021-09-09T22:43:41+08:00"><meta property="article:tag" content="Go"><meta name=twitter:card content="summary"><meta name=twitter:title content="GO 翻山越岭——系统调用调试工具"><meta name=twitter:description content="了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
+案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-09-09T22:43:41+08:00">
+    <meta property="article:modified_time" content="2021-09-09T22:43:41+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GO 翻山越岭——系统调用调试工具">
+  <meta name="twitter:description" content="了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
 观察系统调用工具 在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss
 案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：
-系统调用示例使用 strace 指令 + 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
+系统调用示例使用 strace 指令 &#43; 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
 案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：
-查看nginx 系统调用我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 + -f 参数 + nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
+查看nginx 系统调用我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 &#43; -f 参数 &#43; nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
 注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn’t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/
-案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。"><link rel=canonical href=https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/><link href=/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css rel=stylesheet><link href=/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css rel=stylesheet><link rel=apple-touch-icon sizes=180x180 href=/icons/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/icons/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/icons/favicon-16x16.png><link rel=mask-icon href=/icons/safari-pinned-tab.svg><link rel="shortcut icon" href=/favicon.ico><link rel=manifest href=https://JupiterXue.github.io/site.webmanifest><meta name=msapplication-config content="/browserconfig.xml"><meta name=msapplication-TileColor content="#2d89ef"><meta name=theme-color content="#434648"><link rel=icon type=image/svg+xml href=/icons/favicon.svg></head><body data-theme=light class=notransition><script src=/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script><div class=navbar role=navigation><nav class=menu aria-label="Main Navigation"><a href=https://JupiterXue.github.io/ class=logo><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><title>主页</title><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-</a><input type=checkbox id=menu-trigger class=menu-trigger>
-<label for=menu-trigger><span class=menu-icon><svg width="25" height="25" stroke="currentcolor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7H3.40726"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M.5 12.5V1.5c0-.552285.447715-1 1-1h11C13.0523.5 13.5.947715 13.5 1.5v11C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C.947715 13.5.5 13.0523.5 12.5z"/></svg></span></label><div class=trigger><ul class=trigger-container><li><a class=menu-link href=/>主页</a></li><li><a class=menu-link href=/poetry/>诗词</a></li><li><a class=menu-link href=/quant-whale-notes/>量化</a></li><li><a class="menu-link active" href=/go-to-top/>Go系列</a></li><li><a class=menu-link href=/arch/>归档文章</a></li><li><a class=menu-link href=/pages/about/>关于我</a></li><li class=menu-separator><span>|</span></li></ul><a id=mode href=#><svg class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg><svg class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg></a></div></nav></div><div class="wrapper post"><main class=page-content aria-label=Content><article><header class=header><h1 class=header-title>GO 翻山越岭——系统调用调试工具</h1><div class=post-meta><time datetime=2021-09-09T22:43:41+08:00 itemprop=datePublished>Sep 9, 2021</time></div></header><details class=toc zgotmplz><summary><b>目录</b></summary><nav id=TableOfContents></nav></details><div class=page-content><p><strong>了解系统调用就能在业务发生问题时有更多招数，见招拆招</strong>。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。</p><h1 id=观察系统调用工具>观察系统调用工具</h1><p>在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss</p><p>案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：</p><p><img alt=image-20210909230308944 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092303708.png></p><center>系统调用示例</center><p>使用 strace 指令 + 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。</p><p>案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：</p><p><img alt=image-20210909231712937 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092317098.png></p><center>查看nginx 系统调用</center><p>我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 + -f 参数 + nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。</p><p>注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn&rsquo;t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/</p><p>案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。</p><p><img alt=image-20210909232448820 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092324898.png></p><p>使用 -c 的 flag 参数，可以看到有哪些系统调用。</p><p>在往期文章中讲解“Go 内置数据结构-Timer”时，我们在对 Go 1.13 和 Go1.14 进行对比时用到的就是 strace。</p><p>如果官方说对 Go 的 runtime 中做了许多优化，比如 time.Sleep 中用到的 syscall 相比以前少了很多，那么我们同样可以用这个工具去查看。通过运行一定次数 time.Sleep 看前后的结果是否真的有什么区别。</p><p>需要注意，strace 的实现其实也依赖了 ptrace 这个 syscall，所以本质上我们要去追踪一个 syscall 还需要依赖一个 syscall（有点套娃）。另外，调试器（如 delve）也是大量使用了 ptrace。因此 <strong>ptrace 不仅可以做跟踪工具，还能做调试工具</strong>。</p><h1 id=go-语言中的系统调用>Go 语言中的系统调用</h1><p>了解了这么多基础概念，还是要回到我们的 Go 语言，看看它有哪些内部系统调用。</p><p>首先我们要区分一下，在系统调用中有一个简单分类：有一些是阻塞的，有一些是非阻塞的。</p><p><img alt=未命名文件 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092340838.png></p><center>syscall 分类</center><p>假如我们对一个网络 fd 去做 read 操作，而连接中没有数据，就会阻塞在这里。其实 read 还是有费阻塞模式的，所以也不太好区分。read 操作的底层通过调用 io_control 之类的系统调用，变成了非阻塞的的调用方式。</p><p>在我们用户状态去做阻塞应用的话，其实底层都会转化为非阻塞调用。</p><p>还有一部分系统调用没办法做成非阻塞调用。这种情况一定会阻塞。在往期文章讲“调度”的时候，对于 runtime 的 Go 来说没办法去做拦截的一类阻塞。</p><p>这两种类型的系统调用最终在底层也会被翻译成不同的函数调用，在底层的函数调用中还是有一些细节区分的，像后面有数字 6 的就是一种派生函数。</p><p>问题来了，为啥还要有个 6 后缀？这里其实也是遵循了 Linux 编程中的常见规范。</p><p><img alt=image-20210909234809637 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092348692.png></p><center>syscall 带数字</center><p>很多 Linux 函数都是带有数字的，6 其实说的是 6 个参数。很多系统接口也有类似的命名发，如 wait4，accept4。</p><p>这里列举一下和 Syscall 相关代码所在的具体位置：</p><ol><li>OS 相关的基础⽂件，在 syscall package 中：https://golang.org/src/syscall/syscall_linux.go</li><li>使⽤脚本⽣成的⽂件，在 syscall package 中：https://golang.org/src/syscall/zsyscall_linux_386.go</li><li>不对⽤户暴露的特殊 syscall，不受调度影响，在 runtime 中：https://golang.org/src/runtime/sys_linux_amd64.s</li></ol><p>我们知道了系统调用分为阻塞和非阻塞的。还需要注意的是：阻塞的系统调⽤，有特殊的逻辑去把 P 和 M 解绑定，即修改 P 的状态：running -> syscall。这样在 sysmon 中才能发现这个 P 已经在 syscall 状态阻塞了。不过解绑定也是有前提的，如图红色两行代码：</p><p><img alt=image-20210909235424347 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092354413.png></p><center>P 和 M 解绑定约束</center><h1 id=系统调用发展历史>系统调用发展历史</h1><p>最后，系统调用的发展历史，可以用一张图简单说明。</p><p><img alt=image-20210909235643954 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092356006.png></p><center>系统调用发展历史简要说明</center><p><strong>参考资料</strong></p><p>[1] Linux strace命令, 博客园</p><p><a href=https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316692.html>https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316692.html</a></p><p>[2] [译]strace的10个命令, 鸟窝</p><p><a href=https://colobu.com/2021/04/30/strace-commands-for-troubleshooting-and-debugging-linux/>https://colobu.com/2021/04/30/strace-commands-for-troubleshooting-and-debugging-linux/</a></p></div></article></main></div><footer class=footer><span class=footer_item></span>&nbsp;<div class=footer_social-icons><a href=https://github.com/JupiterXue target=_blank rel="noopener noreferrer me" title=Github><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
-</a><a href=839769325@qq.com target=_blank rel="noopener noreferrer me" title=Qq><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path transform="scale(0.04) translate(75 40)" stroke-width="50" d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741.0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792.0.0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z"/></svg></a></div><small class=footer_copyright>© 2024 JupiterXue.
-Powered by <a href=https://github.com/hugo-sid/hugo-blog-awesome target=_blank rel=noopener>Hugo blog awesome</a>.</small></footer><a href=# title=回到顶部 id=totop><svg width="48" height="48" fill="currentcolor" stroke="currentcolor" viewBox="0 96 960 960"><path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197z"/></svg>
-</a><script src=https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30+lSNuSkl4QXuNyy8="></script></body></html>
+案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">GO 翻山越岭——系统调用调试工具</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-09-09T22:43:41&#43;08:00" itemprop="datePublished"> Sep 9, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p><strong>了解系统调用就能在业务发生问题时有更多招数，见招拆招</strong>。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。</p>
+<h1 id="观察系统调用工具">观察系统调用工具</h1>
+<p>在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss</p>
+<p>案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：</p>
+<p><img alt="image-20210909230308944" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092303708.png"></p>
+<center>系统调用示例</center>
+<p>使用 strace 指令 + 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。</p>
+<p>案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：</p>
+<p><img alt="image-20210909231712937" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092317098.png"></p>
+<center>查看nginx 系统调用</center>
+<p>我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 + -f 参数 + nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。</p>
+<p>注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn&rsquo;t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/</p>
+<p>案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。</p>
+<p><img alt="image-20210909232448820" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092324898.png"></p>
+<p>使用 -c 的 flag 参数，可以看到有哪些系统调用。</p>
+<p>在往期文章中讲解“Go 内置数据结构-Timer”时，我们在对 Go 1.13 和 Go1.14 进行对比时用到的就是 strace。</p>
+<p>如果官方说对 Go 的 runtime 中做了许多优化，比如 time.Sleep 中用到的 syscall 相比以前少了很多，那么我们同样可以用这个工具去查看。通过运行一定次数 time.Sleep 看前后的结果是否真的有什么区别。</p>
+<p>需要注意，strace 的实现其实也依赖了 ptrace 这个 syscall，所以本质上我们要去追踪一个 syscall 还需要依赖一个 syscall（有点套娃）。另外，调试器（如 delve）也是大量使用了 ptrace。因此 <strong>ptrace 不仅可以做跟踪工具，还能做调试工具</strong>。</p>
+<h1 id="go-语言中的系统调用">Go 语言中的系统调用</h1>
+<p>了解了这么多基础概念，还是要回到我们的 Go 语言，看看它有哪些内部系统调用。</p>
+<p>首先我们要区分一下，在系统调用中有一个简单分类：有一些是阻塞的，有一些是非阻塞的。</p>
+<p><img alt="未命名文件" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092340838.png"></p>
+<center>syscall 分类</center>
+<p>假如我们对一个网络 fd 去做 read 操作，而连接中没有数据，就会阻塞在这里。其实 read 还是有费阻塞模式的，所以也不太好区分。read 操作的底层通过调用 io_control 之类的系统调用，变成了非阻塞的的调用方式。</p>
+<p>在我们用户状态去做阻塞应用的话，其实底层都会转化为非阻塞调用。</p>
+<p>还有一部分系统调用没办法做成非阻塞调用。这种情况一定会阻塞。在往期文章讲“调度”的时候，对于 runtime 的 Go 来说没办法去做拦截的一类阻塞。</p>
+<p>这两种类型的系统调用最终在底层也会被翻译成不同的函数调用，在底层的函数调用中还是有一些细节区分的，像后面有数字 6 的就是一种派生函数。</p>
+<p>问题来了，为啥还要有个 6 后缀？这里其实也是遵循了 Linux 编程中的常见规范。</p>
+<p><img alt="image-20210909234809637" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092348692.png"></p>
+<center>syscall 带数字</center>
+<p>很多 Linux 函数都是带有数字的，6 其实说的是 6 个参数。很多系统接口也有类似的命名发，如 wait4，accept4。</p>
+<p>这里列举一下和 Syscall 相关代码所在的具体位置：</p>
+<ol>
+<li>OS 相关的基础⽂件，在 syscall package 中：https://golang.org/src/syscall/syscall_linux.go</li>
+<li>使⽤脚本⽣成的⽂件，在 syscall package 中：https://golang.org/src/syscall/zsyscall_linux_386.go</li>
+<li>不对⽤户暴露的特殊 syscall，不受调度影响，在 runtime 中：https://golang.org/src/runtime/sys_linux_amd64.s</li>
+</ol>
+<p>我们知道了系统调用分为阻塞和非阻塞的。还需要注意的是：阻塞的系统调⽤，有特殊的逻辑去把 P 和 M 解绑定，即修改 P 的状态：running -&gt; syscall。这样在 sysmon 中才能发现这个 P 已经在 syscall 状态阻塞了。不过解绑定也是有前提的，如图红色两行代码：</p>
+<p><img alt="image-20210909235424347" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092354413.png"></p>
+<center>P 和 M 解绑定约束</center>
+<h1 id="系统调用发展历史">系统调用发展历史</h1>
+<p>最后，系统调用的发展历史，可以用一张图简单说明。</p>
+<p><img alt="image-20210909235643954" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109092356006.png"></p>
+<center>系统调用发展历史简要说明</center>
+<p><strong>参考资料</strong></p>
+<p>[1] Linux strace命令, 博客园</p>
+<p><a href="https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316692.html">https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316692.html</a></p>
+<p>[2] [译]strace的10个命令, 鸟窝</p>
+<p><a href="https://colobu.com/2021/04/30/strace-commands-for-troubleshooting-and-debugging-linux/">https://colobu.com/2021/04/30/strace-commands-for-troubleshooting-and-debugging-linux/</a></p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

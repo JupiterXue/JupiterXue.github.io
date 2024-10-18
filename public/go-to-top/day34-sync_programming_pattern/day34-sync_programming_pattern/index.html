@@ -1,15 +1,307 @@
-<!doctype html><html lang=zh-ch><head><meta charset=utf-8><meta http-equiv=content-type content="text/html"><meta name=viewport content="width=device-width,initial-scale=1"><title itemprop=name>Go 翻山越岭——并发编程模式 | Jupiter 的个人博客</title>
-<meta property="og:title" content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客"><meta name=twitter:title content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客"><meta itemprop=name content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客"><meta name=application-name content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客"><meta property="og:site_name" content="Jupiter `s blog"><meta name=description content="Minimal Hugo blog theme with light and dark mode support"><meta itemprop=description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support"><meta name=twitter:description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:locale" content="zh-ch"><meta name=language content="zh-ch"><link rel=alternate hreflang=zh-cn href=https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/ title=中文><meta name=generator content="Hugo 0.135.0"><meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/"><meta property="og:site_name" content="Jupiter 的个人博客"><meta property="og:title" content="Go 翻山越岭——并发编程模式"><meta property="og:description" content="通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 “Do not communicate by sharing memory; instead, share memory by communicating.”
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——并发编程模式 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——并发编程模式 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——并发编程模式">
+  <meta property="og:description" content="通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 “Do not communicate by sharing memory; instead, share memory by communicating.”
 这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。
 第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。
 图 1-1：Fan-in 合并多个 channel 例子图 1-2：Fan-in 合并多个 channel 例子这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
-如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 + select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。 一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。"><meta property="og:locale" content="zh_ch"><meta property="og:type" content="article"><meta property="article:section" content="go-to-top"><meta property="article:published_time" content="2021-12-03T20:32:49+08:00"><meta property="article:modified_time" content="2021-12-03T20:32:49+08:00"><meta property="article:tag" content="Go"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go 翻山越岭——并发编程模式"><meta name=twitter:description content="通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 “Do not communicate by sharing memory; instead, share memory by communicating.”
+如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 &#43; select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。 一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-12-03T20:32:49+08:00">
+    <meta property="article:modified_time" content="2021-12-03T20:32:49+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——并发编程模式">
+  <meta name="twitter:description" content="通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 “Do not communicate by sharing memory; instead, share memory by communicating.”
 这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。
 第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。
 图 1-1：Fan-in 合并多个 channel 例子图 1-2：Fan-in 合并多个 channel 例子这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
-如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 + select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。 一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。"><link rel=canonical href=https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/><link href=/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css rel=stylesheet><link href=/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css rel=stylesheet><link rel=apple-touch-icon sizes=180x180 href=/icons/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/icons/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/icons/favicon-16x16.png><link rel=mask-icon href=/icons/safari-pinned-tab.svg><link rel="shortcut icon" href=/favicon.ico><link rel=manifest href=https://JupiterXue.github.io/site.webmanifest><meta name=msapplication-config content="/browserconfig.xml"><meta name=msapplication-TileColor content="#2d89ef"><meta name=theme-color content="#434648"><link rel=icon type=image/svg+xml href=/icons/favicon.svg></head><body data-theme=light class=notransition><script src=/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script><div class=navbar role=navigation><nav class=menu aria-label="Main Navigation"><a href=https://JupiterXue.github.io/ class=logo><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><title>主页</title><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-</a><input type=checkbox id=menu-trigger class=menu-trigger>
-<label for=menu-trigger><span class=menu-icon><svg width="25" height="25" stroke="currentcolor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7H3.40726"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M.5 12.5V1.5c0-.552285.447715-1 1-1h11C13.0523.5 13.5.947715 13.5 1.5v11C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C.947715 13.5.5 13.0523.5 12.5z"/></svg></span></label><div class=trigger><ul class=trigger-container><li><a class=menu-link href=/>主页</a></li><li><a class=menu-link href=/poetry/>诗词</a></li><li><a class=menu-link href=/quant-whale-notes/>量化</a></li><li><a class="menu-link active" href=/go-to-top/>Go系列</a></li><li><a class=menu-link href=/arch/>归档文章</a></li><li><a class=menu-link href=/pages/about/>关于我</a></li><li class=menu-separator><span>|</span></li></ul><a id=mode href=#><svg class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg><svg class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg></a></div></nav></div><div class="wrapper post"><main class=page-content aria-label=Content><article><header class=header><h1 class=header-title>Go 翻山越岭——并发编程模式</h1><div class=post-meta><time datetime=2021-12-03T20:32:49+08:00 itemprop=datePublished>Dec 3, 2021</time></div></header><details class=toc zgotmplz><summary><b>目录</b></summary><nav id=TableOfContents></nav></details><div class=page-content><p>通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 &ldquo;Do not communicate by sharing memory; instead, share memory by communicating.&rdquo;</p><p>这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。</p><p>第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。</p><p><img alt=image-20211203230406497 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032304677.png></p><center>图 1-1：Fan-in 合并多个 channel 例子</center><p><img alt=image-20211203230942784 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032309871.png></p><center>图 1-2：Fan-in 合并多个 channel 例子</center><p>这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：</p><ul><li>如果是 0，说明递归结束直接返回；</li><li>如果是 1，就返回当前的 channel；</li><li>如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 + select 结合来实现的。</li><li>最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。</li></ul><p>一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。</p><p>第二个例子 Or channel，意思是说有多个 channel，其中一个有结果的时候，不管其他 channel 的结果，直接把整体的结果返回。这个一般是在有多个后端向前端响应结果，并且一旦有个后端返回了就不用等另外个后端返回的场景下去用，也就是通过用更多资源的方式来降低延时、提升用户的体验。Or channel 的实现和这种实现类似，代码如下：</p><p><img alt=image-20211203231732542 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032317626.png></p><center>图 2：Or channel 例子</center><p>这个代码的逻辑稍微复杂，具体是这样的：</p><ul><li>如果当前 channel 数组的长度为 0，直接返回空；</li><li>如果是 1，就返回当前的 channel；</li><li>如果是 2，就用 select 和两个 case 就解决了。</li><li>如果是 3个以上多个 channel，就采用 select 的 0、1、2 case，其他的就递归去调用 or 函数来实现。</li></ul><p>以上代码也是《Concurrency in Go》书中的代码，也建议大家通过抄一下去学习。</p><p>第三个例子，将 channel 串联起来。</p><p><img alt=image-20211203232747010 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032327076.png></p><center>图 3：Pipeline 例子</center><p>这个代码中逻辑比较简单，也就是一个 channel 收到了然后做一些处理，然后做些处理，然后再发往下一个 channel。这种例子一般用于上下游的数据处理，通过将 channel 串联起来，解决速度不匹配的问题。</p><p>第四个例子，是由 PingCap 工程师分享的案例：想要通过 Goroutine 并发去提升请求的性能，但是在业务场景下，需要按照顺序，把数据处理后返回给用户。所以既要通过并发提升性能，又能够保证返回的顺序性。</p><p><img alt=image-20211203232839228 src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032328302.png></p><center>图 4：并发同时保序例子</center><p>这个代码逻辑如下：</p><ul><li>用户提供了一个 task 任务，按照用户提供的 task 顺序分别发送了两个目标：一个是并发执行任务的 worker，另一个是保证顺序的函数。<ul><li>这里保证顺序的函数可以任意去实现，如数组或链表都是可以的，只要保证最后在消费的时候，是从这个保证顺序的列表或 channel 去消费就 OK 的。</li></ul></li><li>在进行消费的时候 fifo，每次消费一个元素，就执行 t.wait，也就是上方的 sync.WaitGroup。<ul><li>worker 函数中，每次执行完成任务之后执行 t.Done 就 OK。</li></ul></li></ul><p>这个例子比较好玩，网上别人也很少讲到。</p><p>OK，其实以上的例子与代码大部分都来自于《Concurrency in Go》和鸟窝在 Gopher China 分享的内容，比较多，这里给一下地址插个眼：</p><p>[1]《 Concurrency in Go》.pdf</p><p><a href=https://github.com/chapin666/books/blob/master/golang/Concurrency-in-Go.pdf>https://github.com/chapin666/books/blob/master/golang/Concurrency-in-Go.pdf</a></p><p>[2]《 Concurrency in Go-中文版》.pdf</p><p>[https://github.com/hapi666/GOBook/blob/master/Concurrency%20in%20Go%E4%B8%AD%E6%96%87%E7%89%88.pdf](<a href=https://github.com/hapi666/GOBook/blob/master/Concurrency>https://github.com/hapi666/GOBook/blob/master/Concurrency</a> in Go中文版.pdf)</p><p>[3] 《Go并发编程实践》博客总结，鸟窝，</p><p><a href=https://colobu.com/2019/04/28/gopher-2019-concurrent-in-action/>https://colobu.com/2019/04/28/gopher-2019-concurrent-in-action/</a></p><p>OK，下期文章继续总结一下常见的并发 Bug，让我们防患于未然。</p></div></article></main></div><footer class=footer><span class=footer_item></span>&nbsp;<div class=footer_social-icons><a href=https://github.com/JupiterXue target=_blank rel="noopener noreferrer me" title=Github><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
-</a><a href=839769325@qq.com target=_blank rel="noopener noreferrer me" title=Qq><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path transform="scale(0.04) translate(75 40)" stroke-width="50" d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741.0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792.0.0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z"/></svg></a></div><small class=footer_copyright>© 2024 JupiterXue.
-Powered by <a href=https://github.com/hugo-sid/hugo-blog-awesome target=_blank rel=noopener>Hugo blog awesome</a>.</small></footer><a href=# title=回到顶部 id=totop><svg width="48" height="48" fill="currentcolor" stroke="currentcolor" viewBox="0 96 960 960"><path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197z"/></svg>
-</a><script src=https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30+lSNuSkl4QXuNyy8="></script></body></html>
+如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 &#43; select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。 一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——并发编程模式</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-12-03T20:32:49&#43;08:00" itemprop="datePublished"> Dec 3, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 &ldquo;Do not communicate by sharing memory; instead, share memory by communicating.&rdquo;</p>
+<p>这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。</p>
+<p>第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。</p>
+<p><img alt="image-20211203230406497" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032304677.png"></p>
+<center>图 1-1：Fan-in 合并多个 channel 例子</center>
+<p><img alt="image-20211203230942784" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032309871.png"></p>
+<center>图 1-2：Fan-in 合并多个 channel 例子</center>
+<p>这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：</p>
+<ul>
+<li>如果是 0，说明递归结束直接返回；</li>
+<li>如果是 1，就返回当前的 channel；</li>
+<li>如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 + select 结合来实现的。</li>
+<li>最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。</li>
+</ul>
+<p>一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。</p>
+<p>第二个例子 Or channel，意思是说有多个 channel，其中一个有结果的时候，不管其他 channel 的结果，直接把整体的结果返回。这个一般是在有多个后端向前端响应结果，并且一旦有个后端返回了就不用等另外个后端返回的场景下去用，也就是通过用更多资源的方式来降低延时、提升用户的体验。Or channel 的实现和这种实现类似，代码如下：</p>
+<p><img alt="image-20211203231732542" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032317626.png"></p>
+<center>图 2：Or channel 例子</center>
+<p>这个代码的逻辑稍微复杂，具体是这样的：</p>
+<ul>
+<li>如果当前 channel 数组的长度为 0，直接返回空；</li>
+<li>如果是 1，就返回当前的 channel；</li>
+<li>如果是 2，就用 select 和两个 case 就解决了。</li>
+<li>如果是 3个以上多个 channel，就采用 select 的  0、1、2 case，其他的就递归去调用 or 函数来实现。</li>
+</ul>
+<p>以上代码也是《Concurrency in Go》书中的代码，也建议大家通过抄一下去学习。</p>
+<p>第三个例子，将 channel 串联起来。</p>
+<p><img alt="image-20211203232747010" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032327076.png"></p>
+<center>图 3：Pipeline 例子</center>
+<p>这个代码中逻辑比较简单，也就是一个 channel 收到了然后做一些处理，然后做些处理，然后再发往下一个 channel。这种例子一般用于上下游的数据处理，通过将 channel 串联起来，解决速度不匹配的问题。</p>
+<p>第四个例子，是由 PingCap 工程师分享的案例：想要通过 Goroutine 并发去提升请求的性能，但是在业务场景下，需要按照顺序，把数据处理后返回给用户。所以既要通过并发提升性能，又能够保证返回的顺序性。</p>
+<p><img alt="image-20211203232839228" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112032328302.png"></p>
+<center>图 4：并发同时保序例子</center>
+<p>这个代码逻辑如下：</p>
+<ul>
+<li>用户提供了一个 task 任务，按照用户提供的 task 顺序分别发送了两个目标：一个是并发执行任务的 worker，另一个是保证顺序的函数。
+<ul>
+<li>这里保证顺序的函数可以任意去实现，如数组或链表都是可以的，只要保证最后在消费的时候，是从这个保证顺序的列表或 channel 去消费就 OK 的。</li>
+</ul>
+</li>
+<li>在进行消费的时候 fifo，每次消费一个元素，就执行 t.wait，也就是上方的 sync.WaitGroup。
+<ul>
+<li>worker 函数中，每次执行完成任务之后执行 t.Done 就 OK。</li>
+</ul>
+</li>
+</ul>
+<p>这个例子比较好玩，网上别人也很少讲到。</p>
+<p>OK，其实以上的例子与代码大部分都来自于《Concurrency in Go》和鸟窝在 Gopher China 分享的内容，比较多，这里给一下地址插个眼：</p>
+<p>[1]《 Concurrency in Go》.pdf</p>
+<p><a href="https://github.com/chapin666/books/blob/master/golang/Concurrency-in-Go.pdf">https://github.com/chapin666/books/blob/master/golang/Concurrency-in-Go.pdf</a></p>
+<p>[2]《 Concurrency in Go-中文版》.pdf</p>
+<p>[https://github.com/hapi666/GOBook/blob/master/Concurrency%20in%20Go%E4%B8%AD%E6%96%87%E7%89%88.pdf](<a href="https://github.com/hapi666/GOBook/blob/master/Concurrency">https://github.com/hapi666/GOBook/blob/master/Concurrency</a> in Go中文版.pdf)</p>
+<p>[3] 《Go并发编程实践》博客总结，鸟窝，</p>
+<p><a href="https://colobu.com/2019/04/28/gopher-2019-concurrent-in-action/">https://colobu.com/2019/04/28/gopher-2019-concurrent-in-action/</a></p>
+<p>OK，下期文章继续总结一下常见的并发 Bug，让我们防患于未然。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

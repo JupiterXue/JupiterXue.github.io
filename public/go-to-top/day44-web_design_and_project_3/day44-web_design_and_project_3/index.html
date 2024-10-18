@@ -1,91 +1,378 @@
-<!doctype html><html lang=zh-ch><head><meta charset=utf-8><meta http-equiv=content-type content="text/html"><meta name=viewport content="width=device-width,initial-scale=1"><title itemprop=name>Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客</title>
-<meta property="og:title" content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客"><meta name=twitter:title content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客"><meta itemprop=name content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客"><meta name=application-name content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客"><meta property="og:site_name" content="Jupiter `s blog"><meta name=description content="Minimal Hugo blog theme with light and dark mode support"><meta itemprop=description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support"><meta name=twitter:description content="Minimal Hugo blog theme with light and dark mode support"><meta property="og:locale" content="zh-ch"><meta name=language content="zh-ch"><link rel=alternate hreflang=zh-cn href=https://JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/ title=中文><meta name=generator content="Hugo 0.135.0"><meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/"><meta property="og:site_name" content="Jupiter 的个人博客"><meta property="og:title" content="Go 翻山越岭——web 框架原理（3）"><meta property="og:description" content='没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——web 框架原理（3） | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/" title="中文" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——web 框架原理（3）">
+  <meta property="og:description" content="没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
 Validator 在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：
-type RegisterReq struct { Username string `json:"username"` PasswordNew string `josn:"password_new"` PasswordRepeat string `json:"password_repeat"` Email string `json:email` } func register(req RegisterReq) error { if len(req.Username) > 0 { if len(req.PasswordNew) > 0 && len(req.PasswordRepeat) > 0 { if req.PasswordNew == req.PassowrdRepeat { createUser() return nil } else { return errors.New("invalid email") } } else { return errors.New("password and password reinput must be loger than 0") } } else { return errors.New("length of username cannot be 0") } } 这段代码的意思是说，我们想要创建一个账户。
+type RegisterReq struct { Username string `json:&#34;username&#34;` PasswordNew string `josn:&#34;password_new&#34;` PasswordRepeat string `json:&#34;password_repeat&#34;` Email string `json:email` } func register(req RegisterReq) error { if len(req.Username) &gt; 0 { if len(req.PasswordNew) &gt; 0 &amp;&amp; len(req.PasswordRepeat) &gt; 0 { if req.PasswordNew == req.PassowrdRepeat { createUser() return nil } else { return errors.New(&#34;invalid email&#34;) } } else { return errors.New(&#34;password and password reinput must be loger than 0&#34;) } } else { return errors.New(&#34;length of username cannot be 0&#34;) } } 这段代码的意思是说，我们想要创建一个账户。
 首先，用户名的长度需要大于 0； 其次，密码的长度大于 0，并且重复确认输入的密码的长度也大于 0； 然后，密码和重复确认的密码必须相同； 再然后，注册用到的 email 必须是合法的。 这段代码看起来就像开了花，但其实是很多公司的日常开发写的。但我们如果这种代码写多了不仅感到繁琐，看起来更是感到不舒服。
 于是我们会去学习一些重构的理念之后，比如 early return / guard cluuse 的重构思想后，重构改造写出的代码可能就是这样的：
-func register(req RegisterReq) error { if len(req.Username) == 0 { return errors.New("length of username cannot be 0") } if len(req.PassowrdNew) == 0 || len(reqPasswordRepeat) == 0 { return errors.New("password and password reinput must be loger than 0") } if req.PassowordNEw != req.PassowrdRepeat { return errors.New("passowrd and reinput must be the same") } if emailFormatValid(req.Email) { return errors.New("invalid email") } createUser() return nil } 重构之后的代码看起来相比之前的代码是更加清晰、有条理些。'><meta property="og:locale" content="zh_ch"><meta property="og:type" content="article"><meta property="article:section" content="go-to-top"><meta property="article:published_time" content="2021-12-28T22:15:02+08:00"><meta property="article:modified_time" content="2021-12-28T22:15:02+08:00"><meta property="article:tag" content="Go"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go 翻山越岭——web 框架原理（3）"><meta name=twitter:description content='没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
+func register(req RegisterReq) error { if len(req.Username) == 0 { return errors.New(&#34;length of username cannot be 0&#34;) } if len(req.PassowrdNew) == 0 || len(reqPasswordRepeat) == 0 { return errors.New(&#34;password and password reinput must be loger than 0&#34;) } if req.PassowordNEw != req.PassowrdRepeat { return errors.New(&#34;passowrd and reinput must be the same&#34;) } if emailFormatValid(req.Email) { return errors.New(&#34;invalid email&#34;) } createUser() return nil } 重构之后的代码看起来相比之前的代码是更加清晰、有条理些。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="go-to-top">
+    <meta property="article:published_time" content="2021-12-28T22:15:02+08:00">
+    <meta property="article:modified_time" content="2021-12-28T22:15:02+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——web 框架原理（3）">
+  <meta name="twitter:description" content="没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。
 Validator 在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：
-type RegisterReq struct { Username string `json:"username"` PasswordNew string `josn:"password_new"` PasswordRepeat string `json:"password_repeat"` Email string `json:email` } func register(req RegisterReq) error { if len(req.Username) > 0 { if len(req.PasswordNew) > 0 && len(req.PasswordRepeat) > 0 { if req.PasswordNew == req.PassowrdRepeat { createUser() return nil } else { return errors.New("invalid email") } } else { return errors.New("password and password reinput must be loger than 0") } } else { return errors.New("length of username cannot be 0") } } 这段代码的意思是说，我们想要创建一个账户。
+type RegisterReq struct { Username string `json:&#34;username&#34;` PasswordNew string `josn:&#34;password_new&#34;` PasswordRepeat string `json:&#34;password_repeat&#34;` Email string `json:email` } func register(req RegisterReq) error { if len(req.Username) &gt; 0 { if len(req.PasswordNew) &gt; 0 &amp;&amp; len(req.PasswordRepeat) &gt; 0 { if req.PasswordNew == req.PassowrdRepeat { createUser() return nil } else { return errors.New(&#34;invalid email&#34;) } } else { return errors.New(&#34;password and password reinput must be loger than 0&#34;) } } else { return errors.New(&#34;length of username cannot be 0&#34;) } } 这段代码的意思是说，我们想要创建一个账户。
 首先，用户名的长度需要大于 0； 其次，密码的长度大于 0，并且重复确认输入的密码的长度也大于 0； 然后，密码和重复确认的密码必须相同； 再然后，注册用到的 email 必须是合法的。 这段代码看起来就像开了花，但其实是很多公司的日常开发写的。但我们如果这种代码写多了不仅感到繁琐，看起来更是感到不舒服。
 于是我们会去学习一些重构的理念之后，比如 early return / guard cluuse 的重构思想后，重构改造写出的代码可能就是这样的：
-func register(req RegisterReq) error { if len(req.Username) == 0 { return errors.New("length of username cannot be 0") } if len(req.PassowrdNew) == 0 || len(reqPasswordRepeat) == 0 { return errors.New("password and password reinput must be loger than 0") } if req.PassowordNEw != req.PassowrdRepeat { return errors.New("passowrd and reinput must be the same") } if emailFormatValid(req.Email) { return errors.New("invalid email") } createUser() return nil } 重构之后的代码看起来相比之前的代码是更加清晰、有条理些。'><link rel=canonical href=https://JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/><link href=/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css rel=stylesheet><link href=/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css rel=stylesheet><link rel=apple-touch-icon sizes=180x180 href=/icons/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/icons/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/icons/favicon-16x16.png><link rel=mask-icon href=/icons/safari-pinned-tab.svg><link rel="shortcut icon" href=/favicon.ico><link rel=manifest href=https://JupiterXue.github.io/site.webmanifest><meta name=msapplication-config content="/browserconfig.xml"><meta name=msapplication-TileColor content="#2d89ef"><meta name=theme-color content="#434648"><link rel=icon type=image/svg+xml href=/icons/favicon.svg></head><body data-theme=light class=notransition><script src=/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script><div class=navbar role=navigation><nav class=menu aria-label="Main Navigation"><a href=https://JupiterXue.github.io/ class=logo><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><title>主页</title><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-</a><input type=checkbox id=menu-trigger class=menu-trigger>
-<label for=menu-trigger><span class=menu-icon><svg width="25" height="25" stroke="currentcolor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7H3.40726"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"/><path stroke-linecap="round" stroke-linejoin="round" d="M.5 12.5V1.5c0-.552285.447715-1 1-1h11C13.0523.5 13.5.947715 13.5 1.5v11C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C.947715 13.5.5 13.0523.5 12.5z"/></svg></span></label><div class=trigger><ul class=trigger-container><li><a class=menu-link href=/>主页</a></li><li><a class=menu-link href=/poetry/>诗词</a></li><li><a class=menu-link href=/quant-whale-notes/>量化</a></li><li><a class="menu-link active" href=/go-to-top/>Go系列</a></li><li><a class=menu-link href=/arch/>归档文章</a></li><li><a class=menu-link href=/pages/about/>关于我</a></li><li class=menu-separator><span>|</span></li></ul><a id=mode href=#><svg class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg><svg class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1"><title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1=".5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1=".5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></svg></a></div></nav></div><div class="wrapper post"><main class=page-content aria-label=Content><article><header class=header><h1 class=header-title>Go 翻山越岭——web 框架原理（3）</h1><div class=post-meta><time datetime=2021-12-28T22:15:02+08:00 itemprop=datePublished>Dec 28, 2021</time></div></header><details class=toc zgotmplz><summary><b>目录</b></summary><nav id=TableOfContents><ul><li><a href=#validator-基本原理>Validator 基本原理</a></li></ul></nav></details><div class=page-content><p>没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。</p><h1 id=validator>Validator</h1><p>在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>RegisterReq</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>Username</span>             <span class=kt>string</span>    <span class=s>`json:&#34;username&#34;`</span>
-</span></span><span class=line><span class=cl>    <span class=nx>PasswordNew</span>      <span class=kt>string</span>    <span class=s>`josn:&#34;password_new&#34;`</span>
-</span></span><span class=line><span class=cl>    <span class=nx>PasswordRepeat</span>  <span class=kt>string</span>    <span class=s>`json:&#34;password_repeat&#34;`</span>
-</span></span><span class=line><span class=cl>    <span class=nx>Email</span>                   <span class=kt>string</span>   <span class=s>`json:email`</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>register</span><span class=p>(</span><span class=nx>req</span> <span class=nx>RegisterReq</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>Username</span><span class=p>)</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>PasswordNew</span><span class=p>)</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=nb>len</span><span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>PasswordRepeat</span><span class=p>)</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=nx>req</span><span class=p>.</span><span class=nx>PasswordNew</span> <span class=o>==</span> <span class=nx>req</span><span class=p>.</span><span class=nx>PassowrdRepeat</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                <span class=nf>createUser</span><span class=p>()</span>
-</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=kc>nil</span>
-</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;invalid email&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>            <span class=p>}</span>
-</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;password and password reinput must be loger than 0&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>        <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;length of username cannot be 0&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><p>这段代码的意思是说，我们想要创建一个账户。</p><ul><li>首先，用户名的长度需要大于 0；</li><li>其次，密码的长度大于 0，并且重复确认输入的密码的长度也大于 0；</li><li>然后，密码和重复确认的密码必须相同；</li><li>再然后，注册用到的 email 必须是合法的。</li></ul><p>这段代码看起来就像开了花，但其实是很多公司的日常开发写的。但我们如果这种代码写多了不仅感到繁琐，看起来更是感到不舒服。</p><p>于是我们会去学习一些重构的理念之后，比如 early return / guard cluuse 的重构思想后，重构改造写出的代码可能就是这样的：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>register</span><span class=p>(</span><span class=nx>req</span> <span class=nx>RegisterReq</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>Username</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;length of username cannot be 0&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>PassowrdNew</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=o>||</span> <span class=nb>len</span><span class=p>(</span><span class=nx>reqPasswordRepeat</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;password and password reinput must be loger than 0&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>req</span><span class=p>.</span><span class=nx>PassowordNEw</span> <span class=o>!=</span> <span class=nx>req</span><span class=p>.</span><span class=nx>PassowrdRepeat</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;passowrd and reinput must be the same&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nf>emailFormatValid</span><span class=p>(</span><span class=nx>req</span><span class=p>.</span><span class=nx>Email</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;invalid email&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=nf>createUser</span><span class=p>()</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=kc>nil</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><p>重构之后的代码看起来相比之前的代码是更加清晰、有条理些。</p><p>但其实这种代码还能通过 validator 进行改造优化，像这种字段校验的脏活、累活，就尽量不要自己手动去写，可以用一个包来实现，在 go-playground 包中，有一个 validator，代码如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>import</span> <span class=s>&#34;github.com/go-playground/validator/v10&#34;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>RegisterReq</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// 字符串的 gt=0 表示长度必须 &gt; 0, gt means greater than
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>Username</span>            <span class=kt>string</span>    <span class=s>`validate:&#34;gt=0&#34;`</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// 同上
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>PasswordNew</span>     <span class=kt>string</span>    <span class=s>`validate:&#34;gt=0&#34;`</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// eqfield 跨字段相等校验
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>PasswordRepeat</span>  <span class=kt>string</span>    <span class=s>`validate:&#34;eqfield=PasswordNew&#34;`</span>
-</span></span><span class=line><span class=cl>    <span class=c1>// 合法 email 格式校验
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>Email</span>                   <span class=kt>string</span>    <span class=s>`validate:&#34;email&#34;`</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>validate</span> <span class=p>=</span> <span class=nx>validator</span><span class=p>.</span><span class=nf>New</span><span class=p>()</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>validateFunc</span><span class=p>(</span><span class=nx>req</span> <span class=nx>RegisterReq</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>err</span> <span class=o>:=</span> <span class=nx>validate</span><span class=p>.</span><span class=nf>Struct</span><span class=p>(</span><span class=nx>req</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nf>domSomething</span><span class=p>()</span>
-</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>err</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=o>......</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><ul><li><p>我们前面提到的校验规则都可以写在当前的 RegisterRequest 结构中某个字段 的 tag 里。比如我们要求 Username 的长度必须大于 0，就是 gt=0，英文意思是 greater than 0。</p></li><li><p>我们可以在字段和字段之间去做校验，比如我们输入的密码和重复输入的密码必须相等；比如我们输入的 email 必须是内置规则下的合法的 email。</p></li><li><p>下方的函数 validateFunc 就是在使用全局定义的 validate。将 RegisterRequest 对象进行 validate.Struct 校验匹配，然后依次校验每个字段是否符合规则，如果不符合规则就返回错误信息，这些错误信息其实我们也可以去做定制的。</p></li></ul><p>像这种 validator 的应用是比较广泛的，我们常见的 gin 框架里面，其实是把这个组件集成在了一起。虽然平常不怎么看得到，但底层就是这么个设计。</p><p>如果不是作为外部领域的应用，我们还可以将validator 单独拎出来使用。比如防御性的编程之类的。</p><h2 id=validator-基本原理>Validator 基本原理</h2><p>我们除了知道怎么去运用 validator 去做编程开发，还可以进一步了解它的基本原理。</p><p>在此之前，我们需要意识到，我们日常工作中定义的 struct 可以这样理解：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Nested</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>Email</span>    <span class=kt>string</span> <span class=s>`validaate:&#34;email&#34;`</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>T</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=nx>Age</span>    <span class=kt>int</span> <span class=s>`validaate:&#34;eq=10&#34;
-</span></span></span><span class=line><span class=cl><span class=s>    Nested Nested`</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></div><p>即，我们可以把任意多个 struct 理解成一棵树 。</p><p>在 type T 结构中，有一个 Nested 字段，它对应着一个内嵌的结构体 Nested，Nested 结构体中有一个 Email 字段。然后我们将整个结构体的树状图画出来，就是这样的结构：</p><p><img alt="validator 基本原理-树-深度优先遍历 (1)" src=https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112282321720.png></p><center>validator 基本原理-树结构例子</center><ul><li>struct T 是一个根节点；</li><li>左边是 Age 字段；</li><li>右边是内嵌的结构体 Nested；</li><li>内嵌结构体有着自己的 Email 字段。</li></ul><p>如果我们想要完成类似 validator 的功能，就需要对这棵树做深度优先遍历，或者广度优先遍历。</p><p>既然我们可以通过深度优先遍历的方式，遍历到起始到内嵌结构体所有的字段。那么我们就可以利用反射的 API 做到这件事，可以访问到字段并且可以拿到对应字段的注释和注释中的 tag。这句话反过来说也成立，既然可以拿到所有字段，那么通过深度优先遍历的方式可以扫描到所有字段。</p><p><strong>参考资料</strong></p><p>[1] 《Go 高级编程》5.4 validator请求校验</p><p><a href=https://github.com/chai2010/advanced-go-programming-book/blob/master/ch5-web/ch5-04-validator.md#543-%E5%8E%9F%E7%90%86>https://github.com/chai2010/advanced-go-programming-book/blob/master/ch5-web/ch5-04-validator.md#543-%E5%8E%9F%E7%90%86</a></p><p>OK，下期文章继续讲解请求绑定的组件 request binder 的基本原理和实现！</p></div></article></main></div><footer class=footer><span class=footer_item></span>&nbsp;<div class=footer_social-icons><a href=https://github.com/JupiterXue target=_blank rel="noopener noreferrer me" title=Github><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
-</a><a href=839769325@qq.com target=_blank rel="noopener noreferrer me" title=Qq><svg viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path transform="scale(0.04) translate(75 40)" stroke-width="50" d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741.0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792.0.0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z"/></svg></a></div><small class=footer_copyright>© 2024 JupiterXue.
-Powered by <a href=https://github.com/hugo-sid/hugo-blog-awesome target=_blank rel=noopener>Hugo blog awesome</a>.</small></footer><a href=# title=回到顶部 id=totop><svg width="48" height="48" fill="currentcolor" stroke="currentcolor" viewBox="0 96 960 960"><path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197z"/></svg>
-</a><script src=https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30+lSNuSkl4QXuNyy8="></script></body></html>
+func register(req RegisterReq) error { if len(req.Username) == 0 { return errors.New(&#34;length of username cannot be 0&#34;) } if len(req.PassowrdNew) == 0 || len(reqPasswordRepeat) == 0 { return errors.New(&#34;password and password reinput must be loger than 0&#34;) } if req.PassowordNEw != req.PassowrdRepeat { return errors.New(&#34;passowrd and reinput must be the same&#34;) } if emailFormatValid(req.Email) { return errors.New(&#34;invalid email&#34;) } createUser() return nil } 重构之后的代码看起来相比之前的代码是更加清晰、有条理些。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/go-to-top/day44-web_design_and_project_3/day44-web_design_and_project_3/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link active" href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——web 框架原理（3）</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-12-28T22:15:02&#43;08:00" itemprop="datePublished"> Dec 28, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#validator-基本原理">Validator 基本原理</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <p>没想到吧，今天继续写点技术文章。上期文章我们说到，路由 Router 的本质其实是从字符串匹配到用户函数的过程；相似字符串对应不同的路由，中间经过 Radix Tree 构造字典树进而实现。这期文章继续讲讲常见 Web 框架中的组件。</p>
+<h1 id="validator">Validator</h1>
+<p>在没有拦截器（Validator）之前，可能我们写的一个关于，注册请求的代码是这样的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">RegisterReq</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Username</span>             <span class="kt">string</span>    <span class="s">`json:&#34;username&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">PasswordNew</span>      <span class="kt">string</span>    <span class="s">`josn:&#34;password_new&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">PasswordRepeat</span>  <span class="kt">string</span>    <span class="s">`json:&#34;password_repeat&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Email</span>                   <span class="kt">string</span>   <span class="s">`json:email`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">register</span><span class="p">(</span><span class="nx">req</span> <span class="nx">RegisterReq</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">Username</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">PasswordNew</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">PasswordRepeat</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="nx">req</span><span class="p">.</span><span class="nx">PasswordNew</span> <span class="o">==</span> <span class="nx">req</span><span class="p">.</span><span class="nx">PassowrdRepeat</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">createUser</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;invalid email&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;password and password reinput must be loger than 0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;length of username cannot be 0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>这段代码的意思是说，我们想要创建一个账户。</p>
+<ul>
+<li>首先，用户名的长度需要大于 0；</li>
+<li>其次，密码的长度大于 0，并且重复确认输入的密码的长度也大于 0；</li>
+<li>然后，密码和重复确认的密码必须相同；</li>
+<li>再然后，注册用到的 email 必须是合法的。</li>
+</ul>
+<p>这段代码看起来就像开了花，但其实是很多公司的日常开发写的。但我们如果这种代码写多了不仅感到繁琐，看起来更是感到不舒服。</p>
+<p>于是我们会去学习一些重构的理念之后，比如 early return / guard cluuse 的重构思想后，重构改造写出的代码可能就是这样的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">register</span><span class="p">(</span><span class="nx">req</span> <span class="nx">RegisterReq</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">Username</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;length of username cannot be 0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">PassowrdNew</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nb">len</span><span class="p">(</span><span class="nx">reqPasswordRepeat</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;password and password reinput must be loger than 0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">req</span><span class="p">.</span><span class="nx">PassowordNEw</span> <span class="o">!=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">PassowrdRepeat</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;passowrd and reinput must be the same&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nf">emailFormatValid</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">Email</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;invalid email&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">createUser</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>重构之后的代码看起来相比之前的代码是更加清晰、有条理些。</p>
+<p>但其实这种代码还能通过 validator 进行改造优化，像这种字段校验的脏活、累活，就尽量不要自己手动去写，可以用一个包来实现，在 go-playground 包中，有一个 validator，代码如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">import</span> <span class="s">&#34;github.com/go-playground/validator/v10&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">RegisterReq</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 字符串的 gt=0 表示长度必须 &gt; 0, gt means greater than
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Username</span>            <span class="kt">string</span>    <span class="s">`validate:&#34;gt=0&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 同上
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">PasswordNew</span>     <span class="kt">string</span>    <span class="s">`validate:&#34;gt=0&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// eqfield 跨字段相等校验
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">PasswordRepeat</span>  <span class="kt">string</span>    <span class="s">`validate:&#34;eqfield=PasswordNew&#34;`</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 合法 email 格式校验
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">Email</span>                   <span class="kt">string</span>    <span class="s">`validate:&#34;email&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">validate</span> <span class="p">=</span> <span class="nx">validator</span><span class="p">.</span><span class="nf">New</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">validateFunc</span><span class="p">(</span><span class="nx">req</span> <span class="nx">RegisterReq</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">validate</span><span class="p">.</span><span class="nf">Struct</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">domSomething</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">......</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ul>
+<li>
+<p>我们前面提到的校验规则都可以写在当前的 RegisterRequest 结构中某个字段 的 tag 里。比如我们要求 Username 的长度必须大于 0，就是 gt=0，英文意思是 greater than 0。</p>
+</li>
+<li>
+<p>我们可以在字段和字段之间去做校验，比如我们输入的密码和重复输入的密码必须相等；比如我们输入的 email 必须是内置规则下的合法的 email。</p>
+</li>
+<li>
+<p>下方的函数 validateFunc 就是在使用全局定义的 validate。将 RegisterRequest 对象进行 validate.Struct 校验匹配，然后依次校验每个字段是否符合规则，如果不符合规则就返回错误信息，这些错误信息其实我们也可以去做定制的。</p>
+</li>
+</ul>
+<p>像这种 validator 的应用是比较广泛的，我们常见的 gin 框架里面，其实是把这个组件集成在了一起。虽然平常不怎么看得到，但底层就是这么个设计。</p>
+<p>如果不是作为外部领域的应用，我们还可以将validator 单独拎出来使用。比如防御性的编程之类的。</p>
+<h2 id="validator-基本原理">Validator 基本原理</h2>
+<p>我们除了知道怎么去运用 validator 去做编程开发，还可以进一步了解它的基本原理。</p>
+<p>在此之前，我们需要意识到，我们日常工作中定义的 struct 可以这样理解：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Nested</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Email</span>    <span class="kt">string</span> <span class="s">`validaate:&#34;email&#34;`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">T</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Age</span>    <span class="kt">int</span> <span class="s">`validaate:&#34;eq=10&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">    Nested Nested`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>即，我们可以把任意多个 struct 理解成一棵树 。</p>
+<p>在 type T 结构中，有一个 Nested 字段，它对应着一个内嵌的结构体 Nested，Nested 结构体中有一个 Email 字段。然后我们将整个结构体的树状图画出来，就是这样的结构：</p>
+<p><img alt="validator 基本原理-树-深度优先遍历 (1)" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112282321720.png"></p>
+<center>validator 基本原理-树结构例子</center>
+<ul>
+<li>struct T 是一个根节点；</li>
+<li>左边是 Age 字段；</li>
+<li>右边是内嵌的结构体 Nested；</li>
+<li>内嵌结构体有着自己的 Email 字段。</li>
+</ul>
+<p>如果我们想要完成类似 validator 的功能，就需要对这棵树做深度优先遍历，或者广度优先遍历。</p>
+<p>既然我们可以通过深度优先遍历的方式，遍历到起始到内嵌结构体所有的字段。那么我们就可以利用反射的 API 做到这件事，可以访问到字段并且可以拿到对应字段的注释和注释中的 tag。这句话反过来说也成立，既然可以拿到所有字段，那么通过深度优先遍历的方式可以扫描到所有字段。</p>
+<p><strong>参考资料</strong></p>
+<p>[1] 《Go 高级编程》5.4 validator请求校验</p>
+<p><a href="https://github.com/chai2010/advanced-go-programming-book/blob/master/ch5-web/ch5-04-validator.md#543-%E5%8E%9F%E7%90%86">https://github.com/chai2010/advanced-go-programming-book/blob/master/ch5-web/ch5-04-validator.md#543-%E5%8E%9F%E7%90%86</a></p>
+<p>OK，下期文章继续讲解请求绑定的组件 request binder 的基本原理和实现！</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>
