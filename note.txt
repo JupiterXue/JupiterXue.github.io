@@ -1,3 +1,22 @@
+Hugo
+- 热加载
+hugo server --navigateToChanged
+- 目录详解
+https://gohugo.io/getting-started/directory-structure/
+- 创建文章
+Linux:
+hugo new content quant-whale-notes/task3.md
+Win:
+hugo new content quant-whale-notes/task3-get_data/index.md
+
+
+Theme-blog-awesome
+- 地址：https://github.com/hugo-sid/hugo-blog-awesome
+
+
+hugo; git add.; git commit -m "update a blog"; git push
+
+
 Win
 - 安装 choco 方便安装一下 Linux 下软件
 - 通过 choco 安装 hugo扩展版
