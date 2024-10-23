@@ -3,11 +3,11 @@
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title itemprop="name">投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客</title>
-<meta property="og:title" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
-<meta name="twitter:title" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
-<meta itemprop="name" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
-<meta name="application-name" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
+<title itemprop="name">投资与量化-任务4-量化选股 | Jupiter 的个人博客</title>
+<meta property="og:title" content="投资与量化-任务4-量化选股 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="投资与量化-任务4-量化选股 | Jupiter 的个人博客" />
+<meta itemprop="name" content="投资与量化-任务4-量化选股 | Jupiter 的个人博客" />
+<meta name="application-name" content="投资与量化-任务4-量化选股 | Jupiter 的个人博客" />
 <meta property="og:site_name" content="Jupiter `s blog" />
 
 <meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
@@ -18,98 +18,40 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/task2-basic_fina_concepts/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/quant-whale-notes/task4-select-stock/" title="中文" />
 
 
 
 
-
-    
-    
-    
-
-    <meta property="og:type" content="article" />
-    <meta property="og:article:published_time" content=2024-10-16T00:00:00Z />
-    <meta property="article:published_time" content=2024-10-16T00:00:00Z />
-    <meta property="og:url" content="https://JupiterXue.github.io/posts/task2-basic_fina_concepts/" />
-
-    
-    <meta property="og:article:author" content="JupiterXue" />
-    <meta property="article:author" content="JupiterXue" />
-    <meta name="author" content="JupiterXue" />
-    
-    
-
-    
-    <meta name="news_keywords" content="108" />
-    <meta property="article:section" content="108" />
-    
-
-    <script defer type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "Article",
-        "headline": "投资与量化-任务2-什么是金融市场",
-        "author": {
-        "@type": "Person",
-        "name": ""
-        },
-        "datePublished": "2024-10-16",
-        "description": "",
-        "wordCount":  29 ,
-        "mainEntityOfPage": "True",
-        "dateModified": "2024-10-16",
-        "image": {
-        "@type": "imageObject",
-        "url": ""
-        },
-        "publisher": {
-        "@type": "Organization",
-        "name": "Jupiter 的个人博客"
-        }
-    }
-    </script>
 
 
 <meta name="generator" content="Hugo 0.136.4">
 
     
-    <meta property="og:url" content="https://JupiterXue.github.io/posts/task2-basic_fina_concepts/">
+    <meta property="og:url" content="https://JupiterXue.github.io/quant-whale-notes/task4-select-stock/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
-  <meta property="og:title" content="投资与量化-任务2-什么是金融市场">
-  <meta property="og:description" content="传送门：第二章-金融市场基础
-思考 亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。
-货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。
-利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。
-利率计算公式： $$ PV = \frac{CF}{(1&#43;i)^n} $$
-通过极限推导可以得到： $$ PV = \frac{CF}{r} $$ 可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出： $$ PV = \frac{2}{0.02} = 100 \text{元} $$ 即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。
-投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。
-数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。">
+  <meta property="og:title" content="投资与量化-任务4-量化选股">
+  <meta property="og:description" content="传送门：第四章-量化选股
+思考 基础有效市场理论模型的讨论和研究，短期市场3-5天无法预测价格，长期3-5年可预测走势。可以说短期的“市场先生”行为和长期的价格-价值均值回归。因此量化优势就是在短期内捕捉到市场无效的低价格和长期看低价格回归高价格的股票。 APT 模型解释了市场回归均衡的一个决定因素，套利行为，如果市场未达到均衡状态市场就有无风险套利机会。单看套利行为好像没什么，单纯赚，但其核心和对冲很相像。就是寻找更低风险，甚至零风险的高收益的组合，而不是单一的看多看空行为。比如06年4月到07年2月，认沽行权价、认购行权价和公司利益形成了对冲，当时的五粮液、包钢认购权证的走势就是无风险套利行为。 2010年交易所推出 level2，可了解日内高频行情信息，是 ALPHA 因子研究的重要数据来源。高频数据有更高数据密度和不同数据结构，但也可以定义为时间序列来处理。除了单日数据量大，时间单位可能也不整齐。 笔记 高频量化处理注意事项： 分段处理。往往按表的或按时间窗口划分。 低频化。将间隔不均匀的时间序列变为均匀时间间隔。 时间窗口避免跨交易日。集合竞价和隔夜信息会增加随机性，给抽样带来干扰。 因子中性化（正交化），用于剔除已有常见因子影响的方法。具体操作中： 市值中性化，对市值取对数然后进行线性回归 行业中性化，对行业均值做差和回归取残差。 多因子选股模型的核心思想：通过多个因子的组合来选择股票，因子可以通过历史数据来计算，然后用来预测未来的股票表现，以获取更全面更稳定的预测，包括： 基本面因子：市盈率PE、市净率PB、营收增长 技术分析因子：动量、波动率 宏观经济因子：利率、通货膨胀 多因子模型步骤 确定目标和约束条件。目标收益率、风险水平、组合数目限制、行业比例限制。 选择因子并计算。根据目标和约束条件，选择合适因子，如PE、PB等。 异常值处理。检查数据中异常值和报错数据，进行处理和滤除。 因子标准化。不同因子取值范围差异很大，进行标准化处理，如去均值和缩放。 确定因子权重。通常用统计方法，如主成分分析来确定。 构建多因子模型。结合因子值和权重，建立评分模型。 股票筛选和组合优化。根据评分筛选股票，并进行组合优化，获得符合目标和约束条件的组合。 回测和调整模型。用历史数据回测多因子模型效果，根据结果调整和改进。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2024-10-16T00:00:00+00:00">
-    <meta property="article:modified_time" content="2024-10-16T00:00:00+00:00">
+    <meta property="article:section" content="quant-whale-notes">
+    <meta property="article:published_time" content="2024-10-23T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-10-23T00:00:00+00:00">
     <meta property="article:tag" content="Quant">
 
 
     
     
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="投资与量化-任务2-什么是金融市场">
-  <meta name="twitter:description" content="传送门：第二章-金融市场基础
-思考 亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。
-货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。
-利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。
-利率计算公式： $$ PV = \frac{CF}{(1&#43;i)^n} $$
-通过极限推导可以得到： $$ PV = \frac{CF}{r} $$ 可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出： $$ PV = \frac{2}{0.02} = 100 \text{元} $$ 即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。
-投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。
-数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。">
+  <meta name="twitter:title" content="投资与量化-任务4-量化选股">
+  <meta name="twitter:description" content="传送门：第四章-量化选股
+思考 基础有效市场理论模型的讨论和研究，短期市场3-5天无法预测价格，长期3-5年可预测走势。可以说短期的“市场先生”行为和长期的价格-价值均值回归。因此量化优势就是在短期内捕捉到市场无效的低价格和长期看低价格回归高价格的股票。 APT 模型解释了市场回归均衡的一个决定因素，套利行为，如果市场未达到均衡状态市场就有无风险套利机会。单看套利行为好像没什么，单纯赚，但其核心和对冲很相像。就是寻找更低风险，甚至零风险的高收益的组合，而不是单一的看多看空行为。比如06年4月到07年2月，认沽行权价、认购行权价和公司利益形成了对冲，当时的五粮液、包钢认购权证的走势就是无风险套利行为。 2010年交易所推出 level2，可了解日内高频行情信息，是 ALPHA 因子研究的重要数据来源。高频数据有更高数据密度和不同数据结构，但也可以定义为时间序列来处理。除了单日数据量大，时间单位可能也不整齐。 笔记 高频量化处理注意事项： 分段处理。往往按表的或按时间窗口划分。 低频化。将间隔不均匀的时间序列变为均匀时间间隔。 时间窗口避免跨交易日。集合竞价和隔夜信息会增加随机性，给抽样带来干扰。 因子中性化（正交化），用于剔除已有常见因子影响的方法。具体操作中： 市值中性化，对市值取对数然后进行线性回归 行业中性化，对行业均值做差和回归取残差。 多因子选股模型的核心思想：通过多个因子的组合来选择股票，因子可以通过历史数据来计算，然后用来预测未来的股票表现，以获取更全面更稳定的预测，包括： 基本面因子：市盈率PE、市净率PB、营收增长 技术分析因子：动量、波动率 宏观经济因子：利率、通货膨胀 多因子模型步骤 确定目标和约束条件。目标收益率、风险水平、组合数目限制、行业比例限制。 选择因子并计算。根据目标和约束条件，选择合适因子，如PE、PB等。 异常值处理。检查数据中异常值和报错数据，进行处理和滤除。 因子标准化。不同因子取值范围差异很大，进行标准化处理，如去均值和缩放。 确定因子权重。通常用统计方法，如主成分分析来确定。 构建多因子模型。结合因子值和权重，建立评分模型。 股票筛选和组合优化。根据评分筛选股票，并进行组合优化，获得符合目标和约束条件的组合。 回测和调整模型。用历史数据回测多因子模型效果，根据结果调整和改进。">
 
 
     
 
-    <link rel="canonical" href="https://JupiterXue.github.io/posts/task2-basic_fina_concepts/">
+    <link rel="canonical" href="https://JupiterXue.github.io/quant-whale-notes/task4-select-stock/">
     <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
     <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
@@ -191,7 +133,7 @@ stroke-linejoin="round" class="feather feather-home">
                 </li>
                 
                 <li>
-                    <a class="menu-link " href="/quant-whale-notes/">
+                    <a class="menu-link active" href="/quant-whale-notes/">
                         量化
                     </a>
                     
@@ -238,45 +180,59 @@ stroke-linejoin="round" class="feather feather-home">
     <main class="page-content" aria-label="Content">
         <article>
             <header class="header">
-                <h1 class="header-title">投资与量化-任务2-什么是金融市场</h1>
+                <h1 class="header-title">投资与量化-任务4-量化选股</h1>
                 
                 
                 
                 <div class="post-meta">
-                    <time datetime="2024-10-16T00:00:00&#43;00:00" itemprop="datePublished"> Oct 16, 2024 </time>
+                    <time datetime="2024-10-23T00:00:00&#43;00:00" itemprop="datePublished"> Oct 23, 2024 </time>
                 </div>
                 
             </header>
             
             <div class="page-content">
-                <p>传送门：<a href="https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5">第二章-金融市场基础</a></p>
-<h3 id="思考">思考</h3>
+                <p>传送门：<a href="https://datawhalechina.github.io/whale-quant/#/./ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5">第四章-量化选股</a></p>
+<h2 id="思考">思考</h2>
+<ul>
+<li>基础有效市场理论模型的讨论和研究，短期市场3-5天无法预测价格，长期3-5年可预测走势。可以说短期的“市场先生”行为和长期的价格-价值均值回归。因此量化优势就是在短期内捕捉到市场无效的低价格和长期看低价格回归高价格的股票。</li>
+<li>APT 模型解释了市场回归均衡的一个决定因素，套利行为，如果市场未达到均衡状态市场就有无风险套利机会。单看套利行为好像没什么，单纯赚，但其核心和对冲很相像。就是寻找更低风险，甚至零风险的高收益的组合，而不是单一的看多看空行为。比如06年4月到07年2月，认沽行权价、认购行权价和公司利益形成了对冲，当时的五粮液、包钢认购权证的走势就是无风险套利行为。</li>
+<li>2010年交易所推出 level2，可了解日内高频行情信息，是 ALPHA 因子研究的重要数据来源。高频数据有更高数据密度和不同数据结构，但也可以定义为时间序列来处理。除了单日数据量大，时间单位可能也不整齐。</li>
+</ul>
+<h2 id="笔记">笔记</h2>
+<ul>
+<li><strong>高频量化</strong>处理注意事项：
+<ul>
+<li><strong>分段处理</strong>。往往按表的或按时间窗口划分。</li>
+<li><strong>低频化</strong>。将间隔不均匀的时间序列变为均匀时间间隔。</li>
+<li><strong>时间窗口避免跨交易日</strong>。集合竞价和隔夜信息会增加随机性，给抽样带来干扰。</li>
+</ul>
+</li>
+<li>因子中性化（正交化），用于剔除已有常见因子影响的方法。具体操作中：
+<ul>
+<li>市值中性化，对市值取对数然后进行线性回归</li>
+<li>行业中性化，对行业均值做差和回归取残差。</li>
+</ul>
+</li>
+<li>多因子选股模型的核心思想：通过多个因子的组合来选择股票，因子可以通过历史数据来计算，然后用来预测未来的股票表现，以获取更全面更稳定的预测，包括：
+<ul>
+<li><strong>基本面因子</strong>：市盈率PE、市净率PB、营收增长</li>
+<li><strong>技术分析因子</strong>：动量、波动率</li>
+<li><strong>宏观经济因子</strong>：利率、通货膨胀</li>
+</ul>
+</li>
+<li>多因子模型步骤
 <ol>
-<li>
-<p>亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。</p>
-</li>
-<li>
-<p>货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。</p>
-</li>
-<li>
-<p>利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。</p>
-</li>
-<li>
-<p>利率计算公式：
-$$ PV = \frac{CF}{(1+i)^n} $$<br>
-通过极限推导可以得到：
-$$ PV = \frac{CF}{r} $$
-可以称之为<strong>万物皆有价的公式</strong>。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出：
-$$ PV = \frac{2}{0.02} = 100 \text{元} $$
-即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。</p>
-</li>
-<li>
-<p>投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。</p>
-</li>
-<li>
-<p>数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。</p>
-</li>
+<li>确定目标和约束条件。目标收益率、风险水平、组合数目限制、行业比例限制。</li>
+<li>选择因子并计算。根据目标和约束条件，选择合适因子，如PE、PB等。</li>
+<li>异常值处理。检查数据中异常值和报错数据，进行处理和滤除。</li>
+<li>因子标准化。不同因子取值范围差异很大，进行标准化处理，如去均值和缩放。</li>
+<li>确定因子权重。通常用统计方法，如主成分分析来确定。</li>
+<li>构建多因子模型。结合因子值和权重，建立评分模型。</li>
+<li>股票筛选和组合优化。根据评分筛选股票，并进行组合优化，获得符合目标和约束条件的组合。</li>
+<li>回测和调整模型。用历史数据回测多因子模型效果，根据结果调整和改进。</li>
 </ol>
+</li>
+</ul>
 
             </div>
         </article></main>
