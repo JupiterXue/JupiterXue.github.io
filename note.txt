@@ -13,8 +13,12 @@ hugo new content quant-whale-notes/task3-get_data/index.md
 Theme-blog-awesome
 - 地址：https://github.com/hugo-sid/hugo-blog-awesome
 
-
-hugo; git add.; git commit -m "update a blog"; git push
+rm -rf public
+del public
+hugo
+git add .
+git commit -m "update a blog"
+git push
 
 
 Win
