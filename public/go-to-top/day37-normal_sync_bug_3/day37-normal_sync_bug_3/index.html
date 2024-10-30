@@ -25,14 +25,13 @@
 
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day37-normal_sync_bug_3/day37-normal_sync_bug_3/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
   <meta property="og:title" content="Go 翻山越岭——常见并发 bug（3）">
-  <meta property="og:description" content="
-这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
+  <meta property="og:description" content="这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
 引用传递 for i := 17; i &lt;= 21; i&#43;&#43; { // write go func() { /* Create a new goroutine */ } // before modify go func(i int) { // modified apiVersion := fmt.Sprintf(&#34;v1.%d&#34;, i) // read }() // before modify }(i) // modified } 这里说的是，更改代码之前，我们启动一个 goroutine，这个 goroutine 用的是一个闭包，闭包捕获了外面的变量 i，而这个 i 用的还是地址。而迭代器 for 用的也是同一个 i 的地址，所以到 goroutine 执行的时候，最后 Print 出来的 i 就是最后一个了。
 这里的修改方式比较简单，就是把 i 当作参数传过去，因为是值传递，也就解决问题了。
 WaitGroup func (p *peer) send() { p.mu.Lock() defer p.mu.Unlock() switch p.status { case idle: p.wg.Add(1) // modified go func() { p.wg.Add(1) // before modify ...... p.wg.Done() }() case stopped: } } func (p * peer) stop() { p.mu.Lock() p.status = stopped p.mu.Unlock() p.wg.Wait() } 这里代码还是涉及到 WaitGroup 的用法，在修改代码之前，Add 是放在 go func 中，有可能 WaitGroup 依旧是 0，WaitGroup 的 Wait 就不需要等待任何 goroutine 就能执行完成，整个程序也就执行结束了。">
@@ -48,8 +47,7 @@ WaitGroup func (p *peer) send() { p.mu.Lock() defer p.mu.Unlock() switch p.statu
     
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Go 翻山越岭——常见并发 bug（3）">
-  <meta name="twitter:description" content="
-这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
+  <meta name="twitter:description" content="这只地鼠又来了，说明今天我又来讲 Go 语言并发中常见的一些bug，看代码咯。
 引用传递 for i := 17; i &lt;= 21; i&#43;&#43; { // write go func() { /* Create a new goroutine */ } // before modify go func(i int) { // modified apiVersion := fmt.Sprintf(&#34;v1.%d&#34;, i) // read }() // before modify }(i) // modified } 这里说的是，更改代码之前，我们启动一个 goroutine，这个 goroutine 用的是一个闭包，闭包捕获了外面的变量 i，而这个 i 用的还是地址。而迭代器 for 用的也是同一个 i 的地址，所以到 goroutine 执行的时候，最后 Print 出来的 i 就是最后一个了。
 这里的修改方式比较简单，就是把 i 当作参数传过去，因为是值传递，也就解决问题了。
 WaitGroup func (p *peer) send() { p.mu.Lock() defer p.mu.Unlock() switch p.status { case idle: p.wg.Add(1) // modified go func() { p.wg.Add(1) // before modify ...... p.wg.Done() }() case stopped: } } func (p * peer) stop() { p.mu.Lock() p.status = stopped p.mu.Unlock() p.wg.Wait() } 这里代码还是涉及到 WaitGroup 的用法，在修改代码之前，Add 是放在 go func 中，有可能 WaitGroup 依旧是 0，WaitGroup 的 Wait 就不需要等待任何 goroutine 就能执行完成，整个程序也就执行结束了。">

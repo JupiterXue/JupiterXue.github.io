@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day28-mark-lost-solutions/day28-mark-lost-solutions/">
@@ -33,11 +33,11 @@
   <meta property="og:title" content="Go 翻山越岭——GC 标记丢失解决初步方案">
   <meta property="og:description" content="Go 语言采用三色标记算法来实现垃圾回收，但标记过程中存在对象漏标情况，最终导致变量被意外回收掉。为了解决这个问题我们需要一个理论基础——强弱三色性。
 强弱三色性 强三色不变性和弱三色不变性是解决标记流程中对象漏标或错标的方案，还是看图好理解：
-图 1：强弱三色不变性流程左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。
+图 1：强弱三色不变性流程 左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。
 右边的弱三色不变性是说黑色对象可以指向白色对象，是合法的，但是必须保证还有指向灰色对象的可达路径，比如 A → E，前提是 A → C → E。因为有灰色可达路径，所以黑色对象指向白色对象是合法的，这种方式适当地放宽了强三色不变性的条件，保证了我们的算法可以顺利都执行完。
 以上都只是理论，我们要实现这两种三色不变性，最终还是回到了 writebarrier 或 readbarrier（Go 语言中没有）。需要注意：在 GC 中的 writebarrier 和并发中的 writebarrier 不是一个东西。GC 中 barrier 的本质是：指针在编辑之前，可以插入一段代码 snippet of code insert before pointer modify，而 writebarrier 就是指的这段代码：
-图 2：chan.go 中 writebarrier 的实现位置图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。
-图 3：gcWriteBarrier 源码对应位置可以看到在源码的 252 行，确实是将 waiting 指针指向了空。
+图 2：chan.go 中 writebarrier 的实现位置 图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。
+图 3：gcWriteBarrier 源码对应位置 可以看到在源码的 252 行，确实是将 waiting 指针指向了空。
 强弱三色性的实现例子 以上说了强弱三色不变性和 writebarrier，还都偏抽象、偏基础的，再来看一下强弱三色不变性分别通过哪些 writebarrier 来实现的。首先来一组实现例子：Dijkstra barrier 和 Yuasa barrier。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
@@ -53,11 +53,11 @@
   <meta name="twitter:title" content="Go 翻山越岭——GC 标记丢失解决初步方案">
   <meta name="twitter:description" content="Go 语言采用三色标记算法来实现垃圾回收，但标记过程中存在对象漏标情况，最终导致变量被意外回收掉。为了解决这个问题我们需要一个理论基础——强弱三色性。
 强弱三色性 强三色不变性和弱三色不变性是解决标记流程中对象漏标或错标的方案，还是看图好理解：
-图 1：强弱三色不变性流程左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。
+图 1：强弱三色不变性流程 左边的强三色不变性意味着所有黑色对象不能白色对象，比如 A → B 就是种非法的情况。只要让程序中不出现这种情况，黑色只能指向灰色，灰色可任意指向，那么 GC 流程一定不会有漏标或错标的情况的，这是一种比较严格的限制。
 右边的弱三色不变性是说黑色对象可以指向白色对象，是合法的，但是必须保证还有指向灰色对象的可达路径，比如 A → E，前提是 A → C → E。因为有灰色可达路径，所以黑色对象指向白色对象是合法的，这种方式适当地放宽了强三色不变性的条件，保证了我们的算法可以顺利都执行完。
 以上都只是理论，我们要实现这两种三色不变性，最终还是回到了 writebarrier 或 readbarrier（Go 语言中没有）。需要注意：在 GC 中的 writebarrier 和并发中的 writebarrier 不是一个东西。GC 中 barrier 的本质是：指针在编辑之前，可以插入一段代码 snippet of code insert before pointer modify，而 writebarrier 就是指的这段代码：
-图 2：chan.go 中 writebarrier 的实现位置图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。
-图 3：gcWriteBarrier 源码对应位置可以看到在源码的 252 行，确实是将 waiting 指针指向了空。
+图 2：chan.go 中 writebarrier 的实现位置 图中用红色下划线勾出来的意思是说，我们去触发 runtime.gcWriteBarrier 函数时，就是一个指针修改操作之前插入的一个函数调用。我们可以在源码中直接搜索 gcWriteBarrier 找到这个函数。因为反编译也能够看出这句函数调用的源码位置，所以我们可进入确认一下，它一定是一个指针的操作。
+图 3：gcWriteBarrier 源码对应位置 可以看到在源码的 252 行，确实是将 waiting 指针指向了空。
 强弱三色性的实现例子 以上说了强弱三色不变性和 writebarrier，还都偏抽象、偏基础的，再来看一下强弱三色不变性分别通过哪些 writebarrier 来实现的。首先来一组实现例子：Dijkstra barrier 和 Yuasa barrier。">
 
 

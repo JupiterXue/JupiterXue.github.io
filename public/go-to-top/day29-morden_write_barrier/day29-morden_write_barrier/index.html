@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day29-morden_write_barrier/day29-morden_write_barrier/">
@@ -33,7 +33,7 @@
   <meta property="og:title" content="Go 翻山越岭——现代化标记丢失解决方案">
   <meta property="og:description" content="在 Go 语言 GC 中，为避免对象丢失，可以在所有指针操作中加 Dijkstra barrier，而 Go 官方设计者为了降低 Go 运行环境中的成本，不希望栈上的操作频率很高，所以限制了 Go 不能在栈上操作指针时加 barrier。因此 Dijkstra barrier 和 Yuasa barrier 都失效了。
 因为 Go 语言不在栈上去加一个 writebarrier，所以任何一个 barrier 单独拿出来都没办法解决 Go 语言 GC 标记的正确性问题。为了解决这个问题，机智的语言设计者就把 Dijkstra barrier 和 Yuasa barrier 结合起来，做出了集大成者——Hybrid barrier，并且写了一个提案 preposal。网上有很多博客会去解析 writebarrier 的源码，其实就是这张图中的，中和两种算法的集合体。
-图 1：混合屏障 Hybrid barrier这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
+图 1：混合屏障 Hybrid barrier 这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
 这个算法虽然集成了两种算法思想，但两个算法所遇到的问题正好被有效避免了。虽然作者写个提案 preposal，但后来因为没有时间就没有去实现。后来他们还发现，如果要检查栈的颜色的工作话还需要做一些同步操作，而这个 stack check 动作维护成本太高，所以暂时放弃了，至今也没实现。
 但我们亲自去看 Go 语言源码可以发现，它不是内部实现，代码片段如下：
 // slot is the destination in Go code. // ptr is the value that goes into the slot in Go code. func RealityWB(slot *unsafe.Pointer, ptr unsafe.Pointer) { shade(*slot) shade(ptr) *slot = ptr } 可以看到，Go 源码中其实是没有任何 if 判断。如果发送了任何堆上指针的变化，那么一定要把原来的对象和新指向的对象都标灰。然后再执行赋值操作。">
@@ -51,7 +51,7 @@
   <meta name="twitter:title" content="Go 翻山越岭——现代化标记丢失解决方案">
   <meta name="twitter:description" content="在 Go 语言 GC 中，为避免对象丢失，可以在所有指针操作中加 Dijkstra barrier，而 Go 官方设计者为了降低 Go 运行环境中的成本，不希望栈上的操作频率很高，所以限制了 Go 不能在栈上操作指针时加 barrier。因此 Dijkstra barrier 和 Yuasa barrier 都失效了。
 因为 Go 语言不在栈上去加一个 writebarrier，所以任何一个 barrier 单独拿出来都没办法解决 Go 语言 GC 标记的正确性问题。为了解决这个问题，机智的语言设计者就把 Dijkstra barrier 和 Yuasa barrier 结合起来，做出了集大成者——Hybrid barrier，并且写了一个提案 preposal。网上有很多博客会去解析 writebarrier 的源码，其实就是这张图中的，中和两种算法的集合体。
-图 1：混合屏障 Hybrid barrier这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
+图 1：混合屏障 Hybrid barrier 这里的意思是说，把要修改的指针所指向的老的对象先标灰，然后判断当前栈是否是灰色。如果是灰色就去把新来的对象也标灰。最后再做个赋值操作。
 这个算法虽然集成了两种算法思想，但两个算法所遇到的问题正好被有效避免了。虽然作者写个提案 preposal，但后来因为没有时间就没有去实现。后来他们还发现，如果要检查栈的颜色的工作话还需要做一些同步操作，而这个 stack check 动作维护成本太高，所以暂时放弃了，至今也没实现。
 但我们亲自去看 Go 语言源码可以发现，它不是内部实现，代码片段如下：
 // slot is the destination in Go code. // ptr is the value that goes into the slot in Go code. func RealityWB(slot *unsafe.Pointer, ptr unsafe.Pointer) { shade(*slot) shade(ptr) *slot = ptr } 可以看到，Go 源码中其实是没有任何 if 判断。如果发送了任何堆上指针的变化，那么一定要把原来的对象和新指向的对象都标灰。然后再执行赋值操作。">

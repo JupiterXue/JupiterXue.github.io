@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day19-tools_and_sys/day19-tools_and_sys/">
@@ -34,9 +34,9 @@
   <meta property="og:description" content="了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
 观察系统调用工具 在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss
 案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：
-系统调用示例使用 strace 指令 &#43; 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
+系统调用示例 使用 strace 指令 &#43; 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
 案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：
-查看nginx 系统调用我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 &#43; -f 参数 &#43; nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
+查看nginx 系统调用 我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 &#43; -f 参数 &#43; nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
 注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn’t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/
 案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。">
   <meta property="og:locale" content="zh_ch">
@@ -54,9 +54,9 @@
   <meta name="twitter:description" content="了解系统调用就能在业务发生问题时有更多招数，见招拆招。知道了系统调用的概念，有时候我们还需要用工具去实际观察进程是如何发起系统调用，对操作系统做了哪些请求，今天就来聊一聊。
 观察系统调用工具 在 Linux 中我们常用用观察系统调用的工具是 strace，在 macOS 系统上常用的是 dtruss
 案例1，通过 strace 可以看到一个 Go 进程的启动过程到底调用了哪些系统调用，这里有个例子（具体代码不用关注）：
-系统调用示例使用 strace 指令 &#43; 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
+系统调用示例 使用 strace 指令 &#43; 可执行文件x，看到了有哪些系统调用函数被调用。execve 执行哪个二进制文件，arch_prctl、sched_getaffinity 设计 CPU 亲和度，oepnat 加载相关文件，mmap 系统映射，gettid 获取线程 ID。
 案例2，通过 strace 还可以查看一些软件的做了哪些系统调用，比如查看 nginx 的：
-查看nginx 系统调用我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 &#43; -f 参数 &#43; nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
+查看nginx 系统调用 我们知道 nginx 在平时不服务的时候都是阻塞的状态，即阻塞在某个系统调用上。使用 strace 指令 &#43; -f 参数 &#43; nginx 可以观察它启动的过程。如果这个软件需要创建多个进程，就需要这里的 -f 的 flag 参数，跟踪所有刚启动线程创建的其他进程。最后我们可以发现 nginx 阻塞在 pid 为 224 的 epoll_wait 上。
 注意：在 docker 中用这个命令可能会遇到一些问题，可以参考这个链接《Why strace doesn’t work in Docker》https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/
 案例3，通过 strace 观察一个 Go 语言 Hello world 程序生命周期中系统调用情况。">
 

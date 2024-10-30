@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day38-memory_model/day38-memory_model/">
@@ -35,8 +35,8 @@
 我们日常的开发中，只要知道使用显示同步就可以保证正确性。也就是说只要发生了并发的情况，那么一定要显示地使用同步手段。显示同步手段，通常是指 channel 或者锁。并且，能够用 channel 和锁的情况下，基本上，只要没有 race 出现，就能够保障程序的正确性。
 但我们在开发中有时候会给别人提供偏底层的库，那么需要对底层有了解才能做得出来。因此就遇到了 Memory Model 内存模型。
 Memory Model 在具体了解之前，我们先要了解目前的 CPU 架构。现代的 CPU 内部的存储其实都是分级的，比如以下就是个多核 CPU 的典型架构图：
-现代计算机的多级存储结构在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
-lscpu 命令结果L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
+现代计算机的多级存储结构 在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
+lscpu 命令结果 L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
 L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 的大小为 64 bytes。这就是我们为什么在程序中经常会看到，有些数据结构会在其最后不足的情况下补足为 64 字节或 128 字节，都是有可能发生的。我们在 Linux 中也可以再动动手去做些实践尝试一下这个命令：getconf LEVEL1_DCACHE_LINESIZE，可以看到 Data cache 的 cache line 长度，也就是 64 个字节。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
@@ -54,8 +54,8 @@ L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 
 我们日常的开发中，只要知道使用显示同步就可以保证正确性。也就是说只要发生了并发的情况，那么一定要显示地使用同步手段。显示同步手段，通常是指 channel 或者锁。并且，能够用 channel 和锁的情况下，基本上，只要没有 race 出现，就能够保障程序的正确性。
 但我们在开发中有时候会给别人提供偏底层的库，那么需要对底层有了解才能做得出来。因此就遇到了 Memory Model 内存模型。
 Memory Model 在具体了解之前，我们先要了解目前的 CPU 架构。现代的 CPU 内部的存储其实都是分级的，比如以下就是个多核 CPU 的典型架构图：
-现代计算机的多级存储结构在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
-lscpu 命令结果L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
+现代计算机的多级存储结构 在这个内部，我们可以看到 L1 cache，具体的信息可以通过命令 lscpu 查看到，如下图所示：
+lscpu 命令结果 L1 cache 有两种类型： L1 Data cache 和 L1 Structure cache。我们平时在编程中经常遇到的就是 L1 Data cache，也就是在修改内存中变量的时候，一定需要从内存中一级一级地把它加载到 L3 → L2 → L1→ core 最终才能让 CPU 核心去处理数据。
 L1 cache 又会被划分为多个更细粒度的 cache line，每个 cache line 的大小为 64 bytes。这就是我们为什么在程序中经常会看到，有些数据结构会在其最后不足的情况下补足为 64 字节或 128 字节，都是有可能发生的。我们在 Linux 中也可以再动动手去做些实践尝试一下这个命令：getconf LEVEL1_DCACHE_LINESIZE，可以看到 Data cache 的 cache line 长度，也就是 64 个字节。">
 
 
@@ -230,7 +230,7 @@ stroke-linejoin="round" class="feather feather-home">
 <table>
   <thead>
       <tr>
-          <th style="text-align: left"></th>
+          <th></th>
           <th style="text-align: center">p0</th>
           <th style="text-align: center">p1</th>
           <th style="text-align: center">p2</th>
@@ -239,42 +239,42 @@ stroke-linejoin="round" class="feather feather-home">
   </thead>
   <tbody>
       <tr>
-          <td style="text-align: left">Initial state</td>
+          <td>Initial state</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td style="text-align: left">p0 reads X</td>
+          <td>p0 reads X</td>
           <td style="text-align: center">E</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td style="text-align: left">p1 reads X</td>
+          <td>p1 reads X</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td style="text-align: left">p2 reads X</td>
+          <td>p2 reads X</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">I</td>
       </tr>
       <tr>
-          <td style="text-align: left">p3 writes X</td>
+          <td>p3 writes X</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">M</td>
       </tr>
       <tr>
-          <td style="text-align: left">p0 readx X</td>
+          <td>p0 readx X</td>
           <td style="text-align: center">S</td>
           <td style="text-align: center">I</td>
           <td style="text-align: center">I</td>

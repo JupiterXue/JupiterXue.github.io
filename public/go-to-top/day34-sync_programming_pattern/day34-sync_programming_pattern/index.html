@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/go-to-top/day34-sync_programming_pattern/day34-sync_programming_pattern/">
@@ -34,7 +34,7 @@
   <meta property="og:description" content="通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 “Do not communicate by sharing memory; instead, share memory by communicating.”
 这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。
 第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。
-图 1-1：Fan-in 合并多个 channel 例子图 1-2：Fan-in 合并多个 channel 例子这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
+图 1-1：Fan-in 合并多个 channel 例子 图 1-2：Fan-in 合并多个 channel 例子 这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
 如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 &#43; select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。 一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
@@ -51,7 +51,7 @@
   <meta name="twitter:description" content="通常我们在写 Go 代码的时候，听得比较多的是 Go 和传统并发模式不一样。Go 语言采用的是 CSP 模式，即 “Do not communicate by sharing memory; instead, share memory by communicating.”
 这句英文看起来有些玄乎，但其实是在说，除了 runtime 中的 hchan 结构，没有其他结构能够共享内存。而如果我们想要共享数据的话，就需要 chan 去做任务发送，这时候做的其实是一些拷贝的工作。听起来有点抽象，来看一些别人写的代码示例。
 第一个例子 Fan-in 扇入，也就是多个分支合并为一个分支，或合并为少数的分支。
-图 1-1：Fan-in 合并多个 channel 例子图 1-2：Fan-in 合并多个 channel 例子这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
+图 1-1：Fan-in 合并多个 channel 例子 图 1-2：Fan-in 合并多个 channel 例子 这里的代码意思是要把多个 channel 的结果合并到同一个 channel 中去，这样消费者只用去消费一个就好了。函数中第一行是通过判断输入的 channel 数组的长度来实现的：
 如果是 0，说明递归结束直接返回； 如果是 1，就返回当前的 channel； 如果是 2，就需要调用 mergeTwo 函数。这个 mergeTwo 函数也就是简单的 for 循环 &#43; select 结合来实现的。 最后 default，就是不断对 channel 的长度除 2 ，然后递归地调用 mergeTwo 最终来实现。 一般情况下，我们要合并 channel 的话，数量不会很多几百上千个，常见的是 5-6 个。并且更加实际环境中，每个 channel 还有其具体的名字的，也就只需要写一个 select 就可以了，不用像以上代码中不定长的 channel 实现方式要简单得多。">
 
 
