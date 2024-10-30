@@ -3,11 +3,11 @@
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title itemprop="name">投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客</title>
-<meta property="og:title" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
-<meta name="twitter:title" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
-<meta itemprop="name" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
-<meta name="application-name" content="投资与量化-任务2-什么是金融市场 | Jupiter 的个人博客" />
+<title itemprop="name">投资与量化-任务5-量化择时 | Jupiter 的个人博客</title>
+<meta property="og:title" content="投资与量化-任务5-量化择时 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="投资与量化-任务5-量化择时 | Jupiter 的个人博客" />
+<meta itemprop="name" content="投资与量化-任务5-量化择时 | Jupiter 的个人博客" />
+<meta name="application-name" content="投资与量化-任务5-量化择时 | Jupiter 的个人博客" />
 <meta property="og:site_name" content="Jupiter `s blog" />
 
 <meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
@@ -18,7 +18,7 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/quant-whale-notes/task5-select-time/" title="中文" />
 
 
 
@@ -28,42 +28,30 @@
 <meta name="generator" content="Hugo 0.136.5">
 
     
-    <meta property="og:url" content="https://JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/">
+    <meta property="og:url" content="https://JupiterXue.github.io/quant-whale-notes/task5-select-time/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
-  <meta property="og:title" content="投资与量化-任务2-什么是金融市场">
-  <meta property="og:description" content="传送门：第二章-金融市场基础
-思考 亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。
-货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。
-利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。
-利率计算公式： $$ PV = \frac{CF}{(1&#43;i)^n} $$
-通过极限推导可以得到： $$ PV = \frac{CF}{r} $$ 可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出： $$ PV = \frac{2}{0.02} = 100 \text{元} $$ 即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。
-投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。
-数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。">
+  <meta property="og:title" content="投资与量化-任务5-量化择时">
+  <meta property="og:description" content="传送门：第五章-量化择时
+思考 量化择时，时间作为投资的关键，决定了是否进行买卖。其中有三个主要时间选择：市场整体择时，板块轮动择时，个股择时。 常见的择时指标是均线、MACD、RSI，各有优点和缺点： 双均线，短（5、7、10），中（20、30、60），长（120、250），优点在于可以确定趋势；缺点在于具有滞后性，长短期难以抉择；未来优化方向在加权平均、不限于收盘价、自适应时间窗口。 MACD，=DIF（EMA12-EMA26）-DEA（EMA(DIF, 9)），优点在于单指标易分析适用于中长期走势，尤其在上涨/下跌乏力时发出交易信号；缺点在于单边趋势指标会失灵，收益不如指数收益。 RSI，=100-(100/1&#43;RS)，大于70超买，小于30超卖，优点在于捕捉短期买卖点，缺点在于单边行情或市场剧烈波动指标失真。未来优化在于多指标结合，动态调整周期，结合机器学习。 RS=上涨价格幅度的平均值/下跌价格幅度的平均值。 进阶八个择时指标：趋势、Hurst指数、SVM、牛熊线、SWARCH模型、异常指标、市场情绪、有效资金模型。 笔记 定义：根据量化指标，选择买卖时机。 主要分类：市场整体择时、板块行业轮动择时、个股择时 优点：超高额收益，降低风险。 主要目标：观察和定位市场的长期状态区间，在大概率下预测趋势，捕捉短期拐点。一般适合大类资产配置。 常见指标：均线、MACD、RSI。 进阶指标： 趋势：MA、MACD、DMA Hurst指数：分形，三种模式，H=0.5随机，0.5&lt;H&lt;1 长期记忆，0&lt;H&lt;0.5 分红噪声均值回复，只要不为0.5 可用偏的布朗运动（分形布朗）描述。 SWARCH模型：海通证券宏观经济指标，描述货币供应量M2和大盘走势关系。 异常指标：大盘顶点或低点出现的异常数据，主要有市场噪声、行业集中度和兴登堡凶兆。 市场情绪：投资信心指数，情绪热烈积极入市，情绪低迷撤出市场。 SVM：SVM 模式识别大盘，分为几个明显模式，找出特征，用历史数据学习模型来预测走势。 有效资金模型：顶部和底部资金由额外推力，EMS &gt; 0，主动买多，看好后市。EMS &lt; 0，主动卖多，下跌资金所需越多，下跌阻力越大。 牛熊线：年线250日线和大盘走势。 双均线：Granville八大买卖法则。 分类：短期5、7、10，中期20、30、60，长期 120、250 缺陷：滞后、长短期难选择 优化方向：用加权移动平均值，不限于收盘价，自适应调整均线周期 MACD： 短期 EMA 12 天，长期 EMA 26 天 DIF=EMA12-EMA26，DEA=DIF EMA（DIF，9） MACD DIF-DEA 优点： 两条线转换成单指标，减少频发假信号，适用于中长期走势 上涨乏力，能较早发出卖出信号，下跌反之如此。 缺点：上涨行情，收益不如股票指数自身涨幅。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="quant-whale-notes">
-    <meta property="article:published_time" content="2024-10-16T00:00:00+00:00">
-    <meta property="article:modified_time" content="2024-10-16T00:00:00+00:00">
+    <meta property="article:published_time" content="2024-10-30T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-10-30T00:00:00+00:00">
     <meta property="article:tag" content="Quant">
 
 
     
     
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="投资与量化-任务2-什么是金融市场">
-  <meta name="twitter:description" content="传送门：第二章-金融市场基础
-思考 亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。
-货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。
-利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。
-利率计算公式： $$ PV = \frac{CF}{(1&#43;i)^n} $$
-通过极限推导可以得到： $$ PV = \frac{CF}{r} $$ 可以称之为万物皆有价的公式。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出： $$ PV = \frac{2}{0.02} = 100 \text{元} $$ 即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。
-投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。
-数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。">
+  <meta name="twitter:title" content="投资与量化-任务5-量化择时">
+  <meta name="twitter:description" content="传送门：第五章-量化择时
+思考 量化择时，时间作为投资的关键，决定了是否进行买卖。其中有三个主要时间选择：市场整体择时，板块轮动择时，个股择时。 常见的择时指标是均线、MACD、RSI，各有优点和缺点： 双均线，短（5、7、10），中（20、30、60），长（120、250），优点在于可以确定趋势；缺点在于具有滞后性，长短期难以抉择；未来优化方向在加权平均、不限于收盘价、自适应时间窗口。 MACD，=DIF（EMA12-EMA26）-DEA（EMA(DIF, 9)），优点在于单指标易分析适用于中长期走势，尤其在上涨/下跌乏力时发出交易信号；缺点在于单边趋势指标会失灵，收益不如指数收益。 RSI，=100-(100/1&#43;RS)，大于70超买，小于30超卖，优点在于捕捉短期买卖点，缺点在于单边行情或市场剧烈波动指标失真。未来优化在于多指标结合，动态调整周期，结合机器学习。 RS=上涨价格幅度的平均值/下跌价格幅度的平均值。 进阶八个择时指标：趋势、Hurst指数、SVM、牛熊线、SWARCH模型、异常指标、市场情绪、有效资金模型。 笔记 定义：根据量化指标，选择买卖时机。 主要分类：市场整体择时、板块行业轮动择时、个股择时 优点：超高额收益，降低风险。 主要目标：观察和定位市场的长期状态区间，在大概率下预测趋势，捕捉短期拐点。一般适合大类资产配置。 常见指标：均线、MACD、RSI。 进阶指标： 趋势：MA、MACD、DMA Hurst指数：分形，三种模式，H=0.5随机，0.5&lt;H&lt;1 长期记忆，0&lt;H&lt;0.5 分红噪声均值回复，只要不为0.5 可用偏的布朗运动（分形布朗）描述。 SWARCH模型：海通证券宏观经济指标，描述货币供应量M2和大盘走势关系。 异常指标：大盘顶点或低点出现的异常数据，主要有市场噪声、行业集中度和兴登堡凶兆。 市场情绪：投资信心指数，情绪热烈积极入市，情绪低迷撤出市场。 SVM：SVM 模式识别大盘，分为几个明显模式，找出特征，用历史数据学习模型来预测走势。 有效资金模型：顶部和底部资金由额外推力，EMS &gt; 0，主动买多，看好后市。EMS &lt; 0，主动卖多，下跌资金所需越多，下跌阻力越大。 牛熊线：年线250日线和大盘走势。 双均线：Granville八大买卖法则。 分类：短期5、7、10，中期20、30、60，长期 120、250 缺陷：滞后、长短期难选择 优化方向：用加权移动平均值，不限于收盘价，自适应调整均线周期 MACD： 短期 EMA 12 天，长期 EMA 26 天 DIF=EMA12-EMA26，DEA=DIF EMA（DIF，9） MACD DIF-DEA 优点： 两条线转换成单指标，减少频发假信号，适用于中长期走势 上涨乏力，能较早发出卖出信号，下跌反之如此。 缺点：上涨行情，收益不如股票指数自身涨幅。">
 
 
     
 
-    <link rel="canonical" href="https://JupiterXue.github.io/quant-whale-notes/task2-basic_fina_concepts/">
+    <link rel="canonical" href="https://JupiterXue.github.io/quant-whale-notes/task5-select-time/">
     <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
     <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
@@ -192,45 +180,72 @@ stroke-linejoin="round" class="feather feather-home">
     <main class="page-content" aria-label="Content">
         <article>
             <header class="header">
-                <h1 class="header-title">投资与量化-任务2-什么是金融市场</h1>
+                <h1 class="header-title">投资与量化-任务5-量化择时</h1>
                 
                 
                 
                 <div class="post-meta">
-                    <time datetime="2024-10-16T00:00:00&#43;00:00" itemprop="datePublished"> Oct 16, 2024 </time>
+                    <time datetime="2024-10-30T00:00:00&#43;00:00" itemprop="datePublished"> Oct 30, 2024 </time>
                 </div>
                 
             </header>
             
             <div class="page-content">
-                <p>传送门：<a href="https://datawhalechina.github.io/whale-quant/#/./ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/2.1_%E5%AE%8F%E8%A7%82%E7%BB%8F%E6%B5%8E%E5%AD%A6%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5">第二章-金融市场基础</a></p>
-<h3 id="思考">思考</h3>
-<ol>
-<li>
-<p>亚当斯密从《国富论》提出看不见的手市场万能，标志微观经济学诞生；宏观经济学以凯恩斯流派为主，提倡研究供需关系与宏观经济指标。</p>
+                <p>传送门：<a href="https://datawhalechina.github.io/whale-quant/#/./ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5">第五章-量化择时</a></p>
+<h2 id="思考">思考</h2>
+<ul>
+<li>量化择时，时间作为投资的关键，决定了是否进行买卖。其中有三个主要时间选择：<strong>市场整体择时，板块轮动择时，个股择时</strong>。</li>
+<li>常见的择时指标是均线、MACD、RSI，各有优点和缺点：
+<ul>
+<li><strong>双均线</strong>，短（5、7、10），中（20、30、60），长（120、250），优点在于可以确定趋势；缺点在于具有滞后性，长短期难以抉择；未来优化方向在加权平均、不限于收盘价、自适应时间窗口。</li>
+<li><strong>MACD</strong>，=DIF（EMA12-EMA26）-DEA（EMA(DIF, 9)），优点在于单指标易分析适用于中长期走势，尤其在上涨/下跌乏力时发出交易信号；缺点在于单边趋势指标会失灵，收益不如指数收益。</li>
+<li><strong>RSI</strong>，=100-(100/1+RS)，大于70超买，小于30超卖，优点在于捕捉短期买卖点，缺点在于单边行情或市场剧烈波动指标失真。未来优化在于多指标结合，动态调整周期，结合机器学习。
+<ul>
+<li>RS=上涨价格幅度的平均值/下跌价格幅度的平均值。</li>
+</ul>
 </li>
-<li>
-<p>货币金融学研究金融资产有效配置，包括金融体系的建设（融资、工具和机构），货币的功能与计量。</p>
+</ul>
 </li>
-<li>
-<p>利率现值（贴现率）理论上可以想成通货膨胀率，或是机会成本：投资这东西本来可以赚5%，但为了投资另外一个地方而放弃这里的机会，即机会成本5%。又或者像是资金成本。个人更倾向于叫做打折率。</p>
+<li>进阶八个择时指标：趋势、Hurst指数、SVM、牛熊线、SWARCH模型、异常指标、市场情绪、有效资金模型。</li>
+</ul>
+<h2 id="笔记">笔记</h2>
+<ul>
+<li>定义：根据量化指标，选择买卖时机。</li>
+<li>主要分类：市场整体择时、板块行业轮动择时、个股择时</li>
+<li>优点：超高额收益，降低风险。</li>
+<li>主要目标：观察和定位市场的长期状态区间，在大概率下预测趋势，捕捉短期拐点。一般适合大类资产配置。</li>
+<li>常见指标：均线、MACD、RSI。</li>
+<li>进阶指标：
+<ul>
+<li>趋势：MA、MACD、DMA</li>
+<li>Hurst指数：分形，三种模式，H=0.5随机，0.5&lt;H&lt;1 长期记忆，0&lt;H&lt;0.5 分红噪声均值回复，只要不为0.5 可用偏的布朗运动（分形布朗）描述。</li>
+<li>SWARCH模型：海通证券宏观经济指标，描述货币供应量M2和大盘走势关系。</li>
+<li>异常指标：大盘顶点或低点出现的异常数据，主要有市场噪声、行业集中度和兴登堡凶兆。</li>
+<li>市场情绪：投资信心指数，情绪热烈积极入市，情绪低迷撤出市场。</li>
+<li>SVM：SVM 模式识别大盘，分为几个明显模式，找出特征，用历史数据学习模型来预测走势。</li>
+<li>有效资金模型：顶部和底部资金由额外推力，EMS &gt; 0，主动买多，看好后市。EMS &lt; 0，主动卖多，下跌资金所需越多，下跌阻力越大。</li>
+<li>牛熊线：年线250日线和大盘走势。</li>
+</ul>
 </li>
-<li>
-<p>利率计算公式：
-$$ PV = \frac{CF}{(1+i)^n} $$<br>
-通过极限推导可以得到：
-$$ PV = \frac{CF}{r} $$
-可以称之为<strong>万物皆有价的公式</strong>。比如一家公司固定配股配息2元，无期限，就可以大概算出这家公司大概值多少钱：如果通货膨胀率在2%，就可以算出：
-$$ PV = \frac{2}{0.02} = 100 \text{元} $$
-即公司股票价在100元是合理价格，实际股价在100以下就是好买点，以上就是溢价了。</p>
+<li>双均线：Granville八大买卖法则。
+<ul>
+<li>分类：短期5、7、10，中期20、30、60，长期 120、250</li>
+<li>缺陷：滞后、长短期难选择</li>
+<li>优化方向：用加权移动平均值，不限于收盘价，自适应调整均线周期</li>
+</ul>
 </li>
-<li>
-<p>投资学界定了四大类的投资种类：固定收益或债务型证券、普通股或权益型证券、基金、金融衍生品（期货期权互换），并根据其特点分为了几种交易市场：债券市场、外汇市场、贵金属市场、大宗商品市场和股票市场。</p>
+<li>MACD：
+<ul>
+<li>短期 EMA 12 天，长期 EMA 26 天</li>
+<li>DIF=EMA12-EMA26，DEA=DIF EMA（DIF，9）</li>
+<li>MACD DIF-DEA</li>
+<li>优点：</li>
+<li>两条线转换成单指标，减少频发假信号，适用于中长期走势</li>
+<li>上涨乏力，能较早发出卖出信号，下跌反之如此。</li>
+<li>缺点：上涨行情，收益不如股票指数自身涨幅。</li>
+</ul>
 </li>
-<li>
-<p>数理统计部分都是大学中概率论部分知识，公式列举枯燥乏味，有空还是继续补补课看看3Blue1Brown的动画教学视频。</p>
-</li>
-</ol>
+</ul>
 
             </div>
         </article></main>
