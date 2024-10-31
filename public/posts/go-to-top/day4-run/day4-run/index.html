@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——调试2 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——调试2 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——调试2 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——调试2 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——调试2 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/go-to-top/day4-run/day4-run/" title="中文" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2021-08-11T09:38:51&#43;0800 />
+    <meta property="article:published_time" content=2021-08-11T09:38:51&#43;0800 />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day4-run/day4-run/" />
+
+    
+    <meta property="og:article:author" content="JupiterXue" />
+    <meta property="article:author" content="JupiterXue" />
+    <meta name="author" content="JupiterXue" />
+    
+    
+
+    
+    <meta name="news_keywords" content="116" />
+    <meta property="article:section" content="116" />
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Go 翻山越岭——调试2",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2021-08-11",
+        "description": "",
+        "wordCount":  198 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2021-08-11",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Jupiter 的个人博客"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day4-run/day4-run/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——调试2">
+  <meta property="og:description" content="上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
+[toc]
+实验环境与回顾 操作系统：CentOS 7
+Go：1.14.12
+调试工具：readelf、dlv
+这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
+# 挂载目录，文件也可以生成 docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash # 进入项目目录 cd /project/work/ch01 # 查看文件 ls 这里的绿色 hello，就是我们 Go 语言编译后产生的 ELF 格式可执行程序（ELF 不知道是什么，可回顾上期文章）
+我们一般通过工具 readelf 来找到进入可执行程序底层的入口 entry point address，通过以下命令来实现，这里的 -h 表示去读取 header
+-h –file-header	Display the ELF file header
+readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-08-11T09:38:51+08:00">
+    <meta property="article:modified_time" content="2021-08-11T09:38:51+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——调试2">
+  <meta name="twitter:description" content="上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”
+[toc]
+实验环境与回顾 操作系统：CentOS 7
+Go：1.14.12
+调试工具：readelf、dlv
+这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。
+# 挂载目录，文件也可以生成 docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash # 进入项目目录 cd /project/work/ch01 # 查看文件 ls 这里的绿色 hello，就是我们 Go 语言编译后产生的 ELF 格式可执行程序（ELF 不知道是什么，可回顾上期文章）
+我们一般通过工具 readelf 来找到进入可执行程序底层的入口 entry point address，通过以下命令来实现，这里的 -h 表示去读取 header
+-h –file-header	Display the ELF file header
+readelf -h hello 开始底层调试 当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/go-to-top/day4-run/day4-run/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——调试2</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-08-11T09:38:51&#43;08:00" itemprop="datePublished"> Aug 11, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>上回我们说到，利用调试工具 readelf 读取我们在 Linux 上编译的可执行文件 hello，并且找到了查看 Go 底层的入口 entry point address，今天我们尝试踏进底层调试的大门，看一看我们平时所说的底层，是否真的很困难，今天的主题是“初探Go底层”</p>
+<p>[toc]</p>
+<h1 id="实验环境与回顾">实验环境与回顾</h1>
+<blockquote>
+<p>操作系统：CentOS 7</p>
+<p>Go：1.14.12</p>
+<p>调试工具：readelf、dlv</p>
+</blockquote>
+<p>这里我们同样运行曹大提供的实验环境，并且挂载映射到本地项目，然后进入到这个容器环境中。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 挂载目录，文件也可以生成</span>
+</span></span><span class="line"><span class="cl">docker run -it -v /root/project/dockerProject:/root/project xargin/go1.14.12-dev /bin/bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入项目目录</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /project/work/ch01
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看文件</span>
+</span></span><span class="line"><span class="cl">ls
+</span></span></code></pre></div><p><img alt="image-20210811230644860" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811230644860.png"></p>
+<p>这里的绿色 hello，就是我们 Go 语言编译后产生的 ELF 格式可执行程序（ELF 不知道是什么，可回顾上期文章）</p>
+<p>我们一般通过工具 readelf 来找到进入可执行程序底层的入口 entry point address，通过以下命令来实现，这里的 -h 表示去读取 header</p>
+<blockquote>
+<p>-h &ndash;file-header	Display the ELF file header</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">readelf -h hello
+</span></span></code></pre></div><p><img alt="image-20210809235305494" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210809235305494.png"></p>
+<h1 id="开始底层调试">开始底层调试</h1>
+<p>当找我们通过 readelf 找到了调试入口的十六进制地址码，我们还需要用另一个工具 dlv 才能来调试 Golang 程序。再次之前，来简单说明一下什么是 readelf、什么是 dlv。</p>
+<p>我们知道，Windows 上可执行文件的格式为 .exe，而 Linux 上可执行文件的格式为 ELF，见名知意，那么 <strong>readelf 是用于查看 ELF 可执行文件的命令工具</strong>，并且一般会有单个或多个参数的组合命令，这里我们只关注 -h 参数命令。</p>
+<p>Delv，简称 <strong>dlv 是 Go 语言的第三方调试工具</strong>，其目标是为 Go 提供简单、功能齐全的调试工具。相比于 Go 自带的调试器，dlv 做到了观察代码底层行为的功能。并且也是通过单个或多个命令组合实现一定功能。</p>
+<p>好，开始正式调试旅程，跟着我左手右手：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开启对可执行 go 文件的调试</span>
+</span></span><span class="line"><span class="cl">dlv <span class="nb">exec</span> ./hello
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 对 go 可执行文件的入口打断点，这里用到我们通过 readelf 工具找到的地址</span>
+</span></span><span class="line"><span class="cl">b *0x455780
+</span></span></code></pre></div><p><img alt="image-20210811233208118" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811233208118.png"></p>
+<p>可以看到整个可执行程序代码位置了</p>
+<p>继续查看代码的运行，通过 c 命令，c 是 continue 英文的简写</p>
+<p><img alt="image-20210811233238802" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811233238802.png"></p>
+<p>再用 si 命令，执行单步调试。（如果不知道 si 命令是什么意思，可以通过 h 命令，查看帮助，可以找到以下这段话）</p>
+<blockquote>
+<p>stel-instrution (alias: si)	Single step a single cpu instruction.</p>
+</blockquote>
+<p>这里我们先记住一个 l 命令，可以查看当前执行到哪个位置。</p>
+<p><img alt="image-20210811233604465" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811233604465.png"></p>
+<p>再用 si 进入下一步</p>
+<p><img alt="image-20210811233644567" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811233644567.png"></p>
+<p>然后一路输入 si、si、si 可以看到每一步 Go 的底层做了什么，即 Go 语言在汇编层面进行了什么样的指令集。</p>
+<p>OK，通过以上的流程，我们搞清楚了 “Go 进程的启动与初始化的流程”。首先通过 entry point 找到 Go 进程的执行入口，然后实现了：文本 → 编译 → 二进制可执行文件</p>
+<p><img alt="未命名文件" src="c:\\Users\\Xfavor\\Desktop\\未命名文件.png"></p>
+<p>最后，我们可以通过 si 来一步步查看 Go 底层执行的代码，不过这种一直 si 的方式是不是有点不爽？没关系，有好的解决办法——上 Goland。在 Goland 中我们通过 Command+Shift+9，打开底层搜索框，输入 ·rt0_go ，然后点击系统的 rt0_go 的所在位置：</p>
+<p><img alt="image-20210811235217024" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811235217024.png"></p>
+<p>在 Goland 中，就可以自在地上下滚动去查看汇编代码了，不用再机械地用 si 进行调试了。</p>
+<p>这些汇编指令看不懂没有关系，直接找里面的关键函数看就好了。比如不用关注初始化、处理平台的完全不用看，而去关注 ok 后面的代码就可以</p>
+<p><img alt="image-20210811235344792" src="c:\\Users\\Xfavor\\AppData\\Roaming\\Typora\\typora-user-images\\image-20210811235344792.png"></p>
+<p>今天初步探索了 Go 底层的调试，是不是感觉也没有那么困难。没错，只要肯花时间，都能看得懂的。</p>
+<p><strong>参考资料</strong></p>
+<p>[1] readelf命令使用说明</p>
+<p><a href="https://blog.csdn.net/yfldyxl/article/details/81566279">https://blog.csdn.net/yfldyxl/article/details/81566279</a></p>
+<p>[2] 译文 使用 Delve 工具调试 Golang 程序, GOCN</p>
+<p><a href="https://gocn.vip/topics/12090">https://gocn.vip/topics/12090</a></p>
+<p>[3] 常用的分析ELF文件的命令（readelf、objdump及od）</p>
+<p><a href="https://blog.csdn.net/qq_21331015/article/details/103210449">https://blog.csdn.net/qq_21331015/article/details/103210449</a></p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

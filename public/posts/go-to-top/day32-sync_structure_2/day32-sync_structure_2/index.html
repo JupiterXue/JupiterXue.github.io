@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——并发数据结构（2） | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——并发数据结构（2） | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——并发数据结构（2） | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——并发数据结构（2） | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——并发数据结构（2） | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/go-to-top/day32-sync_structure_2/day32-sync_structure_2/" title="中文" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2021-11-29T22:39:57&#43;0800 />
+    <meta property="article:published_time" content=2021-11-29T22:39:57&#43;0800 />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day32-sync_structure_2/day32-sync_structure_2/" />
+
+    
+    <meta property="og:article:author" content="JupiterXue" />
+    <meta property="article:author" content="JupiterXue" />
+    <meta name="author" content="JupiterXue" />
+    
+    
+
+    
+    <meta name="news_keywords" content="116" />
+    <meta property="article:section" content="116" />
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Go 翻山越岭——并发数据结构（2）",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2021-11-29",
+        "description": "",
+        "wordCount":  159 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2021-11-29",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Jupiter 的个人博客"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.135.0">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day32-sync_structure_2/day32-sync_structure_2/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——并发数据结构（2）">
+  <meta property="og:description" content="本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。
+sync.Pool 上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：
+图 1：sync.Pool GC 时的逻辑可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
+一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。
+并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。
+semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-11-29T22:39:57+08:00">
+    <meta property="article:modified_time" content="2021-11-29T22:39:57+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——并发数据结构（2）">
+  <meta name="twitter:description" content="本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。
+sync.Pool 上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：
+图 1：sync.Pool GC 时的逻辑可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。
+一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。
+并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。
+semaphore 信号量 （semaphore），是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/go-to-top/day32-sync_structure_2/day32-sync_structure_2/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——并发数据结构（2）</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-11-29T22:39:57&#43;08:00" itemprop="datePublished"> Nov 29, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#syncpool">sync.Pool</a></li>
+    <li><a href="#semaphore">semaphore</a></li>
+    <li><a href="#syncmutex">sync.Mutex</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <p>本期文章继续拆解 Go 语言中并发部分的一些内置数据结构，了解它们的运行逻辑，梳理其中的要点。</p>
+<h2 id="syncpool">sync.Pool</h2>
+<p>上期说到 sync.Pool 结构，它的应用场合非常多，不过主要是用于 GC 标记阶段消耗大量 CPU 或者进程 RSS 占用过高情况。并且通过梳理源码发现它的逻辑是和缓存的机制很像是，都是多级缓存结构的。上期也留下了一个悬念，当 sync.Once 发生 GC 时，sync.Pool 的代码逻辑有有怎样的变化呢？还是看图直观点：</p>
+<p><img alt="sync.Pool GC 时逻辑" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111292258979.svg"></p>
+<center>图 1：sync.Pool GC 时的逻辑</center>
+<p>可以看到，当发生 GC 的时候，相当于将 local 和 localSize 直接向下平移，local 赋值给了 victim，localSize 赋值给了 P。如果之前 victim 和 victimSize 有值的话就直接丢弃掉。通过这种方式将以前不需要的、多出来的对象淘汰掉。如果把其中的值刚替换掉，并且又需要从 sync.Pool 中 get 获取对象的时候，local 为空，因此就会去 victim 中去寻找值。其他的逻辑，其实和之前的逻辑是完全一致的。最终，如果 victim 找不到值，就会去 P 中去找值。</p>
+<p>一个小插曲。sync.Pool 最早的实现中，操作 shared 是有锁的。而从 Go 1.13 开始，这个锁就直接被干掉了，变成了右下方看起来有点诡异的双端链表，它就可以无锁进行操作。</p>
+<p>并且早期的 sync.Pool 在进行 GC 的时候会将其中的对象完全清空掉的。如果我们的程序对 sync.Pool 有重度使用的情况，那么在每次 GC 完成之后，如果正好发生了一个流量请求的数量波动，就会造成应用程序大量地阻塞在一个锁上，会有短时间的延迟波动。</p>
+<h2 id="semaphore">semaphore</h2>
+<p><strong>信号量 （semaphore）</strong>，是和所有锁相关的实现基础和所有同步原语的基础设施。可以看看这幅图：</p>
+<p><img alt="semaphore (2)" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111292325509.svg"></p>
+<center>图 2：semaphore 逻辑</center>
+<p>semaphore 它的底层其实可以理解为一个个 waitlink 的链表（先看最下方）。不过这个链表需要在 runtime 中去维护，所以设计了一个 semtable（最上方）。semtable 就是一个定长的数组，这里的长度为 251，也就是锁信号量的地址移进来的。其中每一个元素都是 treap 的数据结构，从字面上来看，“treap”其实就是“tree”和“heap”的合成词，也就是说它既是一棵树也是一个堆：</p>
+<ul>
+<li>它是按照 lock addr 排列的二叉搜索树。如果想要加锁，锁中有个信号成员，成员有个地址，通过这个地址最终找到它在二叉搜索树的哪个节点上。并且每个节点就是一个链表。</li>
+<li>既然是二叉搜索树的结构，那么为了保持平衡，所以会为每个节点赋值一个 ticket。</li>
+<li>这个 ticket 会在每次初始化的时候通过 fastrand 来生成。</li>
+</ul>
+<p>如果我们有任何一个锁发生了阻塞，最终都是阻塞在以上这个结构中。最终找到它的节点以后，它们是挂载在等待链表之后的。</p>
+<p>小结，整个逻辑就是通过 semtable 进行查找，然后在 treap 树中查找，最终把找到的节点挂载在对应元素后面。</p>
+<h2 id="syncmutex">sync.Mutex</h2>
+<p>**普通写锁 （sync.Mutex）**有两个字段，状态 state 和信号量 sema，其实也就是 atomic 锁和 semaphore 信号量结合实现的。其逻辑如下：</p>
+<p><img alt="sync.Mutex 逻辑" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111292341422.svg"></p>
+<center>图 2：sync.Mutex 逻辑</center>
+<p>state 结构中，会将最后三位作为标记位：</p>
+<ul>
+<li>最后一位表示当前锁是否已上锁、是否已经被抢占。</li>
+<li>倒数第二位表示当前 mutex 是否有被唤醒并且在等待锁的 G</li>
+<li>倒数第三位表示当前的互斥量是否要进入饥饿模式，如果置为 1，那么之后来的 Goroutine 不能去抢占这个锁，必须在 semaphore 结构中的 treap 找到位置，并且排队在之前的 sudog 后面。
+<ul>
+<li>注意这里的饥饿模式，其实是为了实现锁的公平性。官方在设计锁的时候，给了 Goroutine 一个优先级，也就是最新来抢锁的 Goroutine 的优先级是最高的。源码中是一个自旋的逻辑，一直在检查能否抢到一把锁，如果能够抢到就直接返回 lock 结构，让用户执行 lock 之后的代码。而如果当前 mutex 已经饥饿了，那说明在队列中已经有 Goroutine 等待了很长时间了，那么新来的 Goroutine 能够拿到锁就不太合理了。</li>
+</ul>
+</li>
+</ul>
+<p>整个 state 是 32 位的结构，除去最后三位，剩下 29 位就是所有等待 Goroutine 的计数。</p>
+<p>我们在看代码的时候可能也会遇到这个将最后三位最为状态的优化结构，所以它的计数每次都会向右移动三位。</p>
+<p>除了 state，还有一个 sema，如果了解得多，可以发现：几乎所有和锁相关的数据结构，最终都会有这个成员。这个成员最终对应的就是锁的链表，这个链表也就是 treap 树上的一个节点。</p>
+<p>OK，下期文章继续再对几个常见并发结构做梳理。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

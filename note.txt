@@ -1,18 +1,21 @@
-Hugo
+## Hugo 本身
 - 热加载
 hugo server --navigateToChanged
 - 目录详解
 https://gohugo.io/getting-started/directory-structure/
-- 创建文章
+- 创建文章，自动创建目录
 Linux:
 hugo new content quant-whale-notes/task3.md
 Win:
 hugo new content quant-whale-notes/task3-get_data/index.md
 
 
-Theme-blog-awesome
+## 主题相关 Theme-blog-awesome
 - 地址：https://github.com/hugo-sid/hugo-blog-awesome
+- 所有文章目录放在 posts 下，可在主页显示最近更新5条
 
+
+## 发布到 github pages
 rm -rf public
 del public
 hugo
@@ -21,7 +24,8 @@ git commit -m "update a blog"
 git push
 
 
-Win
+## 操作系统相关
+### Win
 - 安装 choco 方便安装一下 Linux 下软件
 - 通过 choco 安装 hugo扩展版
 choco install hugo-extended
