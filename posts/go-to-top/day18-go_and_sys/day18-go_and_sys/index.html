@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">GO 翻山越岭——Go 常见系统调用 | Jupiter 的个人博客</title>
+<meta property="og:title" content="GO 翻山越岭——Go 常见系统调用 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="GO 翻山越岭——Go 常见系统调用 | Jupiter 的个人博客" />
+<meta itemprop="name" content="GO 翻山越岭——Go 常见系统调用 | Jupiter 的个人博客" />
+<meta name="application-name" content="GO 翻山越岭——Go 常见系统调用 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/go-to-top/day18-go_and_sys/day18-go_and_sys/" title="中文" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2021-09-07T07:28:31&#43;0800 />
+    <meta property="article:published_time" content=2021-09-07T07:28:31&#43;0800 />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day18-go_and_sys/day18-go_and_sys/" />
+
+    
+    <meta property="og:article:author" content="JupiterXue" />
+    <meta property="article:author" content="JupiterXue" />
+    <meta name="author" content="JupiterXue" />
+    
+    
+
+    
+    <meta name="news_keywords" content="116" />
+    <meta property="article:section" content="116" />
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "GO 翻山越岭——Go 常见系统调用",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2021-09-07",
+        "description": "",
+        "wordCount":  204 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2021-09-07",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Jupiter 的个人博客"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.136.5">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day18-go_and_sys/day18-go_and_sys/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="GO 翻山越岭——Go 常见系统调用">
+  <meta property="og:description" content="系统调用，是操作系统内核为应用提供的 API。今天继续来讲一个系统调用案例和 Go 中常见系统调用
+arch syscall NR return arg0 arg1 arg2 arg3 arg4 arg5 213 epoll_create man/ cs/ 0xd5 int size - - - - 来源：https://chromium.googlesource.com/chromiumos/docs/&#43;/master/constants/syscalls.md#x86_64-64_bit
+这是 Linux 中的系统调用，编号是 213，我们可以从一下代码了解更多信息：
+# define SYS_epoll_create 213 TEXT runtime.epoll_create(SB), NOSPLIT, $0 MOVL	size&#43;0(FP), DI MOVL	$SYS_epoll_create, AX SYSCALL MOVL	AX, ret&#43;8(FP) RET 编号 213 按照调用规约会被存储在 rax 寄存器中，也就是这里的 AX 寄存器。epoll_create 只有一个阐述传递，也就是 int 类型的 size。SYSCALL 直接进入内核去了。
+因此，我们需要知道 SYSCALL 之后发生了什么，即我们写好应用程序 Application program 执行了哪些 SYSCALL 逻辑。从下图可以得知：
+当我们调用了 syscall.EpollCreate 之后进入了 syscall 包中的一段代码，然后根据一定的规则翻译成 runtime.RawSyscall，里面会有一堆准备参数和逻辑，完了之后就是执行 SYSCALL 指令。上期说的我们写的代码处于 CPU 分级保护域 ring-3，执行这个指令之后就能帮助我们从 ring-3 切换到 ring-0，然后去执行内核相关的代码了。ring-0 内核模式下什么操作都能够进行，没有特别的权限限制。内核也有相关的系统调用表（在最上面的链接中），会去调用具体的系统调用实现。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-09-07T07:28:31+08:00">
+    <meta property="article:modified_time" content="2021-09-07T07:28:31+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GO 翻山越岭——Go 常见系统调用">
+  <meta name="twitter:description" content="系统调用，是操作系统内核为应用提供的 API。今天继续来讲一个系统调用案例和 Go 中常见系统调用
+arch syscall NR return arg0 arg1 arg2 arg3 arg4 arg5 213 epoll_create man/ cs/ 0xd5 int size - - - - 来源：https://chromium.googlesource.com/chromiumos/docs/&#43;/master/constants/syscalls.md#x86_64-64_bit
+这是 Linux 中的系统调用，编号是 213，我们可以从一下代码了解更多信息：
+# define SYS_epoll_create 213 TEXT runtime.epoll_create(SB), NOSPLIT, $0 MOVL	size&#43;0(FP), DI MOVL	$SYS_epoll_create, AX SYSCALL MOVL	AX, ret&#43;8(FP) RET 编号 213 按照调用规约会被存储在 rax 寄存器中，也就是这里的 AX 寄存器。epoll_create 只有一个阐述传递，也就是 int 类型的 size。SYSCALL 直接进入内核去了。
+因此，我们需要知道 SYSCALL 之后发生了什么，即我们写好应用程序 Application program 执行了哪些 SYSCALL 逻辑。从下图可以得知：
+当我们调用了 syscall.EpollCreate 之后进入了 syscall 包中的一段代码，然后根据一定的规则翻译成 runtime.RawSyscall，里面会有一堆准备参数和逻辑，完了之后就是执行 SYSCALL 指令。上期说的我们写的代码处于 CPU 分级保护域 ring-3，执行这个指令之后就能帮助我们从 ring-3 切换到 ring-0，然后去执行内核相关的代码了。ring-0 内核模式下什么操作都能够进行，没有特别的权限限制。内核也有相关的系统调用表（在最上面的链接中），会去调用具体的系统调用实现。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/go-to-top/day18-go_and_sys/day18-go_and_sys/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">GO 翻山越岭——Go 常见系统调用</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-09-07T07:28:31&#43;08:00" itemprop="datePublished"> Sep 7, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p>系统调用，是操作系统内核为应用提供的 API。今天继续来讲一个系统调用案例和 Go 中常见系统调用</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center">arch</th>
+          <th style="text-align: center">syscall NR</th>
+          <th style="text-align: center">return</th>
+          <th style="text-align: center">arg0</th>
+          <th style="text-align: center">arg1</th>
+          <th style="text-align: center">arg2</th>
+          <th style="text-align: center">arg3</th>
+          <th style="text-align: center">arg4</th>
+          <th style="text-align: center">arg5</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">213</td>
+          <td style="text-align: center">epoll_create</td>
+          <td style="text-align: center">man/ cs/</td>
+          <td style="text-align: center">0xd5</td>
+          <td style="text-align: center">int size</td>
+          <td style="text-align: center">-</td>
+          <td style="text-align: center">-</td>
+          <td style="text-align: center">-</td>
+          <td style="text-align: center">-</td>
+      </tr>
+  </tbody>
+</table>
+<p>来源：https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86_64-64_bit</p>
+<p>这是 Linux 中的系统调用，编号是 213，我们可以从一下代码了解更多信息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ABAP" data-lang="ABAP"><span class="line"><span class="cl"><span class="err">#</span> <span class="k">define</span> <span class="nv">SYS_epoll_create</span>    <span class="mi">213</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">TEXT</span> <span class="nv">runtime</span><span class="p">.</span><span class="nv">epoll_create</span><span class="p">(</span><span class="nv">SB</span><span class="p">),</span> <span class="nv">NOSPLIT</span><span class="p">,</span> <span class="err">$</span><span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">MOVL</span>	<span class="k">size</span><span class="o">+</span><span class="mi">0</span><span class="p">(</span><span class="nv">FP</span><span class="p">),</span> <span class="nv">DI</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">MOVL</span>	<span class="err">$</span><span class="nv">SYS_epoll_create</span><span class="p">,</span> <span class="nv">AX</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">SYSCALL</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">MOVL</span>	<span class="nv">AX</span><span class="p">,</span> <span class="nv">ret</span><span class="o">+</span><span class="mi">8</span><span class="p">(</span><span class="nv">FP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">RET</span>
+</span></span></code></pre></div><p>编号 213 按照调用规约会被存储在 rax 寄存器中，也就是这里的 AX 寄存器。epoll_create 只有一个阐述传递，也就是 int 类型的 size。SYSCALL 直接进入内核去了。</p>
+<p>因此，我们需要知道 SYSCALL 之后发生了什么，即我们写好应用程序 Application program 执行了哪些 SYSCALL 逻辑。从下图可以得知：</p>
+<p><img alt="SYSCALL 之后发生了什么" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202109072232527.png"></p>
+<p>当我们调用了 syscall.EpollCreate 之后进入了 syscall 包中的一段代码，然后根据一定的规则翻译成 runtime.RawSyscall，里面会有一堆准备参数和逻辑，完了之后就是执行 SYSCALL 指令。上期说的我们写的代码处于 CPU 分级保护域 ring-3，执行这个指令之后就能帮助我们从 ring-3 切换到 ring-0，然后去执行内核相关的代码了。ring-0 内核模式下什么操作都能够进行，没有特别的权限限制。内核也有相关的系统调用表（在最上面的链接中），会去调用具体的系统调用实现。</p>
+<blockquote>
+<p>推荐一个可以查看层内核的在线工具，做 C/C++ 的同学都可以看：code.woboq.org</p>
+</blockquote>
+<h1 id="go-常见系统调用">Go 常见系统调用</h1>
+<p>我想，大多数同学和我一样，想问一个问题：了解了系统调用对我们有什么用呢？按理来说，我们还要了解几个部分，Go 的实现，Go 怎么和操作系统交互。知道了 GC 就知道 Go 怎么和系统进行交互。知道了内存相关就知道内核 flag 或 syscall 被修改后为什么会导致应用层行为出这么大的问题。像这些业务问题我们大概知道一点，就不会在做应用的时候完全束手无策。</p>
+<p>在 Go 代码中，也有支持系统调用的地方，比如：</p>
+<table>
+  <thead>
+      <tr>
+          <th>Go 代码</th>
+          <th>系统调用</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>os.GetPid()</td>
+          <td>getpid()</td>
+      </tr>
+      <tr>
+          <td>println(&ldquo;hello world&rdquo;)</td>
+          <td>write(2, &ldquo;hello world&rdquo;, 11)</td>
+      </tr>
+      <tr>
+          <td>startm -&gt; newm -&gt; newosproc</td>
+          <td>clone(child_stack=0xc43003c00, flags=&hellip;&hellip;)</td>
+      </tr>
+  </tbody>
+</table>
+<p>系统调用 write(2, &ldquo;hello world&rdquo;, 11) 中，2 代表 stderr，11 代表字符串长度 strlen。我们在 Linux 中最常见的就是 stdin、stdout、stderr，如果不主动做修改，他们分别对应数字 0, 1, 2. 这里可能会问到，为什么会传递字符串长度，在 C 语言中传递字符串就需要传指针，因为指针不知道字符串的长度。而 Go 语言虽然看起来只是传递了数据结构，但底层还是会做展开。比如传入了一个数组，就会展开为：一个地址、一个长度 len、一个容量 cup，写的是一个参数，底层就展开为了三个参数。</p>
+<p>启动线程代码 startm -&gt; newm -&gt; newosproc  中，newosproc  最终调用了系统调用 clone。</p>
+<p>然后再看下不同操作系统下常见的系统调用</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center">Types of System Calls</th>
+          <th>Windows</th>
+          <th>Linux</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">Process Control</td>
+          <td>CreateProcess()<br />ExitProcess()<br />WaitForSingleObject()</td>
+          <td>fork()<br />exit()<br />wait()</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">File Management</td>
+          <td>CreateFile()<br />ReadFile()<br />WriteFile()<br />CloseHandle()</td>
+          <td>open()<br />read()<br />write()<br />close()</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">Device Management</td>
+          <td>SetConsoleMode()<br />ReadConsole()<br />WriteConsole()</td>
+          <td>ioctl()<br />read()<br />write()</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">Information Maintenance</td>
+          <td>GetCurrentProcessID()<br />SetTimer()<br />Sleep()</td>
+          <td>getpid()<br />alarm()<br />sleep()</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">Communication</td>
+          <td>CreatePipe()<br />CreateFileMapping()<br />MapViewOfFile()</td>
+          <td>pipe()<br />shmget()<br />mmap()</td>
+      </tr>
+  </tbody>
+</table>
+<p>可以发现，不同操作系统下系统调用是不一样的，所以在不同操作系统上看到的也不一样。了解这些的意义也是在于，我们想要做超过自身能力意外的事情就必须求助于操作系统。</p>
+<p>总结，了解系统调用后可以发现这个一个现象：我们的应用程序是被关在权限的监狱中，只能做很少的一些事情，其他的必须拜托操作系统来做。</p>
+<p>下期预告：利用工具去观察系统调用。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

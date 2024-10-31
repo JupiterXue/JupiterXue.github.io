@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——调度-day1 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——调度-day1 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——调度-day1 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——调度-day1 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——调度-day1 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/go-to-top/day1-scheduler/day1-scheduler/" title="中文" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2021-08-03T09:38:51&#43;0800 />
+    <meta property="article:published_time" content=2021-08-03T09:38:51&#43;0800 />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day1-scheduler/day1-scheduler/" />
+
+    
+    <meta property="og:article:author" content="JupiterXue" />
+    <meta property="article:author" content="JupiterXue" />
+    <meta name="author" content="JupiterXue" />
+    
+    
+
+    
+    <meta name="news_keywords" content="116" />
+    <meta property="article:section" content="116" />
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Go 翻山越岭——调度-day1",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2021-08-03",
+        "description": "",
+        "wordCount":  82 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2021-08-03",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Jupiter 的个人博客"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.136.5">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day1-scheduler/day1-scheduler/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——调度-day1">
+  <meta property="og:description" content="前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
+Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory	：当代码需要内存时，负责内存分配工作
+Garbage	：当内存不再需要时，负责回收内存
+而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
+什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
+go func() { println(&#34;hello world in goroutine!&#34;) } 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
+Goroutine 生产过程3,4
+Goroutine 消费过程
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）
+相关链接">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-08-03T09:38:51+08:00">
+    <meta property="article:modified_time" content="2021-08-03T09:38:51+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——调度-day1">
+  <meta name="twitter:description" content="前言 Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。
+Golang 四座大山 作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：
+Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环
+Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项
+Memory	：当代码需要内存时，负责内存分配工作
+Garbage	：当内存不再需要时，负责回收内存
+而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。
+调度器的发展历史 如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：
+什么是调度1,2 举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。 Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。 一个简短的例子 每当我们写下这样形式的代码，到底发生了什么事情呢？
+go func() { println(&#34;hello world in goroutine!&#34;) } 这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。 Go调度流程的本质 也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。 这里有两个动画便于你理解：
+Goroutine 生产过程3,4
+Goroutine 消费过程
+想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。 （未完待续）
+相关链接">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/go-to-top/day1-scheduler/day1-scheduler/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——调度-day1</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-08-03T09:38:51&#43;08:00" itemprop="datePublished"> Aug 3, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#前言">前言</a></li>
+      </ul>
+    </li>
+    <li><a href="#golang-四座大山">Golang 四座大山</a></li>
+    <li><a href="#调度器的发展历史">调度器的发展历史</a></li>
+    <li><a href="#什么是调度34">什么是调度,</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <h3 id="前言">前言</h3>
+<p>Go 语言是一门入门容易深入难的编程语言。说得好像其他编程语言就有入门难深入简单的？其实每一门编程语言要深入学习都会有不一样的壁垒与门槛，只是看作者如何挖掘。</p>
+<!-- more -->
+<h2 id="golang-四座大山">Golang 四座大山</h2>
+<p>作为 Go 语言进阶的一个标识，是磕磕绊绊地翻过 runtime 四座大山，包括：</p>
+<blockquote>
+<p>Scheduler	：调度器管理所有的 G，M，P，在后台执行调度循环</p>
+<p>Netpoll	：网络轮询负责管理网络 DF 相关的读写、就绪事项</p>
+<p>Memory	：当代码需要内存时，负责内存分配工作</p>
+<p>Garbage	：当内存不再需要时，负责回收内存</p>
+</blockquote>
+<p>而这些模块中，最核心的就是 Scheduler 调度，它负责串联所有的 runtime 流程。“要去到哪里,就从哪里开始”，既然选择学习 Golang，我们就直面这个第一个难题。</p>
+<h2 id="调度器的发展历史">调度器的发展历史</h2>
+<p>如果你学习数学感觉困难，那么可以去读数学史。如果学习 Go 语言调度感到困难，那么我们先老了解调度的发展历史。再反过来想一下，如果你是一个领域的专家，是否应该比较熟悉该领域的发展历史？ 哲学家培根说过：“读史使人明智，读诗使人灵秀，数学使人周密，科学使人深刻，伦理使人庄重，逻辑修辞之学使人善辩“。那么就开始我们的调度器发展史：</p>
+<h2 id="什么是调度34">什么是调度<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>,<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></h2>
+<p>举个例子，十字路口的红绿灯，就是一种调度系统。因为车速过快，人工去做疏导指挥的效率太低而采取的一种自动化的处理流程，为了限制这些车辆不随意行驶，便有了红绿灯调度系统。
+Go 调度是为了多个协程能合理的利用线程。这里的协程（goroutine）相当于车辆了，线程相当于十字路口。程序在运行时，会运行很多协程 goroutine，也就是我们常说的并发，为了保障这些协程能够有序快速地在线程上执行，这时候就引入可调度 Scheduler。
+一个简短的例子
+每当我们写下这样形式的代码，到底发生了什么事情呢？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="nb">println</span><span class="p">(</span><span class="s">&#34;hello world in goroutine!&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>这里我们是向 runtime 提交了一个计算任务，并且 func() { xxx } 里包裹的代码，就是这个计算任务的内容。
+Go调度流程的本质
+也许这里还不清楚，但请记住，Go 的调度流程本质上是一个生产—消费流程。在后面的讲解中你会更加深刻了解到这句话的深意。
+这里有两个动画便于你理解：</p>
+<p>Goroutine 生产过程<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>,<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></p>
+<p>Goroutine 消费过程</p>
+<p>想要学好编程，就需要下功夫，多投入时间去理解与实践。想要学好 Go 语言，就需要跋山涉水，为你我愿意翻山越岭。
+（未完待续）</p>
+<p><strong>相关链接</strong></p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://golang.design/go-questions/sched/goroutine-vs-thread/">goroutine 和线程的区别</a>，饶全成, 博客&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://www.cnblogs.com/jiujuan/p/12735559.html">深入理解Go语言(03)：scheduler调度器 - 基本介绍</a>, 博客园&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>Go 高级工程师实战营第一课, 草春晖&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p><a href="https://qcrao.com/ishare/go-scheduler/">go-scheduler</a>, 饶全成, 博客&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

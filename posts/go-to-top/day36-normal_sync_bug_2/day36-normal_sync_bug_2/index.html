@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——常见并发 bug（2） | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——常见并发 bug（2） | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——常见并发 bug（2） | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——常见并发 bug（2） | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——常见并发 bug（2） | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/" title="中文" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2021-12-08T16:20:11&#43;0800 />
+    <meta property="article:published_time" content=2021-12-08T16:20:11&#43;0800 />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/" />
+
+    
+    <meta property="og:article:author" content="JupiterXue" />
+    <meta property="article:author" content="JupiterXue" />
+    <meta name="author" content="JupiterXue" />
+    
+    
+
+    
+    <meta name="news_keywords" content="116" />
+    <meta property="article:section" content="116" />
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Go 翻山越岭——常见并发 bug（2）",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2021-12-08",
+        "description": "",
+        "wordCount":  291 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2021-12-08",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Jupiter 的个人博客"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.136.5">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——常见并发 bug（2）">
+  <meta property="og:description" content="上期文章说到了一些常见并发 bug 的场景，本期文章继续聊聊 Go 语言中常见的一些 bug，继续写 bug（当然不是），并通过代码案例来讲解。
+K8S 这里有段一篇论文的代码，这篇论文总结了业界比较知名的 bug，有一些是 k8s、docker 等耳熟能详的应用。因此，我们也可以发现，即便是 Google 的工程师，他们还是会写出来一些 bug，
+func finishReq(timeout time.Duration) r ob { ch := make(chan ob) // before modify ch := make(chan ob, 1) // modified go func() { result := fn() ch &lt;- result // block } () select { case result = &lt;- ch: return result case &lt;- time.After(timeout): return nil } } 这段代码的思路其实很简单：我现在想往外部发一个请求，同时要控制超时。如果请求超时那么就会给用户返回一个空。
+这里前两行分别有两段注释，说的是官方修改前的代码 channel 没有缓冲，还有段是修改后的代码 channel 中加入了 1 的缓冲。如果是未修改前的代码，在整个程序跑起来后，我们可以自己先想一下可能会发生什么问题？
+在启动了 goroutine 去向远端发起请求的时候，如果发生了超时，就会触发 select 直接返回空。说明 channel 的对端已经没有消费者在等待结果，而没有缓冲时，channel 的 buffer 为 0，那么往 channel 发送结果的 goroutine 一定会阻塞，也就意味着这个 goroutine 永远释放不了，最终造成 goroutine 泄露。也就是超时一次就泄露一个 goroutine，如果超时越多，泄露的 goroutine 涨幅也越多。
+sync.WaitGroup 这个是 sync.WaitGroup 的 bug
+var group sync.WaitGroup group.Add(len(pm.plugins)) for _, p := range pm.plugins { go func(p *plugin) { defer group.Dont() } group.Wait() // before modify } group.Wait() // modified 看到代码大家可以思考一些这段代码有什么问题。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-12-08T16:20:11+08:00">
+    <meta property="article:modified_time" content="2021-12-08T16:20:11+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——常见并发 bug（2）">
+  <meta name="twitter:description" content="上期文章说到了一些常见并发 bug 的场景，本期文章继续聊聊 Go 语言中常见的一些 bug，继续写 bug（当然不是），并通过代码案例来讲解。
+K8S 这里有段一篇论文的代码，这篇论文总结了业界比较知名的 bug，有一些是 k8s、docker 等耳熟能详的应用。因此，我们也可以发现，即便是 Google 的工程师，他们还是会写出来一些 bug，
+func finishReq(timeout time.Duration) r ob { ch := make(chan ob) // before modify ch := make(chan ob, 1) // modified go func() { result := fn() ch &lt;- result // block } () select { case result = &lt;- ch: return result case &lt;- time.After(timeout): return nil } } 这段代码的思路其实很简单：我现在想往外部发一个请求，同时要控制超时。如果请求超时那么就会给用户返回一个空。
+这里前两行分别有两段注释，说的是官方修改前的代码 channel 没有缓冲，还有段是修改后的代码 channel 中加入了 1 的缓冲。如果是未修改前的代码，在整个程序跑起来后，我们可以自己先想一下可能会发生什么问题？
+在启动了 goroutine 去向远端发起请求的时候，如果发生了超时，就会触发 select 直接返回空。说明 channel 的对端已经没有消费者在等待结果，而没有缓冲时，channel 的 buffer 为 0，那么往 channel 发送结果的 goroutine 一定会阻塞，也就意味着这个 goroutine 永远释放不了，最终造成 goroutine 泄露。也就是超时一次就泄露一个 goroutine，如果超时越多，泄露的 goroutine 涨幅也越多。
+sync.WaitGroup 这个是 sync.WaitGroup 的 bug
+var group sync.WaitGroup group.Add(len(pm.plugins)) for _, p := range pm.plugins { go func(p *plugin) { defer group.Dont() } group.Wait() // before modify } group.Wait() // modified 看到代码大家可以思考一些这段代码有什么问题。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/go-to-top/day36-normal_sync_bug_2/day36-normal_sync_bug_2/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——常见并发 bug（2）</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-12-08T16:20:11&#43;08:00" itemprop="datePublished"> Dec 8, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#k8s">K8S</a></li>
+    <li><a href="#syncwaitgroup">sync.WaitGroup</a></li>
+    <li><a href="#contextwithcancel">context.WithCancel</a></li>
+    <li><a href="#死锁">死锁</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <p>上期文章说到了一些常见并发 bug 的场景，本期文章继续聊聊 Go 语言中常见的一些 bug，继续写 bug（当然不是），并通过代码案例来讲解。</p>
+<p><img alt="img" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202112081853217.png"></p>
+<h2 id="k8s">K8S</h2>
+<p>这里有段一篇论文的代码，这篇论文总结了业界比较知名的 bug，有一些是 k8s、docker 等耳熟能详的应用。因此，我们也可以发现，即便是 Google 的工程师，他们还是会写出来一些 bug，</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">finishReq</span><span class="p">(</span><span class="nx">timeout</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span> <span class="nx">r</span> <span class="nx">ob</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">ob</span><span class="p">)</span>  <span class="c1">// before modify
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">ob</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span> <span class="o">:=</span> <span class="nf">fn</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ch</span> <span class="o">&lt;-</span> <span class="nx">result</span> <span class="c1">// block
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">select</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nx">result</span> <span class="p">=</span> <span class="o">&lt;-</span> <span class="nx">ch</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        	<span class="k">return</span> <span class="nx">result</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="o">&lt;-</span> <span class="nx">time</span><span class="p">.</span><span class="nf">After</span><span class="p">(</span><span class="nx">timeout</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>这段代码的思路其实很简单：我现在想往外部发一个请求，同时要控制超时。如果请求超时那么就会给用户返回一个空。</p>
+<p>这里前两行分别有两段注释，说的是官方修改前的代码 channel 没有缓冲，还有段是修改后的代码 channel 中加入了 1 的缓冲。如果是未修改前的代码，在整个程序跑起来后，我们可以自己先想一下可能会发生什么问题？</p>
+<p>在启动了 goroutine 去向远端发起请求的时候，如果发生了超时，就会触发 select 直接返回空。说明 channel 的对端已经没有消费者在等待结果，而没有缓冲时，channel 的 buffer 为 0，那么往 channel 发送结果的 goroutine 一定会阻塞，也就意味着这个 goroutine 永远释放不了，最终造成 goroutine 泄露。也就是超时一次就泄露一个 goroutine，如果超时越多，泄露的 goroutine 涨幅也越多。</p>
+<h2 id="syncwaitgroup">sync.WaitGroup</h2>
+<p>这个是 sync.WaitGroup 的 bug</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">group</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+</span></span><span class="line"><span class="cl"><span class="nx">group</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">pm</span><span class="p">.</span><span class="nx">plugins</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">p</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">plugins</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">plugin</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">defer</span> <span class="nx">group</span><span class="p">.</span><span class="nf">Dont</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">group</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>   <span class="c1">// before modify
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">group</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>   <span class="c1">// modified
+</span></span></span></code></pre></div><p>看到代码大家可以思考一些这段代码有什么问题。</p>
+<p>在此之前，我们先回顾一下 sync.WaitGroup，它的基本用法中 Add、Done 和 Wait 其实是不能并发的。虽然 Add 和 Done 可以并发，但 Wait 是不可以和另外两个一起并发。</p>
+<p>这段代码中，我们原意是想让所有逻辑都运行完之后再退出，而事实上 Wait 和 Done 产生并发了，也就有可能没有执行等待，直接执行下方的逻辑，并且 Wait 永远退出不了。因此必须把 Wait 拿到外面去，让 Wait 单独地执行，而不是并发执行。</p>
+<h2 id="contextwithcancel">context.WithCancel</h2>
+<p>这个是个 context 的 bug</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">hctx</span><span class="p">,</span> <span class="nx">hcancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>  <span class="c1">// before modify
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">hctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">hcancel</span> <span class="nx">context</span><span class="p">.</span><span class="nx">CancelFunc</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="nx">timeout</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">hctx</span><span class="p">,</span> <span class="nx">hcancel</span> <span class="p">=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">timeout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">hctx</span><span class="p">,</span> <span class="nx">hcancel</span> <span class="p">=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></div><p>老代码的逻辑是如果有 timeout &gt; 0，就把原来的 context 覆盖掉就结束了。大家想想有没有什么问题？</p>
+<p>在第一次生成 context 的时候，其实在底层会生成 goroutine 的。而当 timeout &gt; 0 直接覆盖掉原来的 context ，就相当于原来 context 中的 goroutine 完全没有办法去做控制了，最终导致这个 goroutine 泄露了。所以这种覆盖的方式其实是有问题的。</p>
+<p>后期维护的代码也比较直观，根据是否有 timeout，分别生成两个 不同的 context，并且不再有覆盖的操作。</p>
+<h2 id="死锁">死锁</h2>
+<p>最后一个死锁的例子：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">goroutine1</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">m</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ch</span> <span class="o">&lt;-</span> <span class="nx">request</span> <span class="c1">// blocks,    before modify
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">select</span> <span class="p">{</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">case</span> <span class="nx">ch</span> <span class="o">&lt;-</span> <span class="nx">request</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">defautl</span><span class="p">:</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>   <span class="c1">// modified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">m</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">goroutine2</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">m</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>  <span class="c1">// blocks
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">m</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">request</span> <span class="o">&lt;-</span> <span class="nx">ch</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>这段代码看起来较为简单，第一个 goroutine 中，全局变量 m 先抢占锁，然后 channel 发送值；第二个 goroutine 中，全局对象 m 抢占锁，再释放锁，channel 接收值。也就是说，如果先进入 goroutine1，这个 channel 没有缓冲，就会直接卡住。</p>
+<p>修改后的代码是说，如果 channel 还不能暂时发送、对端没有阻塞了的话，那么就可以进入  default 结束，并且全局对象 m 释放锁。这样 goroutine2 接收端就可以进去。如果接收端可以进去了，发送端也便可以发数据了。这个例子算是个基本的死锁逻辑了。</p>
+<p>OK，对于并发 bug，我们看得越多越容易在实际项目开发中定位到问题，下期文章再来看一些例子并做个小总结。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>

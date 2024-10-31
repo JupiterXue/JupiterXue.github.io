@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-ch"><head><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Go 翻山越岭——标记流程 | Jupiter 的个人博客</title>
+<meta property="og:title" content="Go 翻山越岭——标记流程 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="Go 翻山越岭——标记流程 | Jupiter 的个人博客" />
+<meta itemprop="name" content="Go 翻山越岭——标记流程 | Jupiter 的个人博客" />
+<meta name="application-name" content="Go 翻山越岭——标记流程 | Jupiter 的个人博客" />
+<meta property="og:site_name" content="Jupiter `s blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="zh-ch" />
+<meta name="language" content="zh-ch" />
+
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/" title="中文" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2021-11-15T09:07:46&#43;0800 />
+    <meta property="article:published_time" content=2021-11-15T09:07:46&#43;0800 />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/" />
+
+    
+    <meta property="og:article:author" content="JupiterXue" />
+    <meta property="article:author" content="JupiterXue" />
+    <meta name="author" content="JupiterXue" />
+    
+    
+
+    
+    <meta name="news_keywords" content="116" />
+    <meta property="article:section" content="116" />
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Go 翻山越岭——标记流程",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2021-11-15",
+        "description": "",
+        "wordCount":  181 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2021-11-15",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Jupiter 的个人博客"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.136.5">
+
+    
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/">
+  <meta property="og:site_name" content="Jupiter 的个人博客">
+  <meta property="og:title" content="Go 翻山越岭——标记流程">
+  <meta property="og:description" content="Go 语言使用并发的三色标记（tricolor marking）算法作为其垃圾回收算法，并且在 Go 中的 GC 没有分代，没有压缩，没有对象移动。整个 GC 流程如图：
+图 1：GC 全流程 整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。
+在触发之后会进入 runtime.gcStart 函数。因为很多内存分配器都会进来，但最终只有一个能够进去，所以它会抢一个全局锁。然后启动所有后端标记的 worker 并且把它和每个 P 绑定。每个 P 都会对应一个 BgMarkWorker，但不一定每个 worker 都能全部启动，其实是按比例启动的。所以在 cBgMarkStartWorkers 函数中初始化所有 worker 都会让它们进入一个休眠状态 goPark，它会在执行到 schedule 函数中的 finRunnableGCWorker 时之前休眠的 GC 标记线程唤醒，之后是从 G runing 状态变为 G waiting 状态。
+注意，在标记的时候会控制所有标记协程的 CPU，所以不能把所有的 P 上协程全部唤醒，如果全唤醒意味着 CPU 占用中标记就占用了了80% 到 90%，应用程序也就跑不起来了。
+gcDrain 是整个标记的主流程。其中，mark 标记根节点，gc work 全局和本地的平衡，scan 对象并进行标灰。整个清扫过程完成之后会，会有一个分布式完成算法进行判断，然后会进入 gcMarkDone 函数。
+gcMarkDone 阶段会去把剩余的 write buffer 或 gc worker 里面的工作都清理掉。整个函数中还可能会有回退情况循环情况。标记完成之后就是 gcMarkTermniation ，也就是 GC Mark 的终极阶段。">
+  <meta property="og:locale" content="zh_ch">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-11-15T09:07:46+08:00">
+    <meta property="article:modified_time" content="2021-11-15T09:07:46+08:00">
+    <meta property="article:tag" content="Go">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Go 翻山越岭——标记流程">
+  <meta name="twitter:description" content="Go 语言使用并发的三色标记（tricolor marking）算法作为其垃圾回收算法，并且在 Go 中的 GC 没有分代，没有压缩，没有对象移动。整个 GC 流程如图：
+图 1：GC 全流程 整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。
+在触发之后会进入 runtime.gcStart 函数。因为很多内存分配器都会进来，但最终只有一个能够进去，所以它会抢一个全局锁。然后启动所有后端标记的 worker 并且把它和每个 P 绑定。每个 P 都会对应一个 BgMarkWorker，但不一定每个 worker 都能全部启动，其实是按比例启动的。所以在 cBgMarkStartWorkers 函数中初始化所有 worker 都会让它们进入一个休眠状态 goPark，它会在执行到 schedule 函数中的 finRunnableGCWorker 时之前休眠的 GC 标记线程唤醒，之后是从 G runing 状态变为 G waiting 状态。
+注意，在标记的时候会控制所有标记协程的 CPU，所以不能把所有的 P 上协程全部唤醒，如果全唤醒意味着 CPU 占用中标记就占用了了80% 到 90%，应用程序也就跑不起来了。
+gcDrain 是整个标记的主流程。其中，mark 标记根节点，gc work 全局和本地的平衡，scan 对象并进行标灰。整个清扫过程完成之后会，会有一个分布式完成算法进行判断，然后会进入 gcMarkDone 函数。
+gcMarkDone 阶段会去把剩余的 write buffer 或 gc worker 里面的工作都清理掉。整个函数中还可能会有回退情况循环情况。标记完成之后就是 gcMarkTermniation ，也就是 GC Mark 的终极阶段。">
+
+
+    
+
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/go-to-top/day26-go_garbage_collection_mark/day26-go_garbage_collection_mark/">
+    <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="https://JupiterXue.github.io/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    </head>
+<body data-theme = "light" class="notransition">
+
+<script src="/js/theme.min.8961c317c5b88b953fe27525839672c9343f1058ab044696ca225656c8ba2ab0.js" integrity="sha256-iWHDF8W4i5U/4nUlg5ZyyTQ/EFirBEaWyiJWVsi6KrA="></script>
+
+<div class="navbar" role="navigation">
+    <nav class="menu" aria-label="Main Navigation">
+        <a href="https://JupiterXue.github.io/" class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+stroke-linejoin="round" class="feather feather-home">
+<title>主页</title>
+<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+        </a>
+        <input type="checkbox" id="menu-trigger" class="menu-trigger" />
+        <label for="menu-trigger">
+            <span class="menu-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" stroke="currentColor" fill="none" viewBox="0 0 14 14"><title>Menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M10.595 7L3.40726 7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 3.51488L3.49301 3.51488"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10.5096 10.4851H3.49301"></path><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 12.5V1.5C0.5 0.947715 0.947715 0.5 1.5 0.5H12.5C13.0523 0.5 13.5 0.947715 13.5 1.5V12.5C13.5 13.0523 13.0523 13.5 12.5 13.5H1.5C0.947715 13.5 0.5 13.0523 0.5 12.5Z"></path></svg>
+            </span>
+        </label>
+
+        <div class="trigger">
+            <ul class="trigger-container">
+                
+                
+                <li>
+                    <a class="menu-link " href="/">
+                        主页
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/poetry/">
+                        诗词
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/quant-whale-notes/">
+                        量化
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/go-to-top/">
+                        Go系列
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/arch/">
+                        归档文章
+                    </a>
+                    
+                </li>
+                
+                <li>
+                    <a class="menu-link " href="/pages/about/">
+                        关于我
+                    </a>
+                    
+                </li>
+                
+                <li class="menu-separator">
+                    <span>|</span>
+                </li>
+                
+                
+            </ul>
+            <a id="mode" href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-sunny" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>LIGHT</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-moon" width="21" height="21" viewBox="0 0 14 14" stroke-width="1">
+<title>DARK</title><g><circle cx="7" cy="7" r="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="7" y1="0.5" x2="7" y2="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="2.4" x2="3.82" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="0.5" y1="7" x2="2.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="2.4" y1="11.6" x2="3.82" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="7" y1="13.5" x2="7" y2="11.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="11.6" x2="10.18" y2="10.18" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="13.5" y1="7" x2="11.5" y2="7" fill="none" stroke-linecap="round" stroke-linejoin="round"></line><line x1="11.6" y1="2.4" x2="10.18" y2="3.82" fill="none" stroke-linecap="round" stroke-linejoin="round"></line></g></svg>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Go 翻山越岭——标记流程</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2021-11-15T09:07:46&#43;08:00" itemprop="datePublished"> Nov 15, 2021 </time>
+                </div>
+                
+            </header>
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>目录</b></summary>
+        <nav id="TableOfContents"></nav>
+    </details>
+            <div class="page-content">
+                <p><strong>Go 语言使用并发的三色标记（tricolor marking）算法作为其垃圾回收算法</strong>，并且在 Go 中的 GC 没有分代，没有压缩，没有对象移动。整个 GC 流程如图：</p>
+<p><img alt="gc" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111152027238.png"></p>
+<center>图 1：GC 全流程</center>
+<p>整个图看起来觉得很复杂，代码很长，但其实里面的关键节点不是很多。左上角可以看到三种 GC 的触发的方式：后台触发，用户主动触发，内存分配触发。</p>
+<p>在触发之后会进入 runtime.gcStart 函数。因为很多内存分配器都会进来，但最终只有一个能够进去，所以它会抢一个全局锁。然后启动所有后端标记的 worker 并且把它和每个 P 绑定。每个 P 都会对应一个 BgMarkWorker，但不一定每个 worker 都能全部启动，其实是按比例启动的。所以在 cBgMarkStartWorkers 函数中初始化所有 worker 都会让它们进入一个休眠状态 goPark，它会在执行到 schedule 函数中的 finRunnableGCWorker 时之前休眠的 GC 标记线程唤醒，之后是从 G runing 状态变为 G waiting 状态。</p>
+<p>注意，在标记的时候会控制所有标记协程的 CPU，所以不能把所有的 P 上协程全部唤醒，如果全唤醒意味着 CPU 占用中标记就占用了了80% 到 90%，应用程序也就跑不起来了。</p>
+<p><strong>gcDrain 是整个标记的主流程</strong>。其中，mark 标记根节点，gc work 全局和本地的平衡，scan 对象并进行标灰。整个清扫过程完成之后会，会有一个分布式完成算法进行判断，然后会进入 gcMarkDone 函数。</p>
+<p>gcMarkDone 阶段会去把剩余的 write buffer 或 gc worker 里面的工作都清理掉。整个函数中还可能会有回退情况循环情况。标记完成之后就是 gcMarkTermniation ，也就是 GC Mark 的终极阶段。</p>
+<p>gcMarkTermniation 会调用 gcSweep ，去唤醒 sweep 的协程。这个 sweep 协程其实是在整个程序初始化的时候就已经启动了，但在后台是一直休眠的。GC 完成之后唤醒就能进行清扫工作了。</p>
+<p>大致的代码流程就是这样，再来进行一些细节 QA。</p>
+<h1 id="gc-标记流程">GC 标记流程</h1>
+<p>首先我们要问自己几个个问题：</p>
+<p><strong>1、标记对象从哪里来？</strong></p>
+<p>一个是后台的标记协程 gcMarkWorker 里 ，另一个是应用程序在 GC 标记过程中会并发地去写或删除堆上的指针，即 mutator write/delete heap pointers。</p>
+<p><strong>2、标记对象到哪里去？</strong></p>
+<p>这两个对象写入的目标其实是不一样的。前者是写入 work buffer，后者是写入 write barrier buffer。具体代码如下：</p>
+<ul>
+<li>Work buffer
+<ul>
+<li>本地 worker buffer =&gt; p.gcw</li>
+<li>全局 work buffer =&gt; runtime.work.full</li>
+</ul>
+</li>
+<li>Write barrier buffer
+<ul>
+<li>本地 write barrier buffer =&gt; p.wbBuf</li>
+</ul>
+</li>
+</ul>
+<p>再来看一个图：</p>
+<p><img alt="未命名文件" src="https://cdn.jsdelivr.net/gh/JupiterXue/PictureBed/BlogImg/202111152157603.png"></p>
+<center>图 2：scanobject/greyobject 流程</center>
+<p>可以看到两个 gc 相关的结构 gcw 和 wbBuf。gcw 也就是 gc work 的意思，这个 work 包含两个数组，一个叫 工作队列1 wbuf1 一个叫工作队列2 wbuf2。前面说到的标记也就是往 wbuf1 中存入值，这个值也就是指针的值；如果 wbuf1 写满了以后会把 wbuf1 和 wbuf2 先交换一下（没想到吧，我也没想到），再继续存 wbuf2；如果 wbuf2 也写满了，就会把这些数据推送到全局唯一的队列 Globally unique work；在标记过程中也会遇到 buffer 中没有值的情况，这时就会从全局把数据拿回来。如果没有工作执行的情况，还会从 wbBuf (write barrier buffer) 中去操作。</p>
+<p><strong>3、GC 消费对象是哪些？</strong></p>
+<p>说到了 GC 的队列和 GC 的来源，也需要了解 GC 的消费者是哪些。其实也是 work buffer，它会不断消费队列，按着广度优先遍历算法，直到所有堆上的指针都标记完了，认为工作就完成了。</p>
+<p>OK，说了很多关于标记的偏逻辑上的，具体怎么标记下回继续分析，看一下 Go 的三色标记具体是指什么。</p>
+
+            </div>
+        </article></main>
+</div>
+<footer class="footer">
+    <span class="footer_item"> </span>
+    &nbsp;
+
+    <div class="footer_social-icons">
+<a href="https://github.com/JupiterXue" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="839769325@qq.com" target="_blank" rel="noopener noreferrer me"
+    title="Qq">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path transform="scale(0.04) translate(75 40)" stroke-width="50"
+        d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z">
+    </path>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2024 JupiterXue.
+        Powered by <a href="https://github.com/hugo-sid/hugo-blog-awesome" target="_blank" rel="noopener">Hugo blog awesome</a>.
+    </small>
+</footer><a href="#" title="回到顶部" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a>
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script src="https://JupiterXue.github.io/js/main.min.35f435a5d8eac613c52daa28d8af544a4512337d3e95236e4a4978417b8dcb2f.js" integrity="sha256-NfQ1pdjqxhPFLaoo2K9USkUSM30&#43;lSNuSkl4QXuNyy8="></script>
+
+    
+
+</body>
+</html>
