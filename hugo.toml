@@ -30,7 +30,8 @@ id = '' # G-MEASUREMENT_ID
 [services.disqus]
 shortname = ''
 
-# set markup.highlight.noClasses=false to enable code highlight
+
+# 启用代码高亮显示
 [markup]
 [markup.highlight]
 noClasses = false
@@ -46,43 +47,43 @@ ordered = false # generates <ul> instead of <ol>
 languageName = "中文"
 languageCode = "zh-ch"
 contentDir = "content/zh-cn"  # 设置根路径位置
-#contentDir = "content/en"  # 主页展示文章
-#contentDir = "content/arch"  # 主页展示文章
+#contentDir = "content/en"  # 英文根路径
 weight = 1
 
 [Languages.zh-cn.menu]
 [[Languages.zh-cn.menu.main]]
-# The page reference (pageRef) is useful for menu highlighting
-# When pageRef is set, setting `url` is optional; it will be used as a fallback if the page is not found.
+#页面参考（pageRef）对于菜单突出显示很有用
+#当设置pageRef时，设置“url”是可选的；如果找不到页面，它将用作回退。
 pageRef="/"
 name = '主页'
 url = '/'
 weight = 10
-[[Languages.zh-cn.menu.main]]
-pageRef="poetry"
-name = '诗词'
-url = '/poetry/'
-weight = 20
-[[Languages.zh-cn.menu.main]]
-pageRef="quant-whale-notes"
-name = '量化'
-url = '/quant-whale-notes/'
-weight = 30
-[[Languages.zh-cn.menu.main]]
-pageRef="go-to-top"
-name = 'Go系列'
-url = '/go-to-top/'
-weight = 40
-[[Languages.zh-cn.menu.main]]
-pageRef="arch"
-name = '归档文章'
-url = '/arch/'
-weight = 49
+#[[Languages.zh-cn.menu.main]]
+#pageRef="poetry"
+#name = '诗词'
+#url = '/poetry/'
+#weight = 20
+#[[Languages.zh-cn.menu.main]]
+#pageRef="quant-whale-notes"
+#name = '量化'
+#url = '/quant-whale-notes/'
+#weight = 30
+#[[Languages.zh-cn.menu.main]]
+#pageRef="go-to-top"
+#name = 'Go系列'
+#url = '/go-to-top/'
+#weight = 40
+#[[Languages.zh-cn.menu.main]]
+#pageRef="arch"
+#name = '归档文章'
+#url = '/arch/'
+#weight = 49
 [[Languages.zh-cn.menu.main]]
 pageRef="about"
 name = '关于我'
 url = '/about/'
 weight = 50
+
 
 [Languages.zh-cn.params]
 sitename = "Jupiter `s blog"
@@ -123,9 +124,9 @@ display = "standalone"
 
 ###################################################################
 
-# Allow to override `browserconfig.xml` params (configuration for windows embedded browsers)
+# 允许覆盖`browserconfig.xml`参数（windows嵌入式浏览器的配置）
 [params.browserconfig]
-TileColor = "#2d89ef" # default windows 10 blue tile color
+TileColor = "#2d89ef" # 默认windows 10蓝色平铺颜色
 
 [[params.socialIcons]]
 name = "github"

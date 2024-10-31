@@ -1,5 +1,5 @@
 ---
-title: "春不晚"
+title: "诗词-春不晚"
 date: 2024-10-17
 category: tech
 toc: false
@@ -20,3 +20,4 @@ keywords:
 
 星河斗转纵横，锻成雄心壮志永存。
 
+> ——Jupiter

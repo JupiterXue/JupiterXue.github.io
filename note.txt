@@ -21,6 +21,7 @@ del public
 hugo
 git add .
 git commit -m "update a blog"
+git commit -m "update theme conf"
 git push
 
 

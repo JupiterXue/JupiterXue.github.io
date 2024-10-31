@@ -1,5 +1,5 @@
 ---
-title: "临江仙"
+title: "诗词-临江仙"
 date: 2024-10-16
 category: tech
 toc: false
