@@ -59,6 +59,39 @@
     </item>
     
     <item>
+      <title>投资与量化-任务8-量化与机器学习</title>
+      <link>https://JupiterXue.github.io/posts/quant-whale-notes/task8-ml/</link>
+      <pubDate>Mon, 04 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://JupiterXue.github.io/posts/quant-whale-notes/task8-ml/</guid>
+      
+      <description>&lt;p&gt;传送门：&lt;a href=&#34;https://JupiterXue.github.io/&#34;&gt;第八章-机器学习与量化策略&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;思考&#34;&gt;思考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;将机器学习应用到量化当中的前提是打好&lt;strong&gt;机器学习基础&lt;/strong&gt;，并且熟悉量化当中的数据特征，然后进行关联利用。个人看来更像是利用跨行业思维模型来解决量化当中的问题，如小波分析就是电子信号处理领域的常用方法，用在金融时间序列当中属于跨行应用的典范。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;利用机器学习来优化量化，很可能会有三方包可以直接用&lt;/strong&gt;，不再需要自己蛮力实现，想要使用时多调研了解。&lt;/li&gt;
+&lt;li&gt;时间序列作为量化的重要指标，在机器学习中的权重也应该较高，有必要针对这个专题进行研究。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;笔记&#34;&gt;笔记&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;小波分析&lt;/strong&gt;，去噪于股票预测，主要作用平滑和过滤，常用于金融时间序列处理，将序列中频率噪声变动过滤。python 有专门包 PyWavelets。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LightGBM&lt;/strong&gt;，量化选股，数据挖掘问题主流解决方案，把选股问题转化为监督学习问题。
+&lt;ul&gt;
+&lt;li&gt;解决监督学习的步骤：手机训练样本并进行特征选择（特征工程），选择度量性能的指标，选择模型并优化算安抚，评估模型的性能，样本外预测&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;时间序列分析&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;趋势：时间序列长期方向。如牛市就是长期上升市场。&lt;/li&gt;
+&lt;li&gt;季节性：时间序列在一年或一天内周期性波动。零售业在假日和周末显著增加。python 三方模块statsmodels 可进行最基本季节性分析。&lt;/li&gt;
+&lt;li&gt;残差：时间序列在移除了趋势和季节性后剩下部分，通常被认为随机的或包含信息的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+      
+    </item>
+    
+    <item>
       <title>投资与量化-任务6-量化调仓</title>
       <link>https://JupiterXue.github.io/posts/quant-whale-notes/task6-select-time/</link>
       <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
