@@ -11,7 +11,7 @@ keywords:
 ---
 
 
-传送门：[第六章-量化调仓]()
+传送门：[第六章-量化调仓](https://datawhalechina.github.io/whale-quant/#/./ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5)
 
 
 ## 思考
