@@ -71,7 +71,7 @@
     </script>
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day10-parser/day10-parser/">
@@ -84,7 +84,7 @@
 package main func main() { var ch chan int close(ch) ch &lt;- 1 } go tool compile -S send_to_close.go | grep &#34;send_to_close.go:6&#34; 通过反汇编和文本搜索，找到了关键信息 runtime.chansend1(SB)
 情况2：关闭一个是 nil 值的 channel，文件名 close_nil.go
 package main func main() { var ch chan int ch = nil close(ch) } go tool compile -S close_nil.go | grep &#34;close_nil.go:6&#34; 情况3：关闭一个已经是关闭状态的 channel，文件名 close_closed.go
-package main func main() { var ch chan int close(ch) close(ch) } go tool compile -S close_closed.go | grep &#34;close_closed.go:6&#34; ">
+package main func main() { var ch chan int close(ch) close(ch) } go tool compile -S close_closed.go | grep &#34;close_closed.go:6&#34;">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -104,7 +104,7 @@ package main func main() { var ch chan int close(ch) close(ch) } go tool compile
 package main func main() { var ch chan int close(ch) ch &lt;- 1 } go tool compile -S send_to_close.go | grep &#34;send_to_close.go:6&#34; 通过反汇编和文本搜索，找到了关键信息 runtime.chansend1(SB)
 情况2：关闭一个是 nil 值的 channel，文件名 close_nil.go
 package main func main() { var ch chan int ch = nil close(ch) } go tool compile -S close_nil.go | grep &#34;close_nil.go:6&#34; 情况3：关闭一个已经是关闭状态的 channel，文件名 close_closed.go
-package main func main() { var ch chan int close(ch) close(ch) } go tool compile -S close_closed.go | grep &#34;close_closed.go:6&#34; ">
+package main func main() { var ch chan int close(ch) close(ch) } go tool compile -S close_closed.go | grep &#34;close_closed.go:6&#34;">
 
 
     

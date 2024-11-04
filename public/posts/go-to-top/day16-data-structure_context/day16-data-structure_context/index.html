@@ -71,7 +71,7 @@
     </script>
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day16-data-structure_context/day16-data-structure_context/">
@@ -79,7 +79,7 @@
   <meta property="og:title" content="Go 翻山越岭——内置数据结构-Context">
   <meta property="og:description" content="Go 语言在 1.16 版本之后加入了新的内置数据结构 Context，虽然在代码中使用都比较简单，但语言内部还是做了许多区分，今天来分析一下 Context。
 Context 虽然在使用 context 的时候，看起来都是 context.* 的结构，但 Go 语言内部做了这样一个区分：
-context 操作具体说明如下：
+context 操作 具体说明如下：
 emptyCtx：所有 ctx 类型的根 valueCtx：主要为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成树形结构。 cancelCtx：取消程序的执行树 timerCtx：在 cancelCtx 上包了一层，支持基于时间的 cancel 这里有个例子
 package main import ( &#34;context&#34; &#34;fmt&#34; ) type orderID int func main() { var x = context.TODO() x = context.WithValue(x, orderID(1), &#34;1234&#34;) x = context.WithValue(x, orderID(2), &#34;2345&#34;) x = context.WithValue(x, orderID(3), &#34;3456&#34;) fmt.Println(x.Value(orderID(2))) } 具体流程如下，前一个节点是后一个节点的 parent
 valueCtx{ k: 3, v: 3456 } → valueCtx{ k: 2, v: 2345 } → valueCtx{ k: 1, v: 1234} → emptyCtx">
@@ -97,7 +97,7 @@ valueCtx{ k: 3, v: 3456 } → valueCtx{ k: 2, v: 2345 } → valueCtx{ k: 1, v: 1
   <meta name="twitter:title" content="Go 翻山越岭——内置数据结构-Context">
   <meta name="twitter:description" content="Go 语言在 1.16 版本之后加入了新的内置数据结构 Context，虽然在代码中使用都比较简单，但语言内部还是做了许多区分，今天来分析一下 Context。
 Context 虽然在使用 context 的时候，看起来都是 context.* 的结构，但 Go 语言内部做了这样一个区分：
-context 操作具体说明如下：
+context 操作 具体说明如下：
 emptyCtx：所有 ctx 类型的根 valueCtx：主要为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成树形结构。 cancelCtx：取消程序的执行树 timerCtx：在 cancelCtx 上包了一层，支持基于时间的 cancel 这里有个例子
 package main import ( &#34;context&#34; &#34;fmt&#34; ) type orderID int func main() { var x = context.TODO() x = context.WithValue(x, orderID(1), &#34;1234&#34;) x = context.WithValue(x, orderID(2), &#34;2345&#34;) x = context.WithValue(x, orderID(3), &#34;3456&#34;) fmt.Println(x.Value(orderID(2))) } 具体流程如下，前一个节点是后一个节点的 parent
 valueCtx{ k: 3, v: 3456 } → valueCtx{ k: 2, v: 2345 } → valueCtx{ k: 1, v: 1234} → emptyCtx">

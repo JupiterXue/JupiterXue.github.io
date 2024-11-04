@@ -71,7 +71,7 @@
     </script>
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day18-go_and_sys/day18-go_and_sys/">
@@ -258,22 +258,22 @@ stroke-linejoin="round" class="feather feather-home">
 <table>
   <thead>
       <tr>
-          <th style="text-align: left">Go 代码</th>
-          <th style="text-align: left">系统调用</th>
+          <th>Go 代码</th>
+          <th>系统调用</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td style="text-align: left">os.GetPid()</td>
-          <td style="text-align: left">getpid()</td>
+          <td>os.GetPid()</td>
+          <td>getpid()</td>
       </tr>
       <tr>
-          <td style="text-align: left">println(&ldquo;hello world&rdquo;)</td>
-          <td style="text-align: left">write(2, &ldquo;hello world&rdquo;, 11)</td>
+          <td>println(&ldquo;hello world&rdquo;)</td>
+          <td>write(2, &ldquo;hello world&rdquo;, 11)</td>
       </tr>
       <tr>
-          <td style="text-align: left">startm -&gt; newm -&gt; newosproc</td>
-          <td style="text-align: left">clone(child_stack=0xc43003c00, flags=&hellip;&hellip;)</td>
+          <td>startm -&gt; newm -&gt; newosproc</td>
+          <td>clone(child_stack=0xc43003c00, flags=&hellip;&hellip;)</td>
       </tr>
   </tbody>
 </table>
@@ -284,35 +284,35 @@ stroke-linejoin="round" class="feather feather-home">
   <thead>
       <tr>
           <th style="text-align: center">Types of System Calls</th>
-          <th style="text-align: left">Windows</th>
-          <th style="text-align: left">Linux</th>
+          <th>Windows</th>
+          <th>Linux</th>
       </tr>
   </thead>
   <tbody>
       <tr>
           <td style="text-align: center">Process Control</td>
-          <td style="text-align: left">CreateProcess()<br />ExitProcess()<br />WaitForSingleObject()</td>
-          <td style="text-align: left">fork()<br />exit()<br />wait()</td>
+          <td>CreateProcess()<br />ExitProcess()<br />WaitForSingleObject()</td>
+          <td>fork()<br />exit()<br />wait()</td>
       </tr>
       <tr>
           <td style="text-align: center">File Management</td>
-          <td style="text-align: left">CreateFile()<br />ReadFile()<br />WriteFile()<br />CloseHandle()</td>
-          <td style="text-align: left">open()<br />read()<br />write()<br />close()</td>
+          <td>CreateFile()<br />ReadFile()<br />WriteFile()<br />CloseHandle()</td>
+          <td>open()<br />read()<br />write()<br />close()</td>
       </tr>
       <tr>
           <td style="text-align: center">Device Management</td>
-          <td style="text-align: left">SetConsoleMode()<br />ReadConsole()<br />WriteConsole()</td>
-          <td style="text-align: left">ioctl()<br />read()<br />write()</td>
+          <td>SetConsoleMode()<br />ReadConsole()<br />WriteConsole()</td>
+          <td>ioctl()<br />read()<br />write()</td>
       </tr>
       <tr>
           <td style="text-align: center">Information Maintenance</td>
-          <td style="text-align: left">GetCurrentProcessID()<br />SetTimer()<br />Sleep()</td>
-          <td style="text-align: left">getpid()<br />alarm()<br />sleep()</td>
+          <td>GetCurrentProcessID()<br />SetTimer()<br />Sleep()</td>
+          <td>getpid()<br />alarm()<br />sleep()</td>
       </tr>
       <tr>
           <td style="text-align: center">Communication</td>
-          <td style="text-align: left">CreatePipe()<br />CreateFileMapping()<br />MapViewOfFile()</td>
-          <td style="text-align: left">pipe()<br />shmget()<br />mmap()</td>
+          <td>CreatePipe()<br />CreateFileMapping()<br />MapViewOfFile()</td>
+          <td>pipe()<br />shmget()<br />mmap()</td>
       </tr>
   </tbody>
 </table>

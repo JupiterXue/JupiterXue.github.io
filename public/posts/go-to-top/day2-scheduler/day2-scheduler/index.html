@@ -71,7 +71,7 @@
     </script>
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day2-scheduler/day2-scheduler/">
@@ -87,7 +87,7 @@ P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必
 上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
 让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）
 案例1：
-// channel send:var ch = make(chan int)ch &lt;- 1// channel recv:var ch = make(chan int)&lt;- ch 案例2：">
+// channel send: var ch = make(chan int) ch &lt;- 1 // channel recv: var ch = make(chan int) &lt;- ch 案例2：">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -110,7 +110,7 @@ P: processor，虚拟处理器，M 必须获得 P 才能执行代码，否则必
 上面所说的循环调度流程，都是在正常情况下运作的。而实际业务中我们往往还会遇到其他情况——阻塞。如果程序中有阻塞，那么线程不就全部被堵上，程序就卡住了么？
 让我们来看看以下几种情况，在线程发生阻塞的时候，是否会无限地创新线程？（并不会）
 案例1：
-// channel send:var ch = make(chan int)ch &lt;- 1// channel recv:var ch = make(chan int)&lt;- ch 案例2：">
+// channel send: var ch = make(chan int) ch &lt;- 1 // channel recv: var ch = make(chan int) &lt;- ch 案例2：">
 
 
     

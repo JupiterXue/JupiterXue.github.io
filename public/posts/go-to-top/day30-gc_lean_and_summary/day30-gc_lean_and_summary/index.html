@@ -71,7 +71,7 @@
     </script>
 
 
-<meta name="generator" content="Hugo 0.135.0">
+<meta name="generator" content="Hugo 0.136.0">
 
     
     <meta property="og:url" content="https://JupiterXue.github.io/posts/go-to-top/day30-gc_lean_and_summary/day30-gc_lean_and_summary/">
@@ -79,8 +79,8 @@
   <meta property="og:title" content="Go 翻山越岭——GC 补充与总结">
   <meta property="og:description" content="最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。
 GC 补充 在 GC 标记流程中有一个环节能够辅助标记：
-Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中 图 1：协助标记源码-判定Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。 图 2：协助标记源码-分配内存在标记流程阶段，堆上对象可能出现引用交叉情况：
-图 3：堆上对象引用交叉情况一个是 isMarked 剪枝 图 4：isMarked 源码另一个是 atomic.Or8 图 5：atomic.Or8 源码再补充一些零零碎碎的小知识点：
+Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中 图 1：协助标记源码-判定 Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。 图 2：协助标记源码-分配内存 在标记流程阶段，堆上对象可能出现引用交叉情况：
+图 3：堆上对象引用交叉情况 一个是 isMarked 剪枝 图 4：isMarked 源码 另一个是 atomic.Or8 图 5：atomic.Or8 源码 再补充一些零零碎碎的小知识点：
 GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。 当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作： 作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。 作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。 另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。 Worker 运行模式位于：_p_.gcMarkWorkerMode。 栈本身的内存：newstack、shrinkstack。 使用 allocManual 和 freeManual 相当于手动管理内存，不计入 heap_inuse 和 heap_sys，而是计入 stackinuse 和 stacksys。 栈上变量的内存变化：SP 移动销毁，简单快速。 总结 最后来做个总结，还是简单回顾一下垃圾回收代码的流程。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
@@ -96,8 +96,8 @@ GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N �
   <meta name="twitter:title" content="Go 翻山越岭——GC 补充与总结">
   <meta name="twitter:description" content="最后一篇关于 Go 语言内存管理与垃圾回收的文章，再对之前流程中做一些补充，然后对这期系列文章做个总结。
 GC 补充 在 GC 标记流程中有一个环节能够辅助标记：
-Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中 图 1：协助标记源码-判定Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。 图 2：协助标记源码-分配内存在标记流程阶段，堆上对象可能出现引用交叉情况：
-图 3：堆上对象引用交叉情况一个是 isMarked 剪枝 图 4：isMarked 源码另一个是 atomic.Or8 图 5：atomic.Or8 源码再补充一些零零碎碎的小知识点：
+Goroutine 中有 gcAssistBytes 字段。 当后台 gcWorker 标记时，会累积 credit，记录在 gcController.gbScanCredit 中 图 1：协助标记源码-判定 Goroutine 想执行内存分配，要先尝试去 gcController.bgScanCredit 中去借债，如果借到了足够的债，那么就不用协助标记。 如果借不到，那就先协助标记，标记完成后再去分配内存。 图 2：协助标记源码-分配内存 在标记流程阶段，堆上对象可能出现引用交叉情况：
+图 3：堆上对象引用交叉情况 一个是 isMarked 剪枝 图 4：isMarked 源码 另一个是 atomic.Or8 图 5：atomic.Or8 源码 再补充一些零零碎碎的小知识点：
 GC 的 CPU 控制目标是整体的 25%。 当 P = 4 * N 时，只要启动 N 个 wroker 就可以使用。 当 P 无法被 4 整除时，需要吃苦耐劳的 gcMarkWorker 来帮助做一部分工作： 作为全局 GC 员工 Dedicated worker，需要一直干活，知道被抢占。 作为兼职 GC 员工 Fractional worker，达到业绩目标（fractionalUtilizationGoal）时，可以主动让出。 另外一种 IDLE 模式。在调度循环中发现找不到可执行的 g ，并且有标记任务没有完成的情况下，就可以开启 IDLE 模式去帮忙。 Worker 运行模式位于：_p_.gcMarkWorkerMode。 栈本身的内存：newstack、shrinkstack。 使用 allocManual 和 freeManual 相当于手动管理内存，不计入 heap_inuse 和 heap_sys，而是计入 stackinuse 和 stacksys。 栈上变量的内存变化：SP 移动销毁，简单快速。 总结 最后来做个总结，还是简单回顾一下垃圾回收代码的流程。">
 
 

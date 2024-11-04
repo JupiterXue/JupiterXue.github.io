@@ -3,11 +3,11 @@
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title itemprop="name">诗词-临江仙 | Jupiter 的个人博客</title>
-<meta property="og:title" content="诗词-临江仙 | Jupiter 的个人博客" />
-<meta name="twitter:title" content="诗词-临江仙 | Jupiter 的个人博客" />
-<meta itemprop="name" content="诗词-临江仙 | Jupiter 的个人博客" />
-<meta name="application-name" content="诗词-临江仙 | Jupiter 的个人博客" />
+<title itemprop="name">投资与量化-任务8-量化与机器学习 | Jupiter 的个人博客</title>
+<meta property="og:title" content="投资与量化-任务8-量化与机器学习 | Jupiter 的个人博客" />
+<meta name="twitter:title" content="投资与量化-任务8-量化与机器学习 | Jupiter 的个人博客" />
+<meta itemprop="name" content="投资与量化-任务8-量化与机器学习 | Jupiter 的个人博客" />
+<meta name="application-name" content="投资与量化-任务8-量化与机器学习 | Jupiter 的个人博客" />
 <meta property="og:site_name" content="Jupiter `s blog" />
 
 <meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
@@ -18,7 +18,7 @@
 <meta property="og:locale" content="zh-ch" />
 <meta name="language" content="zh-ch" />
 
-  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/poetry/river_to_god/" title="中文" />
+  <link rel="alternate" hreflang="zh-cn" href="https://JupiterXue.github.io/posts/quant-whale-notes/task8-ml/" title="中文" />
 
 
 
@@ -29,9 +29,9 @@
     
 
     <meta property="og:type" content="article" />
-    <meta property="og:article:published_time" content=2024-10-16T00:00:00Z />
-    <meta property="article:published_time" content=2024-10-16T00:00:00Z />
-    <meta property="og:url" content="https://JupiterXue.github.io/posts/poetry/river_to_god/" />
+    <meta property="og:article:published_time" content=2024-11-04T00:00:00Z />
+    <meta property="article:published_time" content=2024-11-04T00:00:00Z />
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/quant-whale-notes/task8-ml/" />
 
     
     <meta property="og:article:author" content="JupiterXue" />
@@ -41,24 +41,24 @@
     
 
     
-    <meta name="news_keywords" content="116" />
-    <meta property="article:section" content="116" />
+    <meta name="news_keywords" content="108" />
+    <meta property="article:section" content="108" />
     
 
     <script defer type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "Article",
-        "headline": "诗词-临江仙",
+        "headline": "投资与量化-任务8-量化与机器学习",
         "author": {
         "@type": "Person",
         "name": ""
         },
-        "datePublished": "2024-10-16",
+        "datePublished": "2024-11-04",
         "description": "",
-        "wordCount":  4 ,
+        "wordCount":  17 ,
         "mainEntityOfPage": "True",
-        "dateModified": "2024-10-16",
+        "dateModified": "2024-11-04",
         "image": {
         "@type": "imageObject",
         "url": ""
@@ -74,32 +74,30 @@
 <meta name="generator" content="Hugo 0.136.0">
 
     
-    <meta property="og:url" content="https://JupiterXue.github.io/posts/poetry/river_to_god/">
+    <meta property="og:url" content="https://JupiterXue.github.io/posts/quant-whale-notes/task8-ml/">
   <meta property="og:site_name" content="Jupiter 的个人博客">
-  <meta property="og:title" content="诗词-临江仙">
-  <meta property="og:description" content="浊水倾波三万里，愀然独坐孤峰。 龙潜狮随后飙风。无情皆竖子，有泪亦英雄。
-长剑倚天星斗烂，古今过眼成空。乾坤俯仰任穷通。半轮沧海上，一苇大江东。
-——缠中说禅">
+  <meta property="og:title" content="投资与量化-任务8-量化与机器学习">
+  <meta property="og:description" content="传送门：第八章-机器学习与量化策略
+思考 将机器学习应用到量化当中的前提是打好机器学习基础，并且熟悉量化当中的数据特征，然后进行关联利用。个人看来更像是利用跨行业思维模型来解决量化当中的问题，如小波分析就是电子信号处理领域的常用方法，用在金融时间序列当中属于跨行应用的典范。 利用机器学习来优化量化，很可能会有三方包可以直接用，不再需要自己蛮力实现，想要使用时多调研了解。 时间序列作为量化的重要指标，在机器学习中的权重也应该较高，有必要针对这个专题进行研究。 笔记 小波分析，去噪于股票预测，主要作用平滑和过滤，常用于金融时间序列处理，将序列中频率噪声变动过滤。python 有专门包 PyWavelets。 LightGBM，量化选股，数据挖掘问题主流解决方案，把选股问题转化为监督学习问题。 解决监督学习的步骤：手机训练样本并进行特征选择（特征工程），选择度量性能的指标，选择模型并优化算安抚，评估模型的性能，样本外预测 时间序列分析 趋势：时间序列长期方向。如牛市就是长期上升市场。 季节性：时间序列在一年或一天内周期性波动。零售业在假日和周末显著增加。python 三方模块statsmodels 可进行最基本季节性分析。 残差：时间序列在移除了趋势和季节性后剩下部分，通常被认为随机的或包含信息的。">
   <meta property="og:locale" content="zh_ch">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2024-10-16T00:00:00+00:00">
-    <meta property="article:modified_time" content="2024-10-16T00:00:00+00:00">
-    <meta property="article:tag" content="诗歌">
+    <meta property="article:published_time" content="2024-11-04T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-11-04T00:00:00+00:00">
+    <meta property="article:tag" content="Quant">
 
 
     
     
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="诗词-临江仙">
-  <meta name="twitter:description" content="浊水倾波三万里，愀然独坐孤峰。 龙潜狮随后飙风。无情皆竖子，有泪亦英雄。
-长剑倚天星斗烂，古今过眼成空。乾坤俯仰任穷通。半轮沧海上，一苇大江东。
-——缠中说禅">
+  <meta name="twitter:title" content="投资与量化-任务8-量化与机器学习">
+  <meta name="twitter:description" content="传送门：第八章-机器学习与量化策略
+思考 将机器学习应用到量化当中的前提是打好机器学习基础，并且熟悉量化当中的数据特征，然后进行关联利用。个人看来更像是利用跨行业思维模型来解决量化当中的问题，如小波分析就是电子信号处理领域的常用方法，用在金融时间序列当中属于跨行应用的典范。 利用机器学习来优化量化，很可能会有三方包可以直接用，不再需要自己蛮力实现，想要使用时多调研了解。 时间序列作为量化的重要指标，在机器学习中的权重也应该较高，有必要针对这个专题进行研究。 笔记 小波分析，去噪于股票预测，主要作用平滑和过滤，常用于金融时间序列处理，将序列中频率噪声变动过滤。python 有专门包 PyWavelets。 LightGBM，量化选股，数据挖掘问题主流解决方案，把选股问题转化为监督学习问题。 解决监督学习的步骤：手机训练样本并进行特征选择（特征工程），选择度量性能的指标，选择模型并优化算安抚，评估模型的性能，样本外预测 时间序列分析 趋势：时间序列长期方向。如牛市就是长期上升市场。 季节性：时间序列在一年或一天内周期性波动。零售业在假日和周末显著增加。python 三方模块statsmodels 可进行最基本季节性分析。 残差：时间序列在移除了趋势和季节性后剩下部分，通常被认为随机的或包含信息的。">
 
 
     
 
-    <link rel="canonical" href="https://JupiterXue.github.io/posts/poetry/river_to_god/">
+    <link rel="canonical" href="https://JupiterXue.github.io/posts/quant-whale-notes/task8-ml/">
     <link href="/style.min.2d921c18cf1ec555ffc03d59a8adc211c402c68c930c27d6a0c306ab175a8d09.css" rel="stylesheet">
     <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
 
@@ -122,7 +120,23 @@
     
     <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
 
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g==" crossorigin="anonymous" crossorigin="anonymous" />
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+    integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA=="
+    crossorigin="anonymous"></script>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    integrity="sha512-iWiuBS5nt6r60fCz26Nd0Zqe0nbk1ZTIQbl3Kv7kYsX+yKMUFHzjaH2+AnM6vp2Xs+gNmaBAVWJjSmuPw76Efg==" crossorigin="anonymous" onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });"></script>
+
     </head>
 <body data-theme = "light" class="notransition">
 
@@ -184,22 +198,40 @@ stroke-linejoin="round" class="feather feather-home">
     <main class="page-content" aria-label="Content">
         <article>
             <header class="header">
-                <h1 class="header-title">诗词-临江仙</h1>
+                <h1 class="header-title">投资与量化-任务8-量化与机器学习</h1>
                 
                 
                 
                 <div class="post-meta">
-                    <time datetime="2024-10-16T00:00:00&#43;00:00" itemprop="datePublished"> Oct 16, 2024 </time>
+                    <time datetime="2024-11-04T00:00:00&#43;00:00" itemprop="datePublished"> Nov 4, 2024 </time>
                 </div>
                 
             </header>
             
             <div class="page-content">
-                <p>浊水倾波三万里，愀然独坐孤峰。 龙潜狮随后飙风。无情皆竖子，有泪亦英雄。</p>
-<p>长剑倚天星斗烂，古今过眼成空。乾坤俯仰任穷通。半轮沧海上，一苇大江东。</p>
-<blockquote>
-<p>——缠中说禅</p>
-</blockquote>
+                <p>传送门：<a href="/">第八章-机器学习与量化策略</a></p>
+<h2 id="思考">思考</h2>
+<ul>
+<li>将机器学习应用到量化当中的前提是打好<strong>机器学习基础</strong>，并且熟悉量化当中的数据特征，然后进行关联利用。个人看来更像是利用跨行业思维模型来解决量化当中的问题，如小波分析就是电子信号处理领域的常用方法，用在金融时间序列当中属于跨行应用的典范。</li>
+<li><strong>利用机器学习来优化量化，很可能会有三方包可以直接用</strong>，不再需要自己蛮力实现，想要使用时多调研了解。</li>
+<li>时间序列作为量化的重要指标，在机器学习中的权重也应该较高，有必要针对这个专题进行研究。</li>
+</ul>
+<h2 id="笔记">笔记</h2>
+<ul>
+<li><strong>小波分析</strong>，去噪于股票预测，主要作用平滑和过滤，常用于金融时间序列处理，将序列中频率噪声变动过滤。python 有专门包 PyWavelets。</li>
+<li><strong>LightGBM</strong>，量化选股，数据挖掘问题主流解决方案，把选股问题转化为监督学习问题。
+<ul>
+<li>解决监督学习的步骤：手机训练样本并进行特征选择（特征工程），选择度量性能的指标，选择模型并优化算安抚，评估模型的性能，样本外预测</li>
+</ul>
+</li>
+<li><strong>时间序列分析</strong>
+<ul>
+<li>趋势：时间序列长期方向。如牛市就是长期上升市场。</li>
+<li>季节性：时间序列在一年或一天内周期性波动。零售业在假日和周末显著增加。python 三方模块statsmodels 可进行最基本季节性分析。</li>
+<li>残差：时间序列在移除了趋势和季节性后剩下部分，通常被认为随机的或包含信息的。</li>
+</ul>
+</li>
+</ul>
 
             </div>
         </article></main>
