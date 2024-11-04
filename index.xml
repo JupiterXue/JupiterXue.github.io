@@ -6,7 +6,58 @@
     <description>Recent content on Jupiter 的个人博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Thu, 31 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://JupiterXue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Nov 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://JupiterXue.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>投资与量化-任务7-量化回撤</title>
+      <link>https://JupiterXue.github.io/posts/quant-whale-notes/task7-backtesting/</link>
+      <pubDate>Mon, 04 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>https://JupiterXue.github.io/posts/quant-whale-notes/task7-backtesting/</guid>
+      
+      <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B&#34;&gt;第七章-量化回撤&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;思考&#34;&gt;思考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;量化回测指标可分四个维度，几个常见指标如下：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;收益&lt;/strong&gt;：总收益/累积收益率，年化收益率，平均收益率，夏普比率，索提诺比率&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;稳定性&lt;/strong&gt;：波动率，最大回撤，回撤恢复时间，收益曲线，收益分布&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;胜率&lt;/strong&gt;：胜率，盈亏比，盈利因子，连续亏损次数，连续盈利次数。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;风险&lt;/strong&gt;：最大回撤，最大回撤比率，条件风险价值，预期亏损，Beta系数，Alpha系数，信息比率。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;综合考量几个或从不同维度考量量化回撤的指标，可以识别大部分&lt;strong&gt;金融投资诈骗&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;手写量化回测框架&lt;/strong&gt;，目的在于造适合自己的轮子，简化并强化策略编写过程，最终直接对接到模拟盘与实盘当中。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;笔记&#34;&gt;笔记&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;量化回测基础指标，熟练掌握：年化收益率、基准年化收益率、最大回撤。&lt;/li&gt;
+&lt;li&gt;常见骗局
+&lt;ul&gt;
+&lt;li&gt;“胜率”确定策略好坏是非常业余且不可靠方法&lt;/li&gt;
+&lt;li&gt;只看年化收益也不对忽略了波动风险情况（最大回撤）&lt;/li&gt;
+&lt;li&gt;用周收益率来计算夏普比，而不是日收益率&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;量化回测四个维度：收益、稳定性、胜率、风险。&lt;/li&gt;
+&lt;li&gt;净值曲线：一组时间序列曲线，表示为股票或基金在不同时间的价值相对于期初的价值倍数。&lt;/li&gt;
+&lt;li&gt;年化收益：直观理解，假设按某种盈利能力，换算成一年的收益能有多少。但不能用单月的直接推算一年的，忽略了波动性。&lt;/li&gt;
+&lt;li&gt;波动率：方差表示，年波动率=策略收益和无风险收益的标准差除以其均值，再除以交易日倒数的平方根，交易日取252天。&lt;/li&gt;
+&lt;li&gt;最大回撤：选定周期任意历史时点往后推，于最低点时的收益率回撤幅度的最大值。地位比波动率还重要。&lt;/li&gt;
+&lt;li&gt;Alpha系数和Beta系数：Beta 代表系统风险，Alpha 非系统风险，投资者获得于市场波动无关的回报。&lt;/li&gt;
+&lt;li&gt;夏普比（Sharpe ratio）：每承受一单位总风险，产生多少超额报酬，比率越高越好。&lt;/li&gt;
+&lt;li&gt;信息比：类似夏普比率，但参照基准不是无风险收益率，是策略的市场基准收益率。&lt;/li&gt;
+&lt;li&gt;量化回测平台：聚宽-图标丰富（https://www.joinquant.com/），Backtrader-学术风、基础数据来源 tushare （ &lt;a href=&#34;https://www.backtrader.com&#34;&gt;https://www.backtrader.com&lt;/a&gt;），BigQuant-图标丰富明亮（https://bigquant.com/）&lt;/li&gt;
+&lt;li&gt;手写回测框架
+&lt;ul&gt;
+&lt;li&gt;目的：避免重复造轮子，简化策略回测，三方框架过重过程繁琐（vnpy）&lt;/li&gt;
+&lt;li&gt;优点：无须额外依赖，框架简单，策略编写简单&lt;/li&gt;
+&lt;li&gt;解决痛点：不用手写回测结果，封装常用技术指标，便于优化策略，可直接对接模拟盘、实盘。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+      
+    </item>
+    
     <item>
       <title>投资与量化-任务6-量化调仓</title>
       <link>https://JupiterXue.github.io/posts/quant-whale-notes/task6-select-time/</link>
@@ -14,7 +65,7 @@
       
       <guid>https://JupiterXue.github.io/posts/quant-whale-notes/task6-select-time/</guid>
       
-      <description>&lt;p&gt;传送门：&lt;a href=&#34;https://JupiterXue.github.io/&#34;&gt;第六章-量化调仓&lt;/a&gt;&lt;/p&gt;
+      <description>&lt;p&gt;传送门：&lt;a href=&#34;https://datawhalechina.github.io/whale-quant/#/./ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5&#34;&gt;第六章-量化调仓&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;思考&#34;&gt;思考&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;如果说量化择时是进攻，那么&lt;strong&gt;量化调仓就是防守&lt;/strong&gt;。量化调仓可以说是投资中主动性更大的一个环节，更多的考虑不是超额收益而是&lt;strong&gt;降低风险&lt;/strong&gt;，因此会用到一些常见的方法来衡量风险情况。&lt;/li&gt;
